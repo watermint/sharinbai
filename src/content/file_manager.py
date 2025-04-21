@@ -2,12 +2,13 @@
 File manager to handle file operations
 """
 
+import json
 import logging
 import os
-from pathlib import Path
 import re
-import json
+from pathlib import Path
 from typing import Optional, Dict, Any
+
 
 class FileManager:
     """Handles file operations for the project"""

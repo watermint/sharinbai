@@ -2,8 +2,8 @@
 Tests for the FolderGenerator class
 """
 
-import os
 import json
+import os
 import shutil
 import tempfile
 import unittest

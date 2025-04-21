@@ -7,9 +7,10 @@ import sys
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from src.foundation.llm_client import OllamaClient
-from src.content.file_manager import FileManager
 from src.config.language_utils import get_translation
+from src.content.file_manager import FileManager
+from src.foundation.llm_client import OllamaClient
+
 
 class BaseGenerator(ABC):
     """Base abstract class for all content generators"""

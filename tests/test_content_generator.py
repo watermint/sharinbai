@@ -2,13 +2,14 @@
 Tests for the ContentGenerator class
 """
 
-import os
 import datetime
+import os
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
 
 from src.content.content_generator import ContentGenerator
+
 
 class TestContentGenerator(unittest.TestCase):
     """Test cases for ContentGenerator"""

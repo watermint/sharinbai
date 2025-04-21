@@ -2,8 +2,8 @@
 Excel spreadsheet generator
 """
 
-import logging
 import json
+import logging
 import os
 from typing import Optional, Dict, List, Any
 

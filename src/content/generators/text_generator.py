@@ -7,6 +7,7 @@ from typing import Optional
 
 from src.content.generators.base_generator import BaseGenerator
 
+
 class TextGenerator(BaseGenerator):
     """Generator for text files"""
     

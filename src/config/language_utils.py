@@ -2,14 +2,15 @@
 Language utilities for internationalization
 """
 
-import os
-import sys
 import json
-import logging
-import re
 import locale
-from typing import Dict, List, Any, Optional
+import logging
+import os
+import re
+import sys
 from pathlib import Path
+from typing import Dict, List, Any, Optional
+
 
 def get_resource_paths() -> List[Path]:
     """

@@ -2,11 +2,11 @@
 Statistics tracker for generated content
 """
 
-import time
 import logging
 import os
-from pathlib import Path
+import time
 from collections import defaultdict, Counter
+from pathlib import Path
 from typing import Dict, List, Any, Optional
 
 from ..config.ui_constants import (
@@ -20,6 +20,7 @@ from ..config.ui_constants import (
     STATS_TOTAL_EXECUTION_TIME,
     STATS_FOOTER
 )
+
 
 class StatisticsTracker:
     """Tracks statistics about generated content"""

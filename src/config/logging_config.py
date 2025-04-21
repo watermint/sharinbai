@@ -2,11 +2,12 @@
 Logging configuration module
 """
 
+import logging
 import os
 import sys
-import logging
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
 
 def setup_logging(log_level: str = "INFO", output_path: str = ".") -> None:
     """

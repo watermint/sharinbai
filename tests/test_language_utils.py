@@ -5,8 +5,8 @@ Tests for language utility functions
 import json
 import os
 import unittest
-from unittest.mock import patch, mock_open, MagicMock
 from pathlib import Path
+from unittest.mock import patch, mock_open, MagicMock
 
 from src.config.language_utils import (
     get_resource_paths,

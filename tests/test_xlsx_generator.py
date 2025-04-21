@@ -8,6 +8,7 @@ from unittest.mock import patch, MagicMock, call
 
 from src.content.generators.xlsx_generator import XlsxGenerator, XLSX_AVAILABLE
 
+
 # Skip tests if openpyxl is not available
 @unittest.skipIf(not XLSX_AVAILABLE, "openpyxl is not installed")
 class TestXlsxGenerator(unittest.TestCase):

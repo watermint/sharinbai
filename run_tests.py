@@ -5,8 +5,8 @@
 Test runner for Sharinbai tests
 """
 
-import unittest
 import sys
+import unittest
 
 
 def run_tests():

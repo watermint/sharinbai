@@ -2,7 +2,6 @@
 Configuration module for settings and utilities
 """
 
-from src.config.settings import Settings
 from src.config.language_utils import (
     get_default_language,
     get_normalized_language_key,
@@ -12,6 +11,7 @@ from src.config.language_utils import (
     get_translation
 )
 from src.config.logging_config import setup_logging
+from src.config.settings import Settings
 
 __all__ = [
     'Settings',

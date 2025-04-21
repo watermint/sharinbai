@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
 import os
+import sys
 
 # Add project root to sys.path **BEFORE** other imports
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -15,12 +15,10 @@ from src.config.settings import Settings
 from src.config.logging_config import setup_logging
 from src.config.ui_constants import ROLE_PROMPT_CLI
 from src.config.language_utils import (
-    get_default_language,
     get_normalized_language_key,
     get_supported_languages,
     is_language_supported,
-    get_available_language_files,
-    get_translation
+    get_available_language_files
 )
 from src.structure.folder_generator import FolderGenerator
 from src.content.file_manager import FileManager

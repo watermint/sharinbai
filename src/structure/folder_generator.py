@@ -2,18 +2,19 @@
 Folder structure generator
 """
 
+import json
 import logging
 import os
-import json
 import sys
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Union, Tuple
 
-from ..content.file_manager import FileManager
-from ..content.content_generator import ContentGenerator
-from ..foundation.llm_client import OllamaClient
 from ..config.language_utils import get_translation
+from ..content.content_generator import ContentGenerator
+from ..content.file_manager import FileManager
+from ..foundation.llm_client import OllamaClient
 from ..statistics.statistics_tracker import StatisticsTracker
+
 
 # Custom exception for short mode limit
 class ShortModeLimitReached(Exception):
@@ -27,7 +28,7 @@ class LocalizedTemplateNotFoundError(Exception):
 class FolderGenerator:
     """Generates folder structures and instructs content creation"""
     
-    SHORT_MODE_LIMIT = 5 # Define the short mode limit
+    SHORT_MODE_LIMIT = 10 # Define the short mode limit
 
     def __init__(self, model: str = "llama3", ollama_url: Optional[str] = None):
         """

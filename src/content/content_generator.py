@@ -2,13 +2,12 @@
 Content generator for creating various file formats
 """
 
-import logging
-from pathlib import Path
-import os
 import datetime
+import logging
+import os
+from pathlib import Path
 from typing import Dict, Any, Optional, List, Union
 
-from src.foundation.llm_client import OllamaClient
 from src.content.file_manager import FileManager
 from src.content.generators import (
     TextGenerator,
@@ -17,6 +16,8 @@ from src.content.generators import (
     XlsxGenerator,
     ImageGenerator
 )
+from src.foundation.llm_client import OllamaClient
+
 
 class ContentGenerator:
     """Generates content for various file formats"""
