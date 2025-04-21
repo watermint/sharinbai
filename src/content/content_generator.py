@@ -44,6 +44,76 @@ class ContentGenerator:
             "image": ImageGenerator(self.llm_client)
         }
         
+    def generate_file_content(self, file_path: str, file_type: str, description: str, 
+                             industry: str, folder_path: str = "", language: str = "en", 
+                             role: Optional[str] = None) -> bool:
+        """
+        Generate content for a specific file.
+        
+        Args:
+            file_path: Full path to the file to create
+            file_type: Type of the file (extension)
+            description: Description of the file content
+            industry: Industry context
+            folder_path: Path of the folder containing the file
+            language: Language to use
+            role: Specific role within the industry (optional)
+            
+        Returns:
+            True if file was successfully created, False otherwise
+        """
+        try:
+            # Get directory and filename from file_path
+            directory = os.path.dirname(file_path)
+            filename = os.path.basename(file_path)
+            
+            # Ensure the directory exists
+            if not self.file_manager.ensure_directory(directory):
+                return False
+                
+            # Get file extension from file_type if provided, or from filename
+            if file_type and "." not in file_type:
+                ext = file_type.lower()
+            else:
+                _, ext = os.path.splitext(filename)
+                ext = ext.lstrip(".").lower()
+                
+            # Save file metadata separately
+            file_metadata = {
+                "filename": filename,
+                "description": description,
+                "industry": industry,
+                "language": language,
+                "role": role,
+                "extension": ext,
+                "folder_path": folder_path
+            }
+            
+            metadata_dir = os.path.join(directory, ".metadata")
+            self.file_manager.ensure_directory(metadata_dir)
+            metadata_filename = f"{self.file_manager.sanitize_path(filename)}.json"
+            metadata_path = os.path.join(metadata_dir, metadata_filename)
+            self.file_manager.write_json_file(metadata_path, file_metadata)
+            
+            # Use appropriate generator
+            if ext in self.generators:
+                return self.generators[ext].generate(
+                    directory, filename, description, industry, language, role
+                )
+            elif ext in ["png", "jpg"]:
+                return self.generators["image"].generate(
+                    directory, filename, description, industry, language, role
+                )
+            else:
+                # Default to text generator for unknown extensions
+                logging.warning(f"No specific generator for extension '{ext}', using text generator")
+                return self.generators["txt"].generate(
+                    directory, filename, description, industry, language, role
+                )
+        except Exception as e:
+            logging.error(f"Error generating file content for {file_path}: {e}")
+            return False
+        
     def generate_file(self, directory: str, filename: str, description: str,
                      industry: str, language: str, role: Optional[str] = None, 
                      purpose: Optional[str] = None) -> bool:
@@ -158,4 +228,52 @@ class ContentGenerator:
         except Exception as e:
             logging.error(f"Error checking timeseries folder limit: {e}")
             # Default to False on error
-            return False 
+            return False
+            
+    def generate_timeseries_files(self, folder_path: str, folder_name: str, folder_description: str,
+                                 industry: str, language: str, role: Optional[str] = None) -> List[str]:
+        """
+        Generate timeseries files for a folder.
+        
+        Args:
+            folder_path: Path to the folder
+            folder_name: Name of the folder
+            folder_description: Description of the folder
+            industry: Industry context
+            language: Language to use
+            role: Specific role within the industry (optional)
+            
+        Returns:
+            List of created file paths
+        """
+        created_files = []
+        try:
+            # Generate time-based files
+            today = datetime.datetime.now()
+            
+            # Create several files with different dates
+            for i in range(3):  # Create 3 files by default
+                # Use dates going backwards from today
+                date = today - datetime.timedelta(days=i * 30)  # Monthly intervals
+                date_str = date.strftime("%Y-%m-%d")
+                
+                # Create different file types
+                file_types = ["xlsx", "pdf", "txt"]
+                for file_type in file_types:
+                    file_name = f"{date_str}_{folder_name}.{file_type}"
+                    file_path = os.path.join(folder_path, file_name)
+                    
+                    # Skip if file already exists
+                    if os.path.exists(file_path):
+                        logging.info(f"File {file_path} already exists, skipping")
+                        continue
+                    
+                    # Generate file content
+                    description = f"Timeseries {file_type.upper()} file for {date_str} - {folder_description}"
+                    if self.generate_file_content(file_path, file_type, description, industry, folder_path, language, role):
+                        created_files.append(file_path)
+                        
+            return created_files
+        except Exception as e:
+            logging.exception(f"Error generating timeseries files: {e}")
+            return created_files 

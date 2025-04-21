@@ -13,6 +13,7 @@ from ..content.file_manager import FileManager
 from ..content.content_generator import ContentGenerator
 from ..foundation.llm_client import OllamaClient
 from ..config.language_utils import get_translation
+from ..statistics.statistics_tracker import StatisticsTracker
 
 # Custom exception for short mode limit
 class ShortModeLimitReached(Exception):
@@ -41,6 +42,7 @@ class FolderGenerator:
         self.content_generator = ContentGenerator(model, ollama_url)
         self._item_count = 0 # Initialize item counter
         self._short_mode_enabled = False # Flag to store if short mode is active for the current run
+        self.statistics_tracker = StatisticsTracker() # Initialize statistics tracker
         
     # --- Public Methods (expected by sharinbai.py) with Short Mode --- 
 
@@ -71,13 +73,26 @@ class FolderGenerator:
             if not self.file_manager.ensure_directory(str(target_dir)):
                 return False
             
+            self.statistics_tracker.start_tracking_item("level1_structure_generation")
             level1_structure = self._generate_level1_folders(industry, language, role)
+            self.statistics_tracker.end_tracking_item()
+            
             if not level1_structure or "folders" not in level1_structure:
                 logging.error("Failed to generate valid level 1 folder structure")
                 return False
-            return self._process_folder_structure(level1_structure, target_dir, industry, language, role)
+                
+            result = self._process_folder_structure(level1_structure, target_dir, industry, language, role)
+            
+            # Print statistics at the end
+            self.statistics_tracker.print_statistics(language)
+            
+            return result
         except ShortModeLimitReached:
             logging.info("Folder generation stopped due to short mode limit.")
+            
+            # Print statistics even when stopped early
+            self.statistics_tracker.print_statistics(language)
+            
             return True
         except LocalizedTemplateNotFoundError as e:
             logging.error(f"Language resource error: {e}")
@@ -113,13 +128,26 @@ class FolderGenerator:
             if not self.file_manager.ensure_directory(str(target_dir)):
                 return False
                 
+            self.statistics_tracker.start_tracking_item("level1_structure_generation")
             level1_structure = self._generate_level1_folders(industry, language, role)
+            self.statistics_tracker.end_tracking_item()
+            
             if not level1_structure or "folders" not in level1_structure:
                 logging.error("Failed to generate valid level 1 folder structure")
                 return False
-            return self._process_structure_only(level1_structure, target_dir, industry, language, role)
+                
+            result = self._process_structure_only(level1_structure, target_dir, industry, language, role)
+            
+            # Print statistics at the end
+            self.statistics_tracker.print_statistics(language)
+            
+            return result
         except ShortModeLimitReached:
             logging.info("Folder generation stopped due to short mode limit.")
+            
+            # Print statistics even when stopped early
+            self.statistics_tracker.print_statistics(language)
+            
             return True
         except LocalizedTemplateNotFoundError as e:
             logging.error(f"Language resource error: {e}")
@@ -149,10 +177,20 @@ class FolderGenerator:
             if not target_dir.exists():
                  logging.error(f"Target directory {target_dir} does not exist. Run 'all' or 'structure' first.")
                  return False
+                 
             # Industry/language needed for regeneration prompts even if metadata has them
-            return self._regenerate_files(target_dir, industry, language, role) 
+            result = self._regenerate_files(target_dir, industry, language, role)
+            
+            # Print statistics at the end
+            self.statistics_tracker.print_statistics(language)
+            
+            return result
         except ShortModeLimitReached:
             logging.info("File generation stopped due to short mode limit.")
+            
+            # Print statistics even when stopped early
+            self.statistics_tracker.print_statistics(language)
+            
             return True
         except LocalizedTemplateNotFoundError as e:
             logging.error(f"Language resource error: {e}")
@@ -187,6 +225,7 @@ class FolderGenerator:
             "folders": level1_structure["folders"]
         }
         self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
+        self.statistics_tracker.add_file(str(target_dir / ".metadata.json"))
         
         # Get parent folder names to check for conflicts
         parent_dirs = [p.name for p in target_dir.parents]
@@ -210,6 +249,9 @@ class FolderGenerator:
                 success = False
                 continue
                 
+            # Track folder
+            self.statistics_tracker.add_folder(str(l1_folder_path))
+                
             logging.info(f"Created level 1 folder: {l1_folder_name}")
             
             # Get folder purpose if specified
@@ -227,18 +269,23 @@ class FolderGenerator:
             if folder_purpose == "timeseries":
                 logging.info(f"Folder {l1_folder_name} is marked as timeseries, skipping subfolders")
                 self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
+                self.statistics_tracker.add_file(str(l1_folder_path / ".metadata.json"))
                 
                 # Generate timeseries files for this folder
+                self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}")
                 self._generate_timeseries_files(
                     l1_folder_path, l1_folder_name, l1_folder_data.get("description", ""),
                     industry, language, role
                 )
+                self.statistics_tracker.end_tracking_item()
                 continue
             
             # Generate level 2 folder structure
+            self.statistics_tracker.start_tracking_item(f"level2_folders_for_{l1_folder_name}")
             level2_structure = self._generate_level2_folders(
                 industry, l1_folder_name, l1_folder_data.get("description", ""), language, role
             )
+            self.statistics_tracker.end_tracking_item()
             
             if not level2_structure or "folders" not in level2_structure:
                 logging.error(f"Failed to get valid level 2 structure for {l1_folder_name}, skipping")
@@ -247,6 +294,7 @@ class FolderGenerator:
             # Add folders to level 1 metadata
             l1_metadata["folders"] = level2_structure["folders"]
             self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
+            self.statistics_tracker.add_file(str(l1_folder_path / ".metadata.json"))
             
             # Track timeseries folders at level 2
             if self.content_generator.is_timeseries_limit_reached(str(l1_folder_path)):
@@ -295,10 +343,12 @@ class FolderGenerator:
                     self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
                     
                     # Generate timeseries files for this folder
+                    self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}_{l2_folder_name}")
                     self._generate_timeseries_files(
                         l2_folder_path, l2_folder_name, l2_folder_data.get("description", ""),
                         industry, language, role
                     )
+                    self.statistics_tracker.end_tracking_item()
                     continue
                 
                 # Generate level 3 folder structure
@@ -314,6 +364,7 @@ class FolderGenerator:
                 # Add folders to level 2 metadata
                 l2_metadata["folders"] = level3_structure["folders"]
                 self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
+                self.statistics_tracker.add_file(str(l2_folder_path / ".metadata.json"))
                 
                 # Track timeseries folders at level 3
                 if self.content_generator.is_timeseries_limit_reached(str(l2_folder_path)):
@@ -354,14 +405,17 @@ class FolderGenerator:
                         "purpose": l3_folder_data.get("purpose")
                     }
                     self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
+                    self.statistics_tracker.add_file(str(l3_folder_path / ".metadata.json"))
                     
                     # Generate timeseries files for timeseries folders
                     if l3_folder_data.get("purpose") == "timeseries":
                         logging.info(f"Folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name} is marked as timeseries")
+                        self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}_{l2_folder_name}_{l3_folder_name}")
                         self._generate_timeseries_files(
                             l3_folder_path, l3_folder_name, l3_folder_data.get("description", ""),
                             industry, language, role
                         )
+                        self.statistics_tracker.end_tracking_item()
         
         logging.info("Folder structure creation completed (or stopped by short mode).")
         return success
@@ -369,7 +423,7 @@ class FolderGenerator:
     def _process_folder_structure(self, level1_structure: Dict[str, Any], target_dir: Path,
                                 industry: str, language: str, role: Optional[str] = None) -> bool:
         """
-        Process and create the folder structure.
+        Process the folder structure and generate files.
         
         Args:
             level1_structure: Level 1 folder structure data
@@ -381,7 +435,6 @@ class FolderGenerator:
         Returns:
             True if successful, False otherwise
         """
-        level1_folders = list(level1_structure["folders"].keys())
         success = True
         
         # Store root level metadata
@@ -392,10 +445,7 @@ class FolderGenerator:
             "folders": level1_structure["folders"]
         }
         self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
-        
-        # Track timeseries folders at level 1
-        if self.content_generator.is_timeseries_limit_reached(str(target_dir)):
-            logging.warning("Maximum number of timeseries folders at level 1 reached")
+        self.statistics_tracker.add_file(str(target_dir / ".metadata.json"))
         
         # Get parent folder names to check for conflicts
         parent_dirs = [p.name for p in target_dir.parents]
@@ -419,6 +469,9 @@ class FolderGenerator:
                 success = False
                 continue
                 
+            # Track folder creation
+            self.statistics_tracker.add_folder(str(l1_folder_path))
+                
             logging.info(f"Created level 1 folder: {l1_folder_name}")
             
             # Get folder purpose if specified
@@ -436,46 +489,40 @@ class FolderGenerator:
             if folder_purpose == "timeseries":
                 logging.info(f"Folder {l1_folder_name} is marked as timeseries, skipping subfolders")
                 self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
+                self.statistics_tracker.add_file(str(l1_folder_path / ".metadata.json"))
                 
                 # Generate timeseries files for this folder
+                self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}")
                 self._generate_timeseries_files(
                     l1_folder_path, l1_folder_name, l1_folder_data.get("description", ""),
                     industry, language, role
                 )
+                self.statistics_tracker.end_tracking_item()
                 continue
             
             # Generate level 2 folder structure
+            self.statistics_tracker.start_tracking_item(f"level2_folders_for_{l1_folder_name}")
             level2_structure = self._generate_level2_folders(
                 industry, l1_folder_name, l1_folder_data.get("description", ""), language, role
             )
+            self.statistics_tracker.end_tracking_item()
             
             if not level2_structure or "folders" not in level2_structure:
-                logging.error(f"Failed to get valid level 2 structure for {l1_folder_name}, skipping")
+                logging.error(f"Failed to get valid level 2 structure for {l1_folder_name}, skipping subfolders")
                 continue
             
             # Add folders to level 1 metadata
             l1_metadata["folders"] = level2_structure["folders"]
             self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
+            self.statistics_tracker.add_file(str(l1_folder_path / ".metadata.json"))
             
-            # Track timeseries folders at level 2
-            if self.content_generator.is_timeseries_limit_reached(str(l1_folder_path)):
-                logging.warning(f"Maximum number of timeseries folders in {l1_folder_name} reached")
-            
-            # Update parent directories list for level 2 folder check
-            l2_parent_dirs = parent_dirs + [l1_folder_name]
-                
             # Process level 2 folders
             for l2_folder_name, l2_folder_data in level2_structure["folders"].items():
-                if not isinstance(l2_folder_data, dict) or "description" not in l2_folder_data:
-                    logging.warning(f"Invalid data for level 2 folder {l2_folder_name}, skipping")
-                    continue
-                    
                 # Check limit before creating L2 folder
                 if self._check_short_mode_limit(): raise ShortModeLimitReached()
                 
-                # Check if folder name conflicts with parent folder name
-                if l2_folder_name in l2_parent_dirs:
-                    logging.warning(f"Folder name '{l2_folder_name}' conflicts with parent folder name, skipping")
+                if not isinstance(l2_folder_data, dict) or "description" not in l2_folder_data:
+                    logging.warning(f"Invalid data for folder {l1_folder_name}/{l2_folder_name}, skipping")
                     continue
                     
                 # Create level 2 folder
@@ -483,6 +530,9 @@ class FolderGenerator:
                 if not self.file_manager.ensure_directory(str(l2_folder_path)):
                     success = False
                     continue
+                    
+                # Track folder creation
+                self.statistics_tracker.add_folder(str(l2_folder_path))
                     
                 logging.info(f"Created level 2 folder: {l1_folder_name}/{l2_folder_name}")
                 
@@ -493,8 +543,8 @@ class FolderGenerator:
                 l2_metadata = {
                     "name": l2_folder_name,
                     "description": l2_folder_data.get("description", ""),
-                    "parent_folder": l1_folder_name,
                     "industry": industry,
+                    "parent": l1_folder_name,
                     "purpose": l2_folder_purpose
                 }
                 
@@ -502,114 +552,130 @@ class FolderGenerator:
                 if l2_folder_purpose == "timeseries":
                     logging.info(f"Folder {l1_folder_name}/{l2_folder_name} is marked as timeseries, skipping subfolders")
                     self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
+                    self.statistics_tracker.add_file(str(l2_folder_path / ".metadata.json"))
                     
                     # Generate timeseries files for this folder
+                    self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}_{l2_folder_name}")
                     self._generate_timeseries_files(
                         l2_folder_path, l2_folder_name, l2_folder_data.get("description", ""),
                         industry, language, role
                     )
+                    self.statistics_tracker.end_tracking_item()
                     continue
                 
                 # Generate level 3 folder structure
+                self.statistics_tracker.start_tracking_item(f"level3_folders_for_{l1_folder_name}_{l2_folder_name}")
                 level3_structure = self._generate_level3_folders(
-                    industry, l2_folder_name, l2_folder_data, 
-                    l1_folder_data.get("description", ""), l1_folder_name, language, role
+                    industry, l2_folder_name, l2_folder_data, l1_folder_data.get("description", ""),
+                    l1_folder_name, language, role
                 )
+                self.statistics_tracker.end_tracking_item()
                 
-                if not level3_structure or "folders" not in level3_structure:
-                    logging.warning(f"Failed to get valid level 3 structure for {l1_folder_name}/{l2_folder_name}, skipping")
-                    continue
-                
-                # Generate files for level 2 folder
-                level3_files = self._generate_level3_files(
-                    industry, l2_folder_name, l2_folder_data,
-                    l1_folder_data.get("description", ""), l1_folder_name, language, role
-                )
-                
-                # Add folders and files to level 2 metadata
-                l2_metadata["folders"] = level3_structure["folders"]
-                
-                # Add files to metadata if available
-                if level3_files is not None and "files" in level3_files and isinstance(level3_files["files"], list):
-                    l2_metadata["files"] = level3_files["files"]
-                
-                self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
-                
-                # Track timeseries folders at level 3
-                if self.content_generator.is_timeseries_limit_reached(str(l2_folder_path)):
-                    logging.warning(f"Maximum number of timeseries folders in {l1_folder_name}/{l2_folder_name} reached")
-                
-                # Update parent directories list for level 3 folder check
-                l3_parent_dirs = l2_parent_dirs + [l2_folder_name]
-                
-                # Create level 3 folders
-                for l3_folder_name, l3_folder_data in level3_structure["folders"].items():
-                    if not isinstance(l3_folder_data, dict) or "description" not in l3_folder_data:
-                        logging.warning(f"Invalid data for level 3 folder {l3_folder_name}, skipping")
-                        continue
+                if level3_structure and "folders" in level3_structure:
+                    # Add folders to level 2 metadata
+                    l2_metadata["folders"] = level3_structure["folders"]
+                    self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
+                    self.statistics_tracker.add_file(str(l2_folder_path / ".metadata.json"))
+                    
+                    # Process level 3 folders
+                    for l3_folder_name, l3_folder_data in level3_structure["folders"].items():
+                        # Check limit before creating L3 folder
+                        if self._check_short_mode_limit(): raise ShortModeLimitReached()
                         
-                    # Check limit before creating L3 folder
-                    if self._check_short_mode_limit(): raise ShortModeLimitReached()
-                    
-                    # Check if folder name conflicts with parent folder name
-                    if l3_folder_name in l3_parent_dirs:
-                        logging.warning(f"Folder name '{l3_folder_name}' conflicts with parent folder name, skipping")
-                        continue
-                        
-                    # Create level 3 folder
-                    l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
-                    if not self.file_manager.ensure_directory(str(l3_folder_path)):
-                        success = False
-                        continue
-                        
-                    logging.info(f"Created level 3 folder: {l1_folder_name}/{l2_folder_name}/{l3_folder_name}")
-                    
-                    # Store level 3 folder metadata
-                    l3_metadata = {
-                        "name": l3_folder_name,
-                        "description": l3_folder_data.get("description", ""),
-                        "parent_folder": l2_folder_name,
-                        "grandparent_folder": l1_folder_name,
-                        "industry": industry,
-                        "purpose": l3_folder_data.get("purpose")
-                    }
-                    self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
-                    
-                    # Generate timeseries files for timeseries folders
-                    if l3_folder_data.get("purpose") == "timeseries":
-                        logging.info(f"Folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name} is marked as timeseries")
-                        self._generate_timeseries_files(
-                            l3_folder_path, l3_folder_name, l3_folder_data.get("description", ""),
-                            industry, language, role
-                        )
-                
-                # Generate files for level 2 folder
-                if level3_files is not None and "files" in level3_files and isinstance(level3_files["files"], list):
-                    logging.info(f"Creating {len(level3_files['files'])} files in {l1_folder_name}/{l2_folder_name}")
-                    
-                    # Create each file
-                    for file_info in level3_files["files"]:
-                        try:
-                            # Check limit before creating file
-                            if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                        if not isinstance(l3_folder_data, dict) or "description" not in l3_folder_data:
+                            logging.warning(f"Invalid data for folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name}, skipping")
+                            continue
                             
-                            if not isinstance(file_info, dict) or "name" not in file_info:
-                                continue
-                                
-                            file_name = file_info["name"]
-                            file_description = file_info.get("description", "")
-                            
-                            self.content_generator.generate_file(
-                                str(l2_folder_path), file_name, file_description,
-                                industry, language, role, l2_folder_purpose
-                            )
-                            logging.info(f"Created file: {l1_folder_name}/{l2_folder_name}/{file_name}")
-                        except ShortModeLimitReached:
-                            raise # Re-raise to stop outer loops
-                        except Exception as e:
-                            logging.error(f"Error creating file: {e}")
+                        # Create level 3 folder
+                        l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
+                        if not self.file_manager.ensure_directory(str(l3_folder_path)):
                             success = False
+                            continue
+                            
+                        # Track folder creation
+                        self.statistics_tracker.add_folder(str(l3_folder_path))
+                            
+                        logging.info(f"Created level 3 folder: {l1_folder_name}/{l2_folder_name}/{l3_folder_name}")
+                        
+                        # Store level 3 folder metadata
+                        l3_metadata = {
+                            "name": l3_folder_name,
+                            "description": l3_folder_data.get("description", ""),
+                            "industry": industry,
+                            "parent": l2_folder_name,
+                            "grandparent": l1_folder_name,
+                            "purpose": l3_folder_data.get("purpose")
+                        }
+                        self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
+                        self.statistics_tracker.add_file(str(l3_folder_path / ".metadata.json"))
+                        
+                        # Generate timeseries files for timeseries folders
+                        if l3_folder_data.get("purpose") == "timeseries":
+                            logging.info(f"Folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name} is marked as timeseries")
+                            self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}_{l2_folder_name}_{l3_folder_name}")
+                            self._generate_timeseries_files(
+                                l3_folder_path, l3_folder_name, l3_folder_data.get("description", ""),
+                                industry, language, role
+                            )
+                            self.statistics_tracker.end_tracking_item()
+                
+                # Generate files for level 2 folder
+                self.statistics_tracker.start_tracking_item(f"files_for_{l1_folder_name}_{l2_folder_name}")
+                level2_files = self._generate_level3_files(
+                    industry, l2_folder_name, l2_folder_data, l1_folder_data.get("description", ""),
+                    l1_folder_name, language, role
+                )
+                self.statistics_tracker.end_tracking_item()
+                
+                if level2_files and "files" in level2_files:
+                    # Add files to level 2 metadata
+                    l2_metadata["files"] = level2_files["files"]
+                    
+                    # Write updated metadata
+                    self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
+                    self.statistics_tracker.add_file(str(l2_folder_path / ".metadata.json"))
+                    
+                    # Create files
+                    self.statistics_tracker.start_tracking_item(f"file_content_for_{l1_folder_name}_{l2_folder_name}")
+                    for file_name, file_data in level2_files["files"].items():
+                        # Check limit before creating file
+                        if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                        
+                        if not isinstance(file_data, dict) or "type" not in file_data:
+                            logging.warning(f"Invalid data for file {l1_folder_name}/{l2_folder_name}/{file_name}, skipping")
+                            continue
+                        
+                        # Generate content for the file
+                        try:
+                            file_path = l2_folder_path / self.file_manager.sanitize_path(file_name)
+                            
+                            # Skip existing files
+                            if self.file_manager.file_exists(str(file_path)):
+                                logging.info(f"File {file_path} already exists, skipping")
+                                continue
+                            
+                            content_success = self.content_generator.generate_file_content(
+                                str(file_path),
+                                file_data.get("type", ""),
+                                file_data.get("description", ""),
+                                industry,
+                                f"{l1_folder_name}/{l2_folder_name}",
+                                language,
+                                role
+                            )
+                            
+                            if content_success:
+                                # Track file creation
+                                self.statistics_tracker.add_file(str(file_path))
+                        except Exception as e:
+                            logging.error(f"Error generating file {file_name}: {e}")
+                    self.statistics_tracker.end_tracking_item()
+                else:
+                    # Just update the metadata without files
+                    self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
+                    self.statistics_tracker.add_file(str(l2_folder_path / ".metadata.json"))
         
+        logging.info("Folder structure and file creation completed (or stopped by short mode).")
         return success
     
     def _regenerate_files(self, target_dir: Path, industry: str, language: str, 

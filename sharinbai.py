@@ -288,6 +288,7 @@ def main():
     
     folder_generator = FolderGenerator(settings.model, settings.ollama_url)
     try:
+        success = False
         if args.command == 'all':
             logging.info(f"Generating complete folder structure for {settings.industry} industry")
             success = folder_generator.generate_all(
@@ -318,6 +319,7 @@ def main():
         else:
             logging.error(f"Unknown command: {args.command}")
             sys.exit(1)
+            
         if success:
             logging.info(f"Command '{args.command}' completed successfully")
             sys.exit(0)

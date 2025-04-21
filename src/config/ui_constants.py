@@ -60,4 +60,15 @@ ERROR_MESSAGES = {
 FALLBACK_FILE_TEMPLATE = "# {file_name}\n\n{description}\n\nIndustry: {industry}\nRole: {role}\n"
 
 # CLI role prompt - this was specifically referenced in the code
-ROLE_PROMPT_CLI = "Please enter the business role for which the folder structure is intended:" 
+ROLE_PROMPT_CLI = "Please enter the business role for which the folder structure is intended:"
+
+# Statistics output messages
+STATS_HEADER = "----- Generation Statistics -----"
+STATS_FOLDER_COUNT = "Total folders created: {count}"
+STATS_FILE_COUNT = "Total files created: {count}"
+STATS_FILE_TYPES_HEADER = "File types:"
+STATS_FILE_TYPE_ITEM = "{type}: {count}"
+STATS_PROCESSING_TIMES_HEADER = "Processing times:"
+STATS_PROCESSING_TIME_ITEM = "{item}: {time}s"
+STATS_TOTAL_EXECUTION_TIME = "Total execution time: {time}s"
+STATS_FOOTER = "--------------------------------" 
