@@ -45,52 +45,5 @@
         "content_generation": "Genera contenido para {description} en la industria de {industry}{role_context}. El contenido debe estar en idioma {language}.{file_type_context} Sé conciso y profesional.",
         "file_type_context": " La salida debe estar en formato {file_type}.",
         "role_context": " para un {role}"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "Rango de fechas en formato AAAA-MM-DD:AAAA-MM-DD",
-            "description": "Genera una estructura de directorio basada en la industria y el rol.",
-            "file": "Generar solo archivo(s) específico(s), rutas separadas por comas",
-            "force": "Forzar sobrescritura de carpeta existente",
-            "industry": "Industria para la estructura de carpetas",
-            "language": "Idioma para el contenido generado (predeterminado: idioma del sistema)",
-            "max_depth": "Profundidad máxima de carpetas (predeterminado: 3)",
-            "min_files": "Número mínimo de archivos por carpeta (predeterminado: 3)",
-            "model": "Modelo Ollama a utilizar (predeterminado: gemma3:4b)",
-            "output": "Directorio de salida (predeterminado: nombre de la industria)",
-            "role": "Rol empresarial para la estructura de carpetas",
-            "scan": "Escanear estructura existente antes de la generación",
-            "scenario": "Generar escenario de negocio",
-            "structure": "Crear solo estructura de carpetas sin generar archivos"
-        },
-        "content_header": "Contenido",
-        "context_header": "Contexto Empresarial",
-        "date_footer": ", Fecha: {date}",
-        "description_label": "Descripción:",
-        "doc_sample_text": "Este documento fue generado como muestra.",
-        "error_messages": {
-            "fallback_file_error": "Error al crear archivo de respaldo: {error}",
-            "folder_structure_not_found": "Plantilla de estructura de carpetas no encontrada en las plantillas de idioma. Usando indicación básica.",
-            "invalid_date_format": "Formato de fecha inválido: {error}. Usando el predeterminado (mes pasado).",
-            "json_parsing_error": "Error de análisis JSON: {error}",
-            "language_mapping_not_found": "Archivo de mapeo de idioma no encontrado: {file}",
-            "template_file_not_found": "Archivo de plantilla {file} no encontrado. Usando plantilla predeterminada en-US.",
-            "unknown_extension": "Extensión de archivo desconocida para: {file_path} - Sugerencias alternativas: {suggestions}",
-            "unsupported_extension": "Extensión de archivo no soportada: {ext}. Usando {new_ext} en su lugar."
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\nIndustria: {industry}\nRol: {role}\n",
-        "file_info_header": "Información del Archivo",
-        "file_list_header": "Archivos:",
-        "filename_label": "Nombre del archivo:",
-        "footer_text": "Este archivo fue generado como muestra.",
-        "industry_footer": "Industria: {industry}",
-        "industry_label": "Industria:",
-        "not_specified": "No especificado",
-        "overview_header": "Resumen",
-        "pdf_sample_text": "Este documento fue generado como muestra.",
-        "period_label": "Período:",
-        "role_footer": ", Rol: {role_text}",
-        "role_label": "Rol:",
-        "sheet_title": "Resumen"
     }
 }

@@ -45,52 +45,5 @@
         "content_generation": "为{industry}行业的{description}{role_context}生成内容。内容应该使用{language}{file_type_context}。保持简洁专业。",
         "file_type_context": "，格式为{file_type}",
         "role_context": "，作为{role}"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "日期范围，格式为YYYY-MM-DD:YYYY-MM-DD",
-            "description": "根据行业和角色生成目录结构。",
-            "file": "仅生成特定文件，以逗号分隔的路径",
-            "force": "强制覆盖现有文件夹",
-            "industry": "文件夹结构的行业",
-            "language": "生成内容的语言（默认：系统语言）",
-            "max_depth": "最大文件夹深度（默认：3）",
-            "min_files": "每个文件夹的最小文件数（默认：3）",
-            "model": "使用的Ollama模型（默认：gemma3:4b）",
-            "output": "输出目录（默认：行业名称）",
-            "role": "文件夹结构的业务角色",
-            "scan": "生成前扫描现有结构",
-            "scenario": "生成业务场景",
-            "structure": "仅创建文件夹结构，不生成任何文件"
-        },
-        "content_header": "内容",
-        "context_header": "业务上下文",
-        "date_footer": "，日期: {date}",
-        "description_label": "说明：",
-        "doc_sample_text": "本文档为示例生成。",
-        "error_messages": {
-            "fallback_file_error": "回退文件创建失败: {error}",
-            "folder_structure_not_found": "语言模板中未找到文件夹结构模板。将使用基础提示。",
-            "invalid_date_format": "日期格式无效: {error}。将使用默认（上月）。",
-            "json_parsing_error": "JSON解析错误: {error}",
-            "language_mapping_not_found": "未找到语言映射文件: {file}",
-            "template_file_not_found": "未找到模板文件 {file}。将使用默认的en-US模板。",
-            "unknown_extension": "未知文件扩展名: {file_path} - 替代方案: {suggestions}",
-            "unsupported_extension": "不支持的文件扩展名: {ext}。将使用 {new_ext} 代替。"
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\n行业: {industry}\n角色: {role}\n",
-        "file_info_header": "文件信息",
-        "file_list_header": "文件:",
-        "filename_label": "文件名：",
-        "footer_text": "本文件为示例生成。",
-        "industry_footer": "行业: {industry}",
-        "industry_label": "行业：",
-        "not_specified": "未指定",
-        "overview_header": "概览",
-        "pdf_sample_text": "本文档为示例生成。",
-        "period_label": "期间：",
-        "role_footer": "，角色: {role_text}",
-        "role_label": "职位：",
-        "sheet_title": "概览"
     }
 }

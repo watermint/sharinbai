@@ -45,52 +45,5 @@
         "content_generation": "Bitte generieren Sie Inhalte für {description} in der {industry}-Branche{role_context}. Der Inhalt sollte auf {language} sein{file_type_context}. Halten Sie es prägnant und professionell.",
         "file_type_context": ". Die Ausgabe sollte im {file_type}-Format sein",
         "role_context": " (für {role})"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "Datumsbereich im Format JJJJ-MM-TT:JJJJ-MM-TT",
-            "description": "Generiert eine Verzeichnisstruktur basierend auf Branche und Rolle.",
-            "file": "Nur bestimmte Dateien generieren (kommagetrennte Pfade)",
-            "force": "Bestehende Ordner überschreiben",
-            "industry": "Die Branche, für die die Ordnerstruktur erstellt wird",
-            "language": "Sprache für den zu generierenden Inhalt (Standard: Systemsprache)",
-            "max_depth": "Maximale Tiefe der Ordnerhierarchie (Standard: 3)",
-            "min_files": "Minimale Anzahl von Dateien pro Ordner (Standard: 3)",
-            "model": "Zu verwendendendes Ollama-Modell (Standard: gemma3:4b)",
-            "output": "Ausgabeverzeichnis (Standard: Name der Branche)",
-            "role": "Die Geschäftsrolle, für die die Ordnerstruktur bestimmt ist",
-            "scan": "Vorhandene Struktur vor der Generierung scannen",
-            "scenario": "Geschäftsszenario zum Generieren",
-            "structure": "Nur Ordnerstruktur erstellen, keine Dateien generieren"
-        },
-        "content_header": "Inhalt",
-        "context_header": "Geschäftskontext",
-        "date_footer": ", Datum: {date}",
-        "description_label": "Beschreibung:",
-        "doc_sample_text": "Dieses Dokument wurde als Beispiel generiert.",
-        "error_messages": {
-            "fallback_file_error": "Fehler beim Erstellen der Fallback-Datei: {error}",
-            "folder_structure_not_found": "Keine Ordnerstrukturvorlage in der Sprachvorlage gefunden. Verwende Basis-Prompt.",
-            "invalid_date_format": "Ungültiges Datumsformat: {error}. Verwende Standard (letzter Monat).",
-            "json_parsing_error": "JSON-Parsing-Fehler: {error}",
-            "language_mapping_not_found": "Sprachmappingdatei nicht gefunden: {file}",
-            "template_file_not_found": "Vorlagendatei {file} nicht gefunden. Verwende Standard-en-US-Vorlage.",
-            "unknown_extension": "Unbekannte Dateierweiterung: {file_path} - Vorschläge: {suggestions}",
-            "unsupported_extension": "Nicht unterstützte Dateierweiterung: {ext}. Verwende stattdessen {new_ext}."
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\nBranche: {industry}\nRolle: {role}\n",
-        "file_info_header": "Dateiinformationen",
-        "file_list_header": "Dateien:",
-        "filename_label": "Dateiname:",
-        "footer_text": "Diese Datei wurde als Beispiel generiert.",
-        "industry_footer": "Branche: {industry}",
-        "industry_label": "Branche:",
-        "not_specified": "Nicht angegeben",
-        "overview_header": "Übersicht",
-        "pdf_sample_text": "Dieses Dokument wurde als Beispiel generiert.",
-        "period_label": "Zeitraum:",
-        "role_footer": ", Rolle: {role_text}",
-        "role_label": "Position:",
-        "sheet_title": "Übersicht"
     }
 }

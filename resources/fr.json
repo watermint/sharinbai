@@ -45,52 +45,5 @@
         "content_generation": "Générez du contenu pour {description} dans l'industrie {industry}{role_context}. Le contenu doit être en {language}{file_type_context}. Soyez concis et professionnel.",
         "file_type_context": " et au format {file_type}",
         "role_context": " en tant que {role}"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "Plage de dates au format AAAA-MM-JJ:AAAA-MM-JJ",
-            "description": "Génère une structure de répertoire basée sur l'industrie et le rôle.",
-            "file": "Générer uniquement des fichiers spécifiques, chemins séparés par des virgules",
-            "force": "Forcer l'écrasement du dossier existant",
-            "industry": "Industrie pour la structure de dossiers",
-            "language": "Langue pour le contenu généré (par défaut : langue du système)",
-            "max_depth": "Profondeur maximale des dossiers (par défaut : 3)",
-            "min_files": "Nombre minimum de fichiers par dossier (par défaut : 3)",
-            "model": "Modèle Ollama à utiliser (par défaut : gemma3:4b)",
-            "output": "Répertoire de sortie (par défaut : nom de l'industrie)",
-            "role": "Rôle commercial pour la structure de dossiers",
-            "scan": "Scanner la structure existante avant la génération",
-            "scenario": "Générer un scénario commercial",
-            "structure": "Créer uniquement la structure de dossiers sans générer de fichiers"
-        },
-        "content_header": "Contenu",
-        "context_header": "Contexte Commercial",
-        "date_footer": ", Date : {date}",
-        "description_label": "Description :",
-        "doc_sample_text": "Ce document a été généré comme exemple.",
-        "error_messages": {
-            "fallback_file_error": "Échec de la création du fichier de secours : {error}",
-            "folder_structure_not_found": "Modèle de structure de dossiers non trouvé dans les modèles de langue. Utilisation de l'invite de base.",
-            "invalid_date_format": "Format de date invalide : {error}. Utilisation de la valeur par défaut (mois dernier).",
-            "json_parsing_error": "Erreur d'analyse JSON : {error}",
-            "language_mapping_not_found": "Fichier de mappage de langue non trouvé : {file}",
-            "template_file_not_found": "Fichier modèle {file} non trouvé. Utilisation du modèle en-US par défaut.",
-            "unknown_extension": "Extension de fichier inconnue pour : {file_path} - Suggestions alternatives : {suggestions}",
-            "unsupported_extension": "Extension de fichier non prise en charge : {ext}. Utilisation de {new_ext} à la place."
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\nIndustrie : {industry}\nRôle : {role}\n",
-        "file_info_header": "Informations sur le Fichier",
-        "file_list_header": "Fichiers :",
-        "filename_label": "Nom du fichier :",
-        "footer_text": "Ce fichier a été généré comme exemple.",
-        "industry_footer": "Industrie : {industry}",
-        "industry_label": "Industrie :",
-        "not_specified": "Non spécifié",
-        "overview_header": "Aperçu",
-        "pdf_sample_text": "Ce document a été généré comme exemple.",
-        "period_label": "Période :",
-        "role_footer": ", Rôle : {role_text}",
-        "role_label": "Rôle :",
-        "sheet_title": "Aperçu"
     }
 }

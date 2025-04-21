@@ -45,52 +45,5 @@
         "content_generation": "請為{industry}產業的{description}生成內容{role_context}。內容需以{language}撰寫{file_type_context}。請保持簡潔且專業。",
         "file_type_context": "。輸出需為{file_type}格式",
         "role_context": "（適用於{role}）"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "日期範圍，格式為YYYY-MM-DD:YYYY-MM-DD",
-            "description": "根據行業和角色生成目錄結構。",
-            "file": "僅生成特定檔案，以逗號分隔的路徑",
-            "force": "強制覆蓋現有資料夾",
-            "industry": "資料夾結構的行業",
-            "language": "生成內容的語言（預設：系統語言）",
-            "max_depth": "最大資料夾深度（預設：3）",
-            "min_files": "每個資料夾的最小檔案數（預設：3）",
-            "model": "使用的Ollama模型（預設：gemma3:4b）",
-            "output": "輸出目錄（預設：行業名稱）",
-            "role": "資料夾結構的業務角色",
-            "scan": "生成前掃描現有結構",
-            "scenario": "生成業務情境",
-            "structure": "僅建立資料夾結構，不生成任何檔案"
-        },
-        "content_header": "內容",
-        "context_header": "業務情境",
-        "date_footer": "，日期: {date}",
-        "description_label": "說明：",
-        "doc_sample_text": "本文件為範例產生。",
-        "error_messages": {
-            "fallback_file_error": "備用檔案建立失敗: {error}",
-            "folder_structure_not_found": "語言範本中找不到資料夾結構範本。將使用基礎提示。",
-            "invalid_date_format": "日期格式無效: {error}。將使用預設（上月）。",
-            "json_parsing_error": "JSON解析錯誤: {error}",
-            "language_mapping_not_found": "找不到語言對應檔案: {file}",
-            "template_file_not_found": "找不到範本檔案 {file}。將使用預設的en-US範本。",
-            "unknown_extension": "未知檔案副檔名: {file_path} - 替代方案: {suggestions}",
-            "unsupported_extension": "不支援的檔案副檔名: {ext}。將使用 {new_ext} 代替。"
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\n產業: {industry}\n角色: {role}\n",
-        "file_info_header": "檔案資訊",
-        "file_list_header": "檔案:",
-        "filename_label": "檔案名稱：",
-        "footer_text": "本檔案為範例產生。",
-        "industry_footer": "產業: {industry}",
-        "industry_label": "產業：",
-        "not_specified": "未指定",
-        "overview_header": "總覽",
-        "pdf_sample_text": "本文件為範例產生。",
-        "period_label": "期間：",
-        "role_footer": "，角色: {role_text}",
-        "role_label": "職稱：",
-        "sheet_title": "總覽"
     }
 }

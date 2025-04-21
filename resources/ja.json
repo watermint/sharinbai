@@ -45,52 +45,5 @@
         "content_generation": "{industry}業界の{description}向けのコンテンツを生成してください{role_context}。コンテンツは{language}で作成してください{file_type_context}。簡潔かつプロフェッショナルな内容にしてください。",
         "file_type_context": "。出力は{file_type}形式でお願いします",
         "role_context": "（{role}向け）"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "YYYY-MM-DD:YYYY-MM-DD形式の日付範囲",
-            "description": "業界と役割に基づいてディレクトリ構造を生成します。",
-            "file": "特定のファイルのみを生成（コンマ区切りのパス）",
-            "force": "既存のフォルダを上書きする",
-            "industry": "フォルダ構造を生成する業界",
-            "language": "生成するコンテンツの言語（デフォルト：システム言語）",
-            "max_depth": "最大フォルダ階層の深さ（デフォルト：3）",
-            "min_files": "フォルダごとの最小ファイル数（デフォルト：3）",
-            "model": "使用するOllamaモデル（デフォルト：gemma3:4b）",
-            "output": "出力ディレクトリ（デフォルト：業界名）",
-            "role": "フォルダ構造の対象となるビジネスロール",
-            "scan": "生成前に既存の構造をスキャンする",
-            "scenario": "ビジネスシナリオを生成する",
-            "structure": "ファイルを生成せずにフォルダ構造のみを作成する"
-        },
-        "content_header": "内容",
-        "context_header": "業務コンテキスト",
-        "date_footer": "、日付: {date}",
-        "description_label": "説明：",
-        "doc_sample_text": "この文書はサンプルとして生成されました。",
-        "error_messages": {
-            "fallback_file_error": "フォールバックファイルの作成に失敗しました: {error}",
-            "folder_structure_not_found": "言語テンプレートにフォルダ構造テンプレートが見つかりません。基本的なプロンプトを使用します。",
-            "invalid_date_format": "日付形式が無効です: {error}。デフォルト（先月）を使用します。",
-            "json_parsing_error": "JSONパースエラー: {error}",
-            "language_mapping_not_found": "言語マッピングファイルが見つかりません: {file}",
-            "template_file_not_found": "テンプレートファイル {file} が見つかりません。デフォルトのen-USテンプレートを使用します。",
-            "unknown_extension": "ファイル拡張子が不明です: {file_path} - 代替案: {suggestions}",
-            "unsupported_extension": "サポートされていないファイル拡張子: {ext}。代わりに {new_ext} を使用します。"
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\n業界: {industry}\n役割: {role}\n",
-        "file_info_header": "ファイル情報",
-        "file_list_header": "ファイル:",
-        "filename_label": "ファイル名：",
-        "footer_text": "このファイルはサンプルとして生成されました。",
-        "industry_footer": "業種: {industry}",
-        "industry_label": "業界：",
-        "not_specified": "指定なし",
-        "overview_header": "概要",
-        "pdf_sample_text": "この文書はサンプルとして生成されました。",
-        "period_label": "期間：",
-        "role_footer": "、役割: {role_text}",
-        "role_label": "役職：",
-        "sheet_title": "概要"
     }
 }

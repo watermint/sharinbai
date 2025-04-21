@@ -45,52 +45,5 @@
         "content_generation": "{description}에 대한 콘텐츠를 {industry} 업계에서 생성해 주세요{role_context}. 콘텐츠는 {language}로 작성되어야 하며{file_type_context}. 간결하고 전문적으로 작성해 주세요.",
         "file_type_context": ". 출력은 {file_type} 형식이어야 합니다.",
         "role_context": " ({role}용)"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "YYYY-MM-DD:YYYY-MM-DD 형식의 날짜 범위",
-            "description": "산업 및 역할에 따라 디렉토리 구조를 생성합니다.",
-            "file": "특정 파일만 생성, 쉼표로 구분된 경로",
-            "force": "기존 폴더 강제 덮어쓰기",
-            "industry": "폴더 구조를 위한 산업",
-            "language": "생성된 콘텐츠의 언어 (기본값: 시스템 언어)",
-            "max_depth": "최대 폴더 깊이 (기본값: 3)",
-            "min_files": "폴더당 최소 파일 수 (기본값: 3)",
-            "model": "사용할 Ollama 모델 (기본값: gemma3:4b)",
-            "output": "출력 디렉토리 (기본값: 산업명)",
-            "role": "폴더 구조를 위한 비즈니스 역할",
-            "scan": "생성 전 기존 구조 스캔",
-            "scenario": "비즈니스 시나리오 생성",
-            "structure": "파일을 생성하지 않고 폴더 구조만 생성"
-        },
-        "content_header": "내용",
-        "context_header": "업무 컨텍스트",
-        "date_footer": ", 날짜: {date}",
-        "description_label": "설명:",
-        "doc_sample_text": "이 문서는 샘플로 생성되었습니다.",
-        "error_messages": {
-            "fallback_file_error": "폴백 파일 생성 실패: {error}",
-            "folder_structure_not_found": "언어 템플릿에 폴더 구조 템플릿이 없습니다. 기본 프롬프트를 사용합니다.",
-            "invalid_date_format": "날짜 형식이 잘못되었습니다: {error}. 기본값(지난달)을 사용합니다.",
-            "json_parsing_error": "JSON 파싱 오류: {error}",
-            "language_mapping_not_found": "언어 매핑 파일을 찾을 수 없습니다: {file}",
-            "template_file_not_found": "템플릿 파일 {file}을(를) 찾을 수 없습니다. 기본 en-US 템플릿을 사용합니다.",
-            "unknown_extension": "알 수 없는 파일 확장자: {file_path} - 대안: {suggestions}",
-            "unsupported_extension": "지원되지 않는 파일 확장자: {ext}. 대신 {new_ext}를 사용합니다."
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\n업계: {industry}\n역할: {role}\n",
-        "file_info_header": "파일 정보",
-        "file_list_header": "파일:",
-        "filename_label": "파일명:",
-        "footer_text": "이 파일은 샘플로 생성되었습니다.",
-        "industry_footer": "업종: {industry}",
-        "industry_label": "업계:",
-        "not_specified": "지정 안 됨",
-        "overview_header": "개요",
-        "pdf_sample_text": "이 문서는 샘플로 생성되었습니다.",
-        "period_label": "기간:",
-        "role_footer": ", 역할: {role_text}",
-        "role_label": "직책:",
-        "sheet_title": "개요"
     }
 }

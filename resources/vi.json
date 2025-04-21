@@ -45,52 +45,5 @@
         "content_generation": "Vui lòng tạo nội dung cho {description} trong ngành {industry}{role_context}. Nội dung nên được viết bằng {language}{file_type_context}. Giữ nội dung ngắn gọn và chuyên nghiệp.",
         "file_type_context": ". Đầu ra nên ở định dạng {file_type}",
         "role_context": " (dành cho {role})"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "Phạm vi ngày theo định dạng YYYY-MM-DD:YYYY-MM-DD",
-            "description": "Tạo cấu trúc thư mục dựa trên ngành và vai trò.",
-            "file": "Chỉ tạo (các) tệp cụ thể, đường dẫn được phân tách bằng dấu phẩy",
-            "force": "Buộc ghi đè thư mục hiện có",
-            "industry": "Ngành cho cấu trúc thư mục",
-            "language": "Ngôn ngữ cho nội dung được tạo (mặc định: ngôn ngữ hệ thống)",
-            "max_depth": "Độ sâu thư mục tối đa (mặc định: 3)",
-            "min_files": "Số lượng tệp tối thiểu cho mỗi thư mục (mặc định: 3)",
-            "model": "Mô hình Ollama để sử dụng (mặc định: gemma3:4b)",
-            "output": "Thư mục đầu ra (mặc định: tên ngành)",
-            "role": "Vai trò kinh doanh cho cấu trúc thư mục",
-            "scan": "Quét cấu trúc hiện có trước khi tạo",
-            "scenario": "Tạo kịch bản kinh doanh",
-            "structure": "Chỉ tạo cấu trúc thư mục mà không tạo bất kỳ tệp nào"
-        },
-        "content_header": "Nội dung",
-        "context_header": "Bối cảnh kinh doanh",
-        "date_footer": ", Ngày: {date}",
-        "description_label": "Mô tả:",
-        "doc_sample_text": "Tài liệu này được tạo dưới dạng mẫu.",
-        "error_messages": {
-            "fallback_file_error": "Không thể tạo tệp dự phòng: {error}",
-            "folder_structure_not_found": "Không tìm thấy mẫu cấu trúc thư mục trong các mẫu ngôn ngữ. Sử dụng lời nhắc cơ bản.",
-            "invalid_date_format": "Định dạng ngày không hợp lệ: {error}. Sử dụng mặc định (tháng trước).",
-            "json_parsing_error": "Lỗi phân tích cú pháp JSON: {error}",
-            "language_mapping_not_found": "Không tìm thấy tệp ánh xạ ngôn ngữ: {file}",
-            "template_file_not_found": "Không tìm thấy tệp mẫu {file}. Sử dụng mẫu en-US mặc định.",
-            "unknown_extension": "Phần mở rộng tệp không xác định cho: {file_path} - Đề xuất thay thế: {suggestions}",
-            "unsupported_extension": "Phần mở rộng tệp không được hỗ trợ: {ext}. Sử dụng {new_ext} thay thế."
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\nNgành: {industry}\nVai trò: {role}\n",
-        "file_info_header": "Thông tin tệp",
-        "file_list_header": "Các tệp:",
-        "filename_label": "Tên tệp:",
-        "footer_text": "Tệp này được tạo dưới dạng mẫu.",
-        "industry_footer": "Ngành: {industry}",
-        "industry_label": "Ngành:",
-        "not_specified": "Không xác định",
-        "overview_header": "Tổng quan",
-        "pdf_sample_text": "Tài liệu này được tạo dưới dạng mẫu.",
-        "period_label": "Giai đoạn:",
-        "role_footer": ", Vai trò: {role_text}",
-        "role_label": "Vai trò:",
-        "sheet_title": "Tổng quan"
     }
 }

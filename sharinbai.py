@@ -13,12 +13,14 @@ import argparse
 from pathlib import Path
 from src.config.settings import Settings
 from src.config.logging_config import setup_logging
+from src.config.ui_constants import ROLE_PROMPT_CLI
 from src.config.language_utils import (
     get_default_language,
     get_normalized_language_key,
     get_supported_languages,
     is_language_supported,
-    get_available_language_files
+    get_available_language_files,
+    get_translation
 )
 from src.structure.folder_generator import FolderGenerator
 from src.content.file_manager import FileManager
@@ -202,9 +204,11 @@ def main():
         
         # Ask for role if not provided
         if not hasattr(settings, 'role') or settings.role is None:
-            role = input("Please enter a specific role within the industry (optional, press Enter to skip): ")
-            if role.strip():
-                settings.role = role
+            role = input(ROLE_PROMPT_CLI + " ")
+            if not role.strip():
+                logging.error("Role is required but not provided")
+                sys.exit(1)
+            settings.role = role
     
     # Ask for language if not provided for any command
     if not settings.language:

@@ -45,52 +45,5 @@
         "content_generation": "Genera contenuti per {description} nell'industria {industry}{role_context}. Il contenuto dovrebbe essere in {language}{file_type_context}. Sii conciso e professionale.",
         "file_type_context": " e in formato {file_type}",
         "role_context": " come {role}"
-    },
-    "ui_strings": {
-        "cli_args": {
-            "date_range": "Intervallo di date nel formato AAAA-MM-GG:AAAA-MM-GG",
-            "description": "Genera una struttura di directory basata sull'industria e sul ruolo.",
-            "file": "Genera solo file specifici, percorsi separati da virgola",
-            "force": "Forza sovrascrittura della cartella esistente",
-            "industry": "Industria per la struttura delle cartelle",
-            "language": "Lingua per il contenuto generato (predefinito: lingua di sistema)",
-            "max_depth": "Profondità massima delle cartelle (predefinito: 3)",
-            "min_files": "Numero minimo di file per cartella (predefinito: 3)",
-            "model": "Modello Ollama da utilizzare (predefinito: gemma3:4b)",
-            "output": "Directory di output (predefinito: nome dell'industria)",
-            "role": "Ruolo aziendale per la struttura delle cartelle",
-            "scan": "Scansiona struttura esistente prima della generazione",
-            "scenario": "Genera scenario aziendale",
-            "structure": "Crea solo struttura cartelle senza generare file"
-        },
-        "content_header": "Contenuto",
-        "context_header": "Contesto Aziendale",
-        "date_footer": ", Data: {date}",
-        "description_label": "Descrizione:",
-        "doc_sample_text": "Questo documento è stato generato come esempio.",
-        "error_messages": {
-            "fallback_file_error": "Impossibile creare file fallback: {error}",
-            "folder_structure_not_found": "Template struttura cartelle non trovato nei template lingua. Utilizzo prompt di base.",
-            "invalid_date_format": "Formato data non valido: {error}. Utilizzo del valore predefinito (mese scorso).",
-            "json_parsing_error": "Errore di analisi JSON: {error}",
-            "language_mapping_not_found": "File di mappatura lingua non trovato: {file}",
-            "template_file_not_found": "File template {file} non trovato. Utilizzo del template en-US predefinito.",
-            "unknown_extension": "Estensione file sconosciuta per: {file_path} - Suggerimenti alternativi: {suggestions}",
-            "unsupported_extension": "Estensione file non supportata: {ext}. Utilizzo {new_ext} al suo posto."
-        },
-        "fallback_file_template": "# {file_name}\n\n{description}\n\nIndustria: {industry}\nRuolo: {role}\n",
-        "file_info_header": "Informazioni File",
-        "file_list_header": "File:",
-        "filename_label": "Nome file:",
-        "footer_text": "Questo file è stato generato come esempio.",
-        "industry_footer": "Industria: {industry}",
-        "industry_label": "Industria:",
-        "not_specified": "Non specificato",
-        "overview_header": "Panoramica",
-        "pdf_sample_text": "Questo documento è stato generato come esempio.",
-        "period_label": "Periodo:",
-        "role_footer": ", Ruolo: {role_text}",
-        "role_label": "Ruolo:",
-        "sheet_title": "Panoramica"
     }
 }
