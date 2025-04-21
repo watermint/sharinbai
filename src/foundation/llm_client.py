@@ -141,12 +141,15 @@ class OllamaClient:
         Returns:
             Parsed JSON dict or None if parsing failed
         """
+        # Log the first 200 characters of the response for debugging
+        logging.debug(f"Attempting to extract JSON from: {text[:200]}...")
+        
         # First try to directly parse the response
         try:
             return json.loads(text)
         except json.JSONDecodeError:
-            pass
-            
+            logging.debug("Direct JSON parsing failed, trying alternative methods")
+        
         # Try to extract JSON from a code block
         json_pattern = r'```(?:json)?\s*([\s\S]*?)\s*```'
         json_match = re.search(json_pattern, text)
@@ -154,16 +157,42 @@ class OllamaClient:
             try:
                 return json.loads(json_match.group(1))
             except json.JSONDecodeError:
-                pass
-                
+                logging.debug("Parsing JSON from code block failed")
+        
         # Try to find JSON-like structure with {} brackets
         json_pattern = r'\{[\s\S]*\}'
         json_match = re.search(json_pattern, text)
         if json_match:
             try:
-                return json.loads(json_match.group(0))
+                extracted_json = json_match.group(0)
+                return json.loads(extracted_json)
             except json.JSONDecodeError:
-                pass
+                logging.debug(f"Parsing JSON with braces failed: {extracted_json[:100]}...")
                 
-        logging.error(f"Failed to parse JSON from response: {text[:100]}...")
+                # Try more aggressive JSON fixing - common issues with Japanese text
+                try:
+                    # Fix missing quotes around keys
+                    fixed_json = re.sub(r'([{,])\s*([^"{\s][^:{\s]*?)\s*:', r'\1"\2":', extracted_json)
+                    
+                    # Fix missing quotes around string values
+                    fixed_json = re.sub(r':\s*([^"{}\[\],\s][^{}\[\],]*?)([,}])', r':"\1"\2', fixed_json)
+                    
+                    # Try to load the fixed JSON
+                    return json.loads(fixed_json)
+                except (json.JSONDecodeError, re.error) as e:
+                    logging.debug(f"Advanced JSON fixing failed: {e}")
+                
+                # If regex fixing failed, try a more drastic approach for truncated JSON
+                try:
+                    # Try to balance braces by adding missing closing braces
+                    open_braces = extracted_json.count('{')
+                    close_braces = extracted_json.count('}')
+                    if open_braces > close_braces:
+                        fixed_json = extracted_json + "}" * (open_braces - close_braces)
+                        return json.loads(fixed_json)
+                except json.JSONDecodeError:
+                    logging.debug("Brace balancing failed")
+                
+        # If all parsing attempts failed, log the error and return None
+        logging.error(f"Failed to parse JSON from response: {text[:200]}...")
         return None 

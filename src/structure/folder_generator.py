@@ -356,7 +356,7 @@ class FolderGenerator:
                     self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
                     
                     # Generate timeseries files for timeseries folders
-                    if l3_folder_purpose == "timeseries":
+                    if l3_folder_data.get("purpose") == "timeseries":
                         logging.info(f"Folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name} is marked as timeseries")
                         self._generate_timeseries_files(
                             l3_folder_path, l3_folder_name, l3_folder_data.get("description", ""),
@@ -564,9 +564,6 @@ class FolderGenerator:
                         
                     logging.info(f"Created level 3 folder: {l1_folder_name}/{l2_folder_name}/{l3_folder_name}")
                     
-                    # Get folder purpose if specified
-                    l3_folder_purpose = l3_folder_data.get("purpose")
-                    
                     # Store level 3 folder metadata
                     l3_metadata = {
                         "name": l3_folder_name,
@@ -574,12 +571,12 @@ class FolderGenerator:
                         "parent_folder": l2_folder_name,
                         "grandparent_folder": l1_folder_name,
                         "industry": industry,
-                        "purpose": l3_folder_purpose
+                        "purpose": l3_folder_data.get("purpose")
                     }
                     self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
                     
                     # Generate timeseries files for timeseries folders
-                    if l3_folder_purpose == "timeseries":
+                    if l3_folder_data.get("purpose") == "timeseries":
                         logging.info(f"Folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name} is marked as timeseries")
                         self._generate_timeseries_files(
                             l3_folder_path, l3_folder_name, l3_folder_data.get("description", ""),
