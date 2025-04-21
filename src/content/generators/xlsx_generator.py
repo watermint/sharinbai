@@ -20,6 +20,40 @@ from src.config.language_utils import get_translation
 class XlsxGenerator(BaseGenerator):
     """Generator for Excel spreadsheets (.xlsx)"""
     
+    # Excel has a 31 character limit for sheet names
+    SHEET_NAME_MAX_LENGTH = 31
+    
+    # Characters not allowed in Excel sheet names
+    INVALID_SHEET_CHARS = [':', '\\', '/', '?', '*', '[', ']']
+    
+    def _validate_sheet_name(self, name: str) -> str:
+        """
+        Validate and sanitize Excel sheet names.
+        
+        Args:
+            name: Original sheet name
+            
+        Returns:
+            Sanitized sheet name that meets Excel's requirements
+        """
+        # Trim whitespace
+        sanitized = name.strip()
+        
+        # Remove invalid characters
+        for char in self.INVALID_SHEET_CHARS:
+            sanitized = sanitized.replace(char, '_')
+            
+        # Truncate to maximum length
+        if len(sanitized) > self.SHEET_NAME_MAX_LENGTH:
+            logging.warning(f"Sheet name '{name}' exceeds maximum length of {self.SHEET_NAME_MAX_LENGTH} characters, truncating.")
+            sanitized = sanitized[:self.SHEET_NAME_MAX_LENGTH]
+            
+        # Excel doesn't allow empty sheet names
+        if not sanitized:
+            sanitized = "Sheet"
+            
+        return sanitized
+    
     def generate(self, directory: str, filename: str, description: str,
                 industry: str, language: str, role: Optional[str] = None) -> bool:
         """
@@ -79,8 +113,11 @@ class XlsxGenerator(BaseGenerator):
             
             # Process each sheet
             for sheet_data in content["sheets"]:
+                # Get sheet name and validate it
+                original_sheet_name = sheet_data.get("name", "Sheet")
+                sheet_name = self._validate_sheet_name(original_sheet_name)
+                
                 # Create sheet
-                sheet_name = sheet_data.get("name", "Sheet")
                 sheet = wb.create_sheet(title=sheet_name)
                 
                 # Add headers

@@ -166,7 +166,7 @@ class FolderGenerator:
     def _process_structure_only(self, level1_structure: Dict[str, Any], target_dir: Path,
                                industry: str, language: str, role: Optional[str] = None) -> bool:
         """
-        Process and create the folder structure without generating files.
+        Process the folder structure without files.
         
         Args:
             level1_structure: Level 1 folder structure data
@@ -178,9 +178,7 @@ class FolderGenerator:
         Returns:
             True if successful, False otherwise
         """
-        level1_folders = list(level1_structure["folders"].keys())
         success = True
-        
         # Store root level metadata
         root_metadata = {
             "industry": industry,
@@ -190,146 +188,8 @@ class FolderGenerator:
         }
         self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
         
-        for l1_folder_name, l1_folder_data in level1_structure["folders"].items():
-            if not isinstance(l1_folder_data, dict) or "description" not in l1_folder_data:
-                logging.warning(f"Invalid data for folder {l1_folder_name}, skipping")
-                continue
-                
-            # Check limit before creating L1 folder
-            if self._check_short_mode_limit(): raise ShortModeLimitReached()
-                
-            # Create level 1 folder
-            l1_folder_path = target_dir / self.file_manager.sanitize_path(l1_folder_name)
-            if not self.file_manager.ensure_directory(str(l1_folder_path)):
-                success = False
-                continue
-                
-            logging.info(f"Created level 1 folder: {l1_folder_name}")
-            
-            # Store level 1 folder metadata
-            l1_metadata = {
-                "name": l1_folder_name,
-                "description": l1_folder_data.get("description", ""),
-                "industry": industry,
-                "purpose": l1_folder_data.get("purpose")
-            }
-            self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
-            
-            # Generate level 2 folder structure
-            level2_structure = self._generate_level2_folders(
-                industry, l1_folder_name, l1_folder_data.get("description", ""), language, role
-            )
-            
-            if not level2_structure or "folders" not in level2_structure:
-                logging.error(f"Failed to get valid level 2 structure for {l1_folder_name}, skipping")
-                continue
-            
-            # Add folders to level 1 metadata
-            l1_metadata["folders"] = level2_structure["folders"]
-            self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
-            
-            # Process level 2 folders
-            for l2_folder_name, l2_folder_data in level2_structure["folders"].items():
-                if not isinstance(l2_folder_data, dict) or "description" not in l2_folder_data:
-                    logging.warning(f"Invalid data for level 2 folder {l2_folder_name}, skipping")
-                    continue
-                    
-                # Check limit before creating L2 folder
-                if self._check_short_mode_limit(): raise ShortModeLimitReached()
-                    
-                # Create level 2 folder
-                l2_folder_path = l1_folder_path / self.file_manager.sanitize_path(l2_folder_name)
-                if not self.file_manager.ensure_directory(str(l2_folder_path)):
-                    success = False
-                    continue
-                    
-                logging.info(f"Created level 2 folder: {l1_folder_name}/{l2_folder_name}")
-                
-                # Store level 2 folder metadata
-                l2_metadata = {
-                    "name": l2_folder_name,
-                    "description": l2_folder_data.get("description", ""),
-                    "parent_folder": l1_folder_name,
-                    "industry": industry,
-                    "purpose": l2_folder_data.get("purpose")
-                }
-                self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
-                
-                # Generate level 3 folder structure
-                level3_structure = self._generate_level3_folders(
-                    industry, l2_folder_name, l2_folder_data, 
-                    l1_folder_data.get("description", ""), l1_folder_name, language, role
-                )
-                
-                if not level3_structure or "folders" not in level3_structure:
-                    logging.warning(f"Failed to get valid level 3 structure for {l1_folder_name}/{l2_folder_name}, skipping")
-                    continue
-                
-                # Add folders to level 2 metadata
-                l2_metadata["folders"] = level3_structure["folders"]
-                self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
-                
-                # Process level 3 folders
-                for l3_folder_name, l3_folder_data in level3_structure["folders"].items():
-                    if not isinstance(l3_folder_data, dict) or "description" not in l3_folder_data:
-                        logging.warning(f"Invalid data for level 3 folder {l3_folder_name}, skipping")
-                        continue
-                        
-                    # Check limit before creating L3 folder
-                    if self._check_short_mode_limit(): raise ShortModeLimitReached()
-                        
-                    # Create level 3 folder
-                    l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
-                    if not self.file_manager.ensure_directory(str(l3_folder_path)):
-                        success = False
-                        continue
-                        
-                    logging.info(f"Created level 3 folder: {l1_folder_name}/{l2_folder_name}/{l3_folder_name}")
-                    
-                    # Store level 3 folder metadata
-                    l3_metadata = {
-                        "name": l3_folder_name,
-                        "description": l3_folder_data.get("description", ""),
-                        "parent_folder": l2_folder_name,
-                        "grandparent_folder": l1_folder_name,
-                        "industry": industry,
-                        "purpose": l3_folder_data.get("purpose")
-                    }
-                    self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
-        
-        logging.info("Folder structure creation completed (or stopped by short mode).")
-        return success
-    
-    def _process_folder_structure(self, level1_structure: Dict[str, Any], target_dir: Path,
-                                industry: str, language: str, role: Optional[str] = None) -> bool:
-        """
-        Process and create the folder structure.
-        
-        Args:
-            level1_structure: Level 1 folder structure data
-            target_dir: Target directory
-            industry: Industry context
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        level1_folders = list(level1_structure["folders"].keys())
-        success = True
-        
-        # Store root level metadata
-        root_metadata = {
-            "industry": industry,
-            "language": language,
-            "role": role,
-            "folders": level1_structure["folders"]
-        }
-        self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
-        
-        # Track timeseries folders at level 1
-        if self.content_generator.is_timeseries_limit_reached(str(target_dir)):
-            logging.warning("Maximum number of timeseries folders at level 1 reached")
+        # Get parent folder names to check for conflicts
+        parent_dirs = [p.name for p in target_dir.parents]
         
         for l1_folder_name, l1_folder_data in level1_structure["folders"].items():
             if not isinstance(l1_folder_data, dict) or "description" not in l1_folder_data:
@@ -338,6 +198,11 @@ class FolderGenerator:
                 
             # Check limit before creating L1 folder
             if self._check_short_mode_limit(): raise ShortModeLimitReached()
+            
+            # Check if folder name conflicts with parent folder name
+            if l1_folder_name in parent_dirs:
+                logging.warning(f"Folder name '{l1_folder_name}' conflicts with parent folder name, skipping")
+                continue
                 
             # Create level 1 folder
             l1_folder_path = target_dir / self.file_manager.sanitize_path(l1_folder_name)
@@ -386,6 +251,9 @@ class FolderGenerator:
             # Track timeseries folders at level 2
             if self.content_generator.is_timeseries_limit_reached(str(l1_folder_path)):
                 logging.warning(f"Maximum number of timeseries folders in {l1_folder_name} reached")
+            
+            # Update parent directories list for level 2 folder check
+            l2_parent_dirs = parent_dirs + [l1_folder_name]
                 
             # Process level 2 folders
             for l2_folder_name, l2_folder_data in level2_structure["folders"].items():
@@ -395,6 +263,220 @@ class FolderGenerator:
                     
                 # Check limit before creating L2 folder
                 if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                
+                # Check if folder name conflicts with parent folder name
+                if l2_folder_name in l2_parent_dirs:
+                    logging.warning(f"Folder name '{l2_folder_name}' conflicts with parent folder name, skipping")
+                    continue
+                    
+                # Create level 2 folder
+                l2_folder_path = l1_folder_path / self.file_manager.sanitize_path(l2_folder_name)
+                if not self.file_manager.ensure_directory(str(l2_folder_path)):
+                    success = False
+                    continue
+                    
+                logging.info(f"Created level 2 folder: {l1_folder_name}/{l2_folder_name}")
+                
+                # Get folder purpose if specified
+                l2_folder_purpose = l2_folder_data.get("purpose")
+                
+                # Store level 2 folder metadata
+                l2_metadata = {
+                    "name": l2_folder_name,
+                    "description": l2_folder_data.get("description", ""),
+                    "parent_folder": l1_folder_name,
+                    "industry": industry,
+                    "purpose": l2_folder_purpose
+                }
+                
+                # Skip subfolder creation for timeseries folders
+                if l2_folder_purpose == "timeseries":
+                    logging.info(f"Folder {l1_folder_name}/{l2_folder_name} is marked as timeseries, skipping subfolders")
+                    self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
+                    
+                    # Generate timeseries files for this folder
+                    self._generate_timeseries_files(
+                        l2_folder_path, l2_folder_name, l2_folder_data.get("description", ""),
+                        industry, language, role
+                    )
+                    continue
+                
+                # Generate level 3 folder structure
+                level3_structure = self._generate_level3_folders(
+                    industry, l2_folder_name, l2_folder_data, 
+                    l1_folder_data.get("description", ""), l1_folder_name, language, role
+                )
+                
+                if not level3_structure or "folders" not in level3_structure:
+                    logging.warning(f"Failed to get valid level 3 structure for {l1_folder_name}/{l2_folder_name}, skipping")
+                    continue
+                
+                # Add folders to level 2 metadata
+                l2_metadata["folders"] = level3_structure["folders"]
+                self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
+                
+                # Track timeseries folders at level 3
+                if self.content_generator.is_timeseries_limit_reached(str(l2_folder_path)):
+                    logging.warning(f"Maximum number of timeseries folders in {l1_folder_name}/{l2_folder_name} reached")
+                
+                # Update parent directories list for level 3 folder check
+                l3_parent_dirs = l2_parent_dirs + [l2_folder_name]
+                
+                # Process level 3 folders
+                for l3_folder_name, l3_folder_data in level3_structure["folders"].items():
+                    if not isinstance(l3_folder_data, dict) or "description" not in l3_folder_data:
+                        logging.warning(f"Invalid data for level 3 folder {l3_folder_name}, skipping")
+                        continue
+                        
+                    # Check limit before creating L3 folder
+                    if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                    
+                    # Check if folder name conflicts with parent folder name
+                    if l3_folder_name in l3_parent_dirs:
+                        logging.warning(f"Folder name '{l3_folder_name}' conflicts with parent folder name, skipping")
+                        continue
+                        
+                    # Create level 3 folder
+                    l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
+                    if not self.file_manager.ensure_directory(str(l3_folder_path)):
+                        success = False
+                        continue
+                        
+                    logging.info(f"Created level 3 folder: {l1_folder_name}/{l2_folder_name}/{l3_folder_name}")
+                    
+                    # Store level 3 folder metadata
+                    l3_metadata = {
+                        "name": l3_folder_name,
+                        "description": l3_folder_data.get("description", ""),
+                        "parent_folder": l2_folder_name,
+                        "grandparent_folder": l1_folder_name,
+                        "industry": industry,
+                        "purpose": l3_folder_data.get("purpose")
+                    }
+                    self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
+                    
+                    # Generate timeseries files for timeseries folders
+                    if l3_folder_purpose == "timeseries":
+                        logging.info(f"Folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name} is marked as timeseries")
+                        self._generate_timeseries_files(
+                            l3_folder_path, l3_folder_name, l3_folder_data.get("description", ""),
+                            industry, language, role
+                        )
+        
+        logging.info("Folder structure creation completed (or stopped by short mode).")
+        return success
+    
+    def _process_folder_structure(self, level1_structure: Dict[str, Any], target_dir: Path,
+                                industry: str, language: str, role: Optional[str] = None) -> bool:
+        """
+        Process and create the folder structure.
+        
+        Args:
+            level1_structure: Level 1 folder structure data
+            target_dir: Target directory
+            industry: Industry context
+            language: Language to use
+            role: Specific role within the industry (optional)
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        level1_folders = list(level1_structure["folders"].keys())
+        success = True
+        
+        # Store root level metadata
+        root_metadata = {
+            "industry": industry,
+            "language": language,
+            "role": role,
+            "folders": level1_structure["folders"]
+        }
+        self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
+        
+        # Track timeseries folders at level 1
+        if self.content_generator.is_timeseries_limit_reached(str(target_dir)):
+            logging.warning("Maximum number of timeseries folders at level 1 reached")
+        
+        # Get parent folder names to check for conflicts
+        parent_dirs = [p.name for p in target_dir.parents]
+        
+        for l1_folder_name, l1_folder_data in level1_structure["folders"].items():
+            if not isinstance(l1_folder_data, dict) or "description" not in l1_folder_data:
+                logging.warning(f"Invalid data for folder {l1_folder_name}, skipping")
+                continue
+                
+            # Check limit before creating L1 folder
+            if self._check_short_mode_limit(): raise ShortModeLimitReached()
+            
+            # Check if folder name conflicts with parent folder name
+            if l1_folder_name in parent_dirs:
+                logging.warning(f"Folder name '{l1_folder_name}' conflicts with parent folder name, skipping")
+                continue
+                
+            # Create level 1 folder
+            l1_folder_path = target_dir / self.file_manager.sanitize_path(l1_folder_name)
+            if not self.file_manager.ensure_directory(str(l1_folder_path)):
+                success = False
+                continue
+                
+            logging.info(f"Created level 1 folder: {l1_folder_name}")
+            
+            # Get folder purpose if specified
+            folder_purpose = l1_folder_data.get("purpose")
+            
+            # Store level 1 folder metadata
+            l1_metadata = {
+                "name": l1_folder_name,
+                "description": l1_folder_data.get("description", ""),
+                "industry": industry,
+                "purpose": folder_purpose
+            }
+            
+            # Skip subfolder creation for timeseries folders
+            if folder_purpose == "timeseries":
+                logging.info(f"Folder {l1_folder_name} is marked as timeseries, skipping subfolders")
+                self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
+                
+                # Generate timeseries files for this folder
+                self._generate_timeseries_files(
+                    l1_folder_path, l1_folder_name, l1_folder_data.get("description", ""),
+                    industry, language, role
+                )
+                continue
+            
+            # Generate level 2 folder structure
+            level2_structure = self._generate_level2_folders(
+                industry, l1_folder_name, l1_folder_data.get("description", ""), language, role
+            )
+            
+            if not level2_structure or "folders" not in level2_structure:
+                logging.error(f"Failed to get valid level 2 structure for {l1_folder_name}, skipping")
+                continue
+            
+            # Add folders to level 1 metadata
+            l1_metadata["folders"] = level2_structure["folders"]
+            self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
+            
+            # Track timeseries folders at level 2
+            if self.content_generator.is_timeseries_limit_reached(str(l1_folder_path)):
+                logging.warning(f"Maximum number of timeseries folders in {l1_folder_name} reached")
+            
+            # Update parent directories list for level 2 folder check
+            l2_parent_dirs = parent_dirs + [l1_folder_name]
+                
+            # Process level 2 folders
+            for l2_folder_name, l2_folder_data in level2_structure["folders"].items():
+                if not isinstance(l2_folder_data, dict) or "description" not in l2_folder_data:
+                    logging.warning(f"Invalid data for level 2 folder {l2_folder_name}, skipping")
+                    continue
+                    
+                # Check limit before creating L2 folder
+                if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                
+                # Check if folder name conflicts with parent folder name
+                if l2_folder_name in l2_parent_dirs:
+                    logging.warning(f"Folder name '{l2_folder_name}' conflicts with parent folder name, skipping")
+                    continue
                     
                 # Create level 2 folder
                 l2_folder_path = l1_folder_path / self.file_manager.sanitize_path(l2_folder_name)
@@ -457,6 +539,9 @@ class FolderGenerator:
                 if self.content_generator.is_timeseries_limit_reached(str(l2_folder_path)):
                     logging.warning(f"Maximum number of timeseries folders in {l1_folder_name}/{l2_folder_name} reached")
                 
+                # Update parent directories list for level 3 folder check
+                l3_parent_dirs = l2_parent_dirs + [l2_folder_name]
+                
                 # Create level 3 folders
                 for l3_folder_name, l3_folder_data in level3_structure["folders"].items():
                     if not isinstance(l3_folder_data, dict) or "description" not in l3_folder_data:
@@ -465,6 +550,11 @@ class FolderGenerator:
                         
                     # Check limit before creating L3 folder
                     if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                    
+                    # Check if folder name conflicts with parent folder name
+                    if l3_folder_name in l3_parent_dirs:
+                        logging.warning(f"Folder name '{l3_folder_name}' conflicts with parent folder name, skipping")
+                        continue
                         
                     # Create level 3 folder
                     l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
@@ -528,7 +618,7 @@ class FolderGenerator:
     def _regenerate_files(self, target_dir: Path, industry: str, language: str, 
                         role: Optional[str] = None) -> bool:
         """
-        Regenerate files in an existing folder structure.
+        Regenerate files for existing folder structure.
         
         Args:
             target_dir: Target directory
@@ -540,147 +630,129 @@ class FolderGenerator:
             True if successful, False otherwise
         """
         success = True
-        for level1_item in target_dir.iterdir():
-            # Skip non-directories and metadata
-            if not level1_item.is_dir() or level1_item.name.startswith('.'):
-                continue
+        
+        # Get parent folder names to check for conflicts
+        parent_dirs = [p.name for p in target_dir.parents]
+        
+        # Get root metadata
+        if not (target_dir / ".metadata.json").exists():
+            logging.error("Metadata file not found, cannot regenerate files")
+            return False
+            
+        try:
+            # Read metadata to understand folder structure
+            metadata = self.file_manager.read_json_file(str(target_dir / ".metadata.json"))
+            if not metadata:
+                logging.error("Failed to read metadata file")
+                return False
                 
-            # Check for metadata file
-            l1_metadata_path = level1_item / ".metadata.json"
-            if not l1_metadata_path.exists():
-                logging.warning(f"No metadata found for {level1_item}, skipping")
-                continue
-                
-            # Load metadata
-            l1_metadata = self.file_manager.read_json_file(str(l1_metadata_path))
-            if not l1_metadata:
-                logging.warning(f"Failed to read metadata for {level1_item}, skipping")
-                continue
-                
-            # Check if this is a timeseries folder
-            if l1_metadata.get("purpose") == "timeseries":
-                # Regenerate timeseries files for this folder
-                folder_name = l1_metadata.get("name", level1_item.name)
-                folder_desc = l1_metadata.get("description", "")
-                self._generate_timeseries_files(
-                    level1_item, folder_name, folder_desc,
-                    industry, language, role
-                )
-                continue
-                
-            # Skip if no subfolders
-            if not "folders" in l1_metadata or not isinstance(l1_metadata["folders"], dict):
-                continue
-                
-            # Process level 2 folders
-            for level2_item in level1_item.iterdir():
-                # Skip non-directories and metadata
-                if not level2_item.is_dir() or level2_item.name.startswith('.'):
+            # Process level 1 folders
+            for level1_item in target_dir.iterdir():
+                if not level1_item.is_dir() or level1_item.name.startswith('.'):
                     continue
                     
-                # Check for metadata file
-                l2_metadata_path = level2_item / ".metadata.json"
-                if not l2_metadata_path.exists():
-                    logging.warning(f"No metadata found for {level2_item}, skipping")
+                # Check if folder name conflicts with parent folder name
+                if level1_item.name in parent_dirs:
+                    logging.warning(f"Folder name '{level1_item.name}' conflicts with parent folder name, skipping")
+                    continue
+                
+                # Update parent directories list for level 2 folder check
+                l2_parent_dirs = parent_dirs + [level1_item.name]
+                    
+                # Read level 1 metadata
+                l1_metadata_path = level1_item / ".metadata.json"
+                if not l1_metadata_path.exists():
+                    logging.warning(f"No metadata for {level1_item.name}, skipping")
                     continue
                     
-                # Load metadata
-                l2_metadata = self.file_manager.read_json_file(str(l2_metadata_path))
-                if not l2_metadata:
-                    logging.warning(f"Failed to read metadata for {level2_item}, skipping")
+                l1_metadata = self.file_manager.read_json_file(str(l1_metadata_path))
+                if not l1_metadata:
+                    logging.warning(f"Failed to read metadata for {level1_item.name}, skipping")
                     continue
                     
-                # Check if this is a timeseries folder
-                if l2_metadata.get("purpose") == "timeseries":
-                    # Regenerate timeseries files for this folder
-                    folder_name = l2_metadata.get("name", level2_item.name)
-                    folder_desc = l2_metadata.get("description", "")
+                l1_description = l1_metadata.get("description", "")
+                l1_purpose = l1_metadata.get("purpose")
+                
+                # Skip file generation for certain folder types
+                if l1_purpose == "timeseries":
+                    logging.info(f"Regenerating timeseries files for {level1_item.name}")
                     self._generate_timeseries_files(
-                        level2_item, folder_name, folder_desc,
+                        level1_item, level1_item.name, l1_description,
                         industry, language, role
                     )
                     continue
                 
-                # Generate files for level 2 folder based on existing metadata
-                l2_folder_name = l2_metadata.get("name", level2_item.name)
-                l2_description = l2_metadata.get("description", "")
-                l1_folder_name = l2_metadata.get("parent_folder", level1_item.name)
-                l1_description = l1_metadata.get("description", "")
-                l2_purpose = l2_metadata.get("purpose")
-                
-                # Find or generate level 2 folder files
-                if "files" in l2_metadata and isinstance(l2_metadata["files"], list):
-                    # Use existing file definitions
-                    for file_info in l2_metadata["files"]:
-                        if not isinstance(file_info, dict) or "name" not in file_info:
-                            continue
-                            
-                        file_name = file_info["name"]
-                        file_description = file_info.get("description", "")
-                        
-                        self.content_generator.generate_file(
-                            str(level2_item), file_name, file_description,
-                            industry, language, role, l2_purpose
-                        )
-                        logging.info(f"Regenerated file: {level1_item.name}/{level2_item.name}/{file_name}")
-                else:
-                    # Generate new file definitions
-                    level3_files = self._generate_level3_files(
-                        industry, l2_folder_name, {"description": l2_description},
-                        l1_description, l1_folder_name, language, role
-                    )
+                # Process level 2 folders
+                for level2_item in level1_item.iterdir():
+                    if not level2_item.is_dir() or level2_item.name.startswith('.'):
+                        continue
                     
-                    if "files" in level3_files and isinstance(level3_files["files"], list):
-                        # Add files to metadata
-                        l2_metadata["files"] = level3_files["files"]
-                        self.file_manager.write_json_file(str(l2_metadata_path), l2_metadata)
+                    # Check if folder name conflicts with parent folder name
+                    if level2_item.name in l2_parent_dirs:
+                        logging.warning(f"Folder name '{level2_item.name}' conflicts with parent folder name, skipping")
+                        continue
+                    
+                    # Update parent directories list for level 3 folder check
+                    l3_parent_dirs = l2_parent_dirs + [level2_item.name]
                         
-                        # Create each file
-                        for file_info in level3_files["files"]:
-                            if not isinstance(file_info, dict) or "name" not in file_info:
+                    # Read level 2 metadata
+                    l2_metadata_path = level2_item / ".metadata.json"
+                    if not l2_metadata_path.exists():
+                        logging.warning(f"No metadata for {level1_item.name}/{level2_item.name}, skipping")
+                        continue
+                        
+                    l2_metadata = self.file_manager.read_json_file(str(l2_metadata_path))
+                    if not l2_metadata:
+                        logging.warning(f"Failed to read metadata for {level1_item.name}/{level2_item.name}, skipping")
+                        continue
+                        
+                    l2_description = l2_metadata.get("description", "")
+                    l2_purpose = l2_metadata.get("purpose")
+                    
+                    # Skip file generation for certain folder types
+                    if l2_purpose == "timeseries":
+                        logging.info(f"Regenerating timeseries files for {level1_item.name}/{level2_item.name}")
+                        self._generate_timeseries_files(
+                            level2_item, level2_item.name, l2_description,
+                            industry, language, role
+                        )
+                        continue
+                    
+                    # Check for level 3 folders first
+                    has_level3_folders = False
+                    for level3_item in level2_item.iterdir():
+                        if level3_item.is_dir() and not level3_item.name.startswith('.'):
+                            has_level3_folders = True
+                            
+                            # Check if folder name conflicts with parent folder name
+                            if level3_item.name in l3_parent_dirs:
+                                logging.warning(f"Folder name '{level3_item.name}' conflicts with parent folder name, skipping")
                                 continue
                                 
-                            file_name = file_info["name"]
-                            file_description = file_info.get("description", "")
+                            # Read level 3 metadata
+                            l3_metadata_path = level3_item / ".metadata.json"
+                            if not l3_metadata_path.exists():
+                                logging.warning(f"No metadata for {level1_item.name}/{level2_item.name}/{level3_item.name}, skipping")
+                                continue
+                                
+                            l3_metadata = self.file_manager.read_json_file(str(l3_metadata_path))
+                            if not l3_metadata:
+                                logging.warning(f"Failed to read metadata for {level1_item.name}/{level2_item.name}/{level3_item.name}, skipping")
+                                continue
+                                
+                            l3_description = l3_metadata.get("description", "")
+                            l3_purpose = l3_metadata.get("purpose")
                             
-                            self.content_generator.generate_file(
-                                str(level2_item), file_name, file_description,
-                                industry, language, role, l2_purpose
-                            )
-                            logging.info(f"Generated file: {level1_item.name}/{level2_item.name}/{file_name}")
-                
-                # Process level 3 folders
-                if "folders" in l2_metadata and isinstance(l2_metadata["folders"], dict):
-                    for level3_item in level2_item.iterdir():
-                        # Skip non-directories and metadata
-                        if not level3_item.is_dir() or level3_item.name.startswith('.'):
-                            continue
-                            
-                        # Check for metadata file
-                        l3_metadata_path = level3_item / ".metadata.json"
-                        if not l3_metadata_path.exists():
-                            logging.warning(f"No metadata found for {level3_item}, skipping")
-                            continue
-                            
-                        # Load metadata
-                        l3_metadata = self.file_manager.read_json_file(str(l3_metadata_path))
-                        if not l3_metadata:
-                            logging.warning(f"Failed to read metadata for {level3_item}, skipping")
-                            continue
-                            
-                        # Check if this is a timeseries folder
-                        if l3_metadata.get("purpose") == "timeseries":
-                            # Regenerate timeseries files for this folder
-                            folder_name = l3_metadata.get("name", level3_item.name)
-                            folder_desc = l3_metadata.get("description", "")
-                            self._generate_timeseries_files(
-                                level3_item, folder_name, folder_desc,
-                                industry, language, role
-                            )
-                            continue
-                        
-                        # Generate files for level 3 folder (if needed in the future)
-                        # Currently not implemented
+                            # Generate timeseries files if needed
+                            if l3_purpose == "timeseries":
+                                logging.info(f"Regenerating timeseries files for {level1_item.name}/{level2_item.name}/{level3_item.name}")
+                                self._generate_timeseries_files(
+                                    level3_item, level3_item.name, l3_description,
+                                    industry, language, role
+                                )
+        except Exception as e:
+            logging.exception(f"Error during file regeneration: {e}")
+            return False
         
         return success
     
