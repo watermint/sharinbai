@@ -27,7 +27,8 @@ from src.content.file_manager import FileManager
 
 def extract_placeholders(text: str) -> set:
     """
-    Extract placeholders in the format {placeholder} from a string.
+    Extract placeholders in the format {placeholder} from a string,
+    while excluding JSON patterns in example formats.
     
     Args:
         text: The string to extract placeholders from
@@ -39,8 +40,33 @@ def extract_placeholders(text: str) -> set:
     if not isinstance(text, str):
         return set()
     
+    # Known valid placeholders - these are the placeholders we should extract
+    # This list is built based on actual placeholders used in the application
+    valid_placeholders = {
+        'industry', 'role', 'role_prompt', 'role_text', 'role_context',
+        'l1_folder_name', 'l2_folder_name', 'l1_description', 'l2_description',
+        'folder_structure', 'date_range', 'date_range_text', 'date_range_prompt',
+        'date_organization_prompt', 'existing_structure_prompt', 'scenario_prompt',
+        'start_date', 'end_date', 'date', 'start_year', 'end_year',
+        'file_type', 'file_type_context', 'description', 'language',
+        'scenario', 'structure', 'examples', 'doc_type', 'style_type', 'content_type',
+        'failed_response', 'key', 'keys'
+    }
+    
     # Find all {placeholder} occurrences
-    placeholders = set(re.findall(r'\{([^{}]+)\}', text))
+    all_matches = re.findall(r'\{([^{}]+)\}', text)
+    
+    # Filter to only include valid placeholders, excluding JSON example patterns
+    placeholders = set()
+    for match in all_matches:
+        # If it's in our valid_placeholders list, it's a real placeholder
+        if match in valid_placeholders:
+            placeholders.add(match)
+        # If it looks like a single word without JSON syntax, it might be a placeholder we missed
+        elif re.match(r'^[a-zA-Z_]+$', match) and '"' not in match and ':' not in match and ',' not in match:
+            placeholders.add(match)
+        # Otherwise it's probably a JSON example pattern, so we ignore it
+    
     return placeholders
 
 def get_value_at_key_path(obj, key_path):
