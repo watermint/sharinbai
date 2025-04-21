@@ -1,115 +1,365 @@
 {
-    "language_templates": {
-        "ja": ["japanese", "日本語", "japan", "ja", "jp", "ja-JP"],
-        "en": ["english", "英語", "en", "us", "usa", "america", "en-US"],
-        "en-GB": ["uk", "british", "england", "great britain", "en-GB"],
-        "default": "en"
-    },
-    
-    "doc_type_mapping": {
-        "docx": {
-            "ja": "文書",
-            "en": "documents",
-            "en-GB": "documents"
-        },
-        "xlsx": {
-            "ja": "Excelシート",
-            "en": "Excel sheets",
-            "en-GB": "Excel sheets"
-        },
-        "pdf": {
-            "ja": "PDFドキュメント",
-            "en": "PDF documents",
-            "en-GB": "PDF documents"
-        }
-    },
-    
-    "style_type_mapping": {
-        "docx": {
-            "ja": "スタイルとフォーマット",
-            "en": "style and format",
-            "en-GB": "style and format"
-        },
-        "xlsx": {
-            "ja": "構造",
-            "en": "structure",
-            "en-GB": "structure"
-        },
-        "pdf": {
-            "ja": "スタイルとフォーマット",
-            "en": "style and format",
-            "en-GB": "style and format"
-        }
-    },
-    
     "content_type_mapping": {
         "docx": {
-            "ja": "情報",
+            "de": "Information",
             "en": "information",
-            "en-GB": "information"
-        },
-        "xlsx": {
-            "ja": "データ",
-            "en": "data",
-            "en-GB": "data"
+            "en-GB": "information",
+            "es": "información",
+            "fr": "information",
+            "it": "informazione",
+            "ja": "情報",
+            "ko": "정보",
+            "pt": "informação",
+            "vi": "thông tin",
+            "zh": "信息",
+            "zh-TW": "資訊"
         },
         "pdf": {
-            "ja": "情報",
+            "de": "Information",
             "en": "information",
-            "en-GB": "information"
+            "en-GB": "information",
+            "es": "información",
+            "fr": "information",
+            "it": "informazione",
+            "ja": "情報",
+            "ko": "정보",
+            "pt": "informação",
+            "vi": "thông tin",
+            "zh": "信息",
+            "zh-TW": "資訊"
+        },
+        "xlsx": {
+            "de": "Daten",
+            "en": "data",
+            "en-GB": "data",
+            "es": "datos",
+            "fr": "données",
+            "it": "dati",
+            "ja": "データ",
+            "ko": "데이터",
+            "pt": "dados",
+            "vi": "dữ liệu",
+            "zh": "数据",
+            "zh-TW": "數據"
         }
     },
-    
     "date_formats": {
-        "prompt": {
-            "ja": "{year}年{month}月{day}日",
+        "default": {
+            "de": "{day}. {month_name} {year}",
             "en": "{month_name} {day}, {year}",
-            "en-GB": "{day} {month_name} {year}"
+            "en-GB": "{day} {month_name} {year}",
+            "es": "{day} de {month_name} de {year}",
+            "fr": "{day} {month_name} {year}",
+            "it": "{day} {month_name} {year}",
+            "ja": "{year}年{month}月{day}日",
+            "ko": "{year}년 {month}월 {day}일",
+            "pt": "{day} de {month_name} de {year}",
+            "vi": "ngày {day} tháng {month} năm {year}",
+            "zh": "{year}年{month}月{day}日",
+            "zh-TW": "{year}年{month}月{day}日"
         },
         "filename": {
-            "ja": "%Y-%m-%d",
+            "de": "%d.%m.%Y",
             "en": "%Y-%m-%d",
-            "en-GB": "%d-%m-%Y"
-        },
-        "short": {
-            "ja": "%Y/%m/%d",
-            "en": "%m/%d/%Y",
-            "en-GB": "%d/%m/%Y"
+            "en-GB": "%d-%m-%Y",
+            "es": "%d/%m/%Y",
+            "fr": "%d/%m/%Y",
+            "it": "%d/%m/%Y",
+            "ja": "%Y-%m-%d",
+            "ko": "%Y-%m-%d",
+            "pt": "%d/%m/%Y",
+            "vi": "%d/%m/%Y",
+            "zh": "%Y-%m-%d",
+            "zh-TW": "%Y-%m-%d"
         },
         "long": {
-            "ja": "{year}年{month}月{day}日",
+            "de": "{day}. {month_name} {year}",
             "en": "{month_name} {day}, {year}",
-            "en-GB": "{day} {month_name} {year}"
+            "en-GB": "{day} {month_name} {year}",
+            "es": "{day} de {month_name} de {year}",
+            "fr": "{day} {month_name} {year}",
+            "it": "{day} {month_name} {year}",
+            "ja": "{year}年{month}月{day}日",
+            "ko": "{year}년 {month}월 {day}일",
+            "pt": "{day} de {month_name} de {year}",
+            "vi": "ngày {day} tháng {month} năm {year}",
+            "zh": "{year}年{month}月{day}日",
+            "zh-TW": "{year}年{month}月{day}日"
         },
-        "default": {
-            "ja": "{year}年{month}月{day}日",
+        "prompt": {
+            "de": "{day}. {month_name} {year}",
             "en": "{month_name} {day}, {year}",
-            "en-GB": "{day} {month_name} {year}"
+            "en-GB": "{day} {month_name} {year}",
+            "es": "{day} de {month_name} de {year}",
+            "fr": "{day} {month_name} {year}",
+            "it": "{day} {month_name} {year}",
+            "ja": "{year}年{month}月{day}日",
+            "ko": "{year}년 {month}월 {day}일",
+            "pt": "{day} de {month_name} de {year}",
+            "vi": "ngày {day} tháng {month} năm {year}",
+            "zh": "{year}年{month}月{day}日",
+            "zh-TW": "{year}年{month}月{day}日"
+        },
+        "short": {
+            "de": "%d.%m.%Y",
+            "en": "%m/%d/%Y",
+            "en-GB": "%d/%m/%Y",
+            "es": "%d/%m/%Y",
+            "fr": "%d/%m/%Y",
+            "it": "%d/%m/%Y",
+            "ja": "%Y/%m/%d",
+            "ko": "%Y/%m/%d",
+            "pt": "%d/%m/%Y",
+            "vi": "%d/%m/%Y",
+            "zh": "%Y/%m/%d",
+            "zh-TW": "%Y/%m/%d"
         }
     },
-    
-    "ui_strings": {
-        "example_prefix": {
-            "ja": "例 {index}：",
-            "en": "EXAMPLE {index}:",
-            "en-GB": "EXAMPLE {index}:"
+    "doc_type_mapping": {
+        "docx": {
+            "de": "Dokumente",
+            "en": "documents",
+            "en-GB": "documents",
+            "es": "documentos",
+            "fr": "documents",
+            "it": "documenti",
+            "ja": "文書",
+            "ko": "문서",
+            "pt": "documentos",
+            "vi": "tài liệu",
+            "zh": "文档",
+            "zh-TW": "文件"
         },
-        "role_prefix": {
-            "ja": "\nビジネスロール：",
-            "en": "\nBusiness Role: ",
-            "en-GB": "\nBusiness Role: "
+        "pdf": {
+            "de": "PDF-Dokumente",
+            "en": "PDF documents",
+            "en-GB": "PDF documents",
+            "es": "documentos PDF",
+            "fr": "documents PDF",
+            "it": "documenti PDF",
+            "ja": "PDFドキュメント",
+            "ko": "PDF 문서",
+            "pt": "documentos PDF",
+            "vi": "tài liệu PDF",
+            "zh": "PDF文档",
+            "zh-TW": "PDF文件"
+        },
+        "xlsx": {
+            "de": "Excel-Tabellen",
+            "en": "Excel sheets",
+            "en-GB": "Excel sheets",
+            "es": "hojas de Excel",
+            "fr": "feuilles Excel",
+            "it": "fogli Excel",
+            "ja": "Excelシート",
+            "ko": "엑셀 시트",
+            "pt": "planilhas Excel",
+            "vi": "bảng tính Excel",
+            "zh": "Excel表格",
+            "zh-TW": "Excel表格"
         }
     },
-    
+    "language_templates": {
+        "de": [
+            "german",
+            "deutsch",
+            "germany",
+            "de",
+            "de-DE"
+        ],
+        "default": "en",
+        "en": [
+            "english",
+            "英語",
+            "en",
+            "us",
+            "usa",
+            "america",
+            "en-US"
+        ],
+        "en-GB": [
+            "uk",
+            "british",
+            "england",
+            "great britain",
+            "en-GB"
+        ],
+        "es": [
+            "spanish",
+            "español",
+            "spain",
+            "es",
+            "es-ES"
+        ],
+        "fr": [
+            "french",
+            "français",
+            "france",
+            "fr",
+            "fr-FR"
+        ],
+        "it": [
+            "italian",
+            "italiano",
+            "italy",
+            "it",
+            "it-IT"
+        ],
+        "ja": [
+            "japanese",
+            "日本語",
+            "japan",
+            "ja",
+            "jp",
+            "ja-JP"
+        ],
+        "ko": [
+            "korean",
+            "한국어",
+            "korea",
+            "kr",
+            "ko-KR"
+        ],
+        "pt": [
+            "portuguese",
+            "português",
+            "portugal",
+            "pt",
+            "pt-PT"
+        ],
+        "vi": [
+            "vietnamese",
+            "tiếng việt",
+            "vietnam",
+            "vi",
+            "vi-VN"
+        ],
+        "zh": [
+            "chinese",
+            "中文",
+            "china",
+            "cn",
+            "zh",
+            "zh-CN"
+        ],
+        "zh-TW": [
+            "taiwanese",
+            "繁體中文",
+            "taiwan",
+            "tw",
+            "zh-TW"
+        ]
+    },
     "role_templates": {
-        "ja": {
-            "role_format": "（{role}として）"
+        "de": {
+            "role_format": " als {role}"
         },
         "en": {
             "role_format": " as a {role}"
         },
         "en-GB": {
             "role_format": " as a {role}"
+        },
+        "es": {
+            "role_format": " como {role}"
+        },
+        "fr": {
+            "role_format": " en tant que {role}"
+        },
+        "it": {
+            "role_format": " come {role}"
+        },
+        "ja": {
+            "role_format": "（{role}として）"
+        },
+        "ko": {
+            "role_format": " {role}(으)로서"
+        },
+        "pt": {
+            "role_format": " como {role}"
+        },
+        "vi": {
+            "role_format": " với tư cách là {role}"
+        },
+        "zh": {
+            "role_format": "作为{role}"
+        },
+        "zh-TW": {
+            "role_format": "作為{role}"
+        }
+    },
+    "style_type_mapping": {
+        "docx": {
+            "de": "Stil und Format",
+            "en": "style and format",
+            "en-GB": "style and format",
+            "es": "estilo y formato",
+            "fr": "style et format",
+            "it": "stile e formato",
+            "ja": "スタイルとフォーマット",
+            "ko": "스타일 및 형식",
+            "pt": "estilo e formato",
+            "vi": "kiểu dáng và định dạng",
+            "zh": "样式和格式",
+            "zh-TW": "樣式和格式"
+        },
+        "pdf": {
+            "de": "Stil und Format",
+            "en": "style and format",
+            "en-GB": "style and format",
+            "es": "estilo y formato",
+            "fr": "style et format",
+            "it": "stile e formato",
+            "ja": "スタイルとフォーマット",
+            "ko": "스타일 및 형식",
+            "pt": "estilo e formato",
+            "vi": "kiểu dáng và định dạng",
+            "zh": "样式和格式",
+            "zh-TW": "樣式和格式"
+        },
+        "xlsx": {
+            "de": "Struktur",
+            "en": "structure",
+            "en-GB": "structure",
+            "es": "estructura",
+            "fr": "structure",
+            "it": "struttura",
+            "ja": "構造",
+            "ko": "구조",
+            "pt": "estrutura",
+            "vi": "cấu trúc",
+            "zh": "结构",
+            "zh-TW": "結構"
+        }
+    },
+    "ui_strings": {
+        "example_prefix": {
+            "de": "BEISPIEL {index}:",
+            "en": "EXAMPLE {index}:",
+            "en-GB": "EXAMPLE {index}:",
+            "es": "EJEMPLO {index}:",
+            "fr": "EXEMPLE {index} :",
+            "it": "ESEMPIO {index}:",
+            "ja": "例 {index}：",
+            "ko": "예시 {index}:",
+            "pt": "EXEMPLO {index}:",
+            "vi": "VÍ DỤ {index}:",
+            "zh": "示例 {index}：",
+            "zh-TW": "範例 {index}："
+        },
+        "role_prefix": {
+            "de": "\nGeschäftsrolle: ",
+            "en": "\nBusiness Role: ",
+            "en-GB": "\nBusiness Role: ",
+            "es": "\nRol empresarial: ",
+            "fr": "\nRôle professionnel : ",
+            "it": "\nRuolo aziendale: ",
+            "ja": "\nビジネスロール：",
+            "ko": "\n비즈니스 역할: ",
+            "pt": "\nFunção empresarial: ",
+            "vi": "\nVai trò kinh doanh: ",
+            "zh": "\n业务角色：",
+            "zh-TW": "\n業務角色："
         }
     }
-} 
+}

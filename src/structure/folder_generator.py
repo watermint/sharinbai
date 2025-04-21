@@ -12,9 +12,15 @@ from src.foundation.llm_client import OllamaClient
 from src.content.file_manager import FileManager
 from src.content.content_generator import ContentGenerator
 
+# Custom exception for short mode limit
+class ShortModeLimitReached(Exception):
+    pass
+
 class FolderGenerator:
     """Generates folder structures and instructs content creation"""
     
+    SHORT_MODE_LIMIT = 5 # Define the short mode limit
+
     def __init__(self, model: str = "llama3", ollama_url: Optional[str] = None):
         """
         Initialize the folder generator.
@@ -26,143 +32,80 @@ class FolderGenerator:
         self.llm_client = OllamaClient(model, ollama_url)
         self.file_manager = FileManager()
         self.content_generator = ContentGenerator(model, ollama_url)
+        self._item_count = 0 # Initialize item counter
+        self._short_mode_enabled = False # Flag to store if short mode is active for the current run
         
-    def generate_all(self, output_path: str, industry: str, role: Optional[str] = None,
-                    language: Optional[str] = None) -> bool:
-        """
-        Generate complete folder structure with files.
-        
-        Args:
-            output_path: Base output path
-            industry: Industry context
-            role: Specific role within the industry (optional)
-            language: Language to use (optional)
+    # --- Public Methods (expected by sharinbai.py) with Short Mode --- 
+
+    def generate_all(self, output_path: str, industry: str, language: str, 
+                     role: Optional[str] = None, short_mode: bool = False) -> bool:
+        """Generate complete folder structure with files."""
+        self._reset_short_mode(short_mode)
+        try:
+            base_dir = Path(output_path)
+            # Simplified target dir logic (assuming sharinbai.py handles existence/metadata checks)
+            target_dir = base_dir / self.file_manager.sanitize_path(f"{industry}_{role if role else 'general'}_{language}")
+            if not self.file_manager.ensure_directory(str(target_dir)):
+                 return False
             
-        Returns:
-            True if successful, False otherwise
-        """
-        # Check if we're operating in an existing directory with metadata
-        base_dir = Path(output_path)
-        if self.file_manager.file_exists(str(base_dir / ".metadata.json")):
-            metadata = self.file_manager.read_json_file(str(base_dir / ".metadata.json"))
-            if metadata:
-                # Update industry/role/language from metadata if not explicitly provided
-                if not industry and "industry" in metadata:
-                    industry = metadata["industry"]
-                    logging.info(f"Using industry '{industry}' from metadata")
+            level1_structure = self._generate_level1_folders(industry, language, role)
+            if not level1_structure or "folders" not in level1_structure:
+                logging.error("Failed to generate valid level 1 folder structure")
+                return False
+            return self._process_folder_structure(level1_structure, target_dir, industry, language, role)
+        except ShortModeLimitReached:
+            logging.info("Folder generation stopped due to short mode limit.")
+            return True
+        except Exception as e:
+            logging.exception(f"Error during full generation: {e}")
+            return False
+
+    def generate_structure_only(self, output_path: str, industry: str, language: str, 
+                                role: Optional[str] = None, short_mode: bool = False) -> bool:
+        """Generate folder structure only without files."""
+        self._reset_short_mode(short_mode)
+        try:
+            base_dir = Path(output_path)
+            target_dir = base_dir / self.file_manager.sanitize_path(f"{industry}_{role if role else 'general'}_{language}")
+            if not self.file_manager.ensure_directory(str(target_dir)):
+                return False
                 
-                if role is None and "role" in metadata:
-                    role = metadata["role"]
-                    logging.info(f"Using role '{role}' from metadata")
-                
-                if language is None and "language" in metadata:
-                    language = metadata["language"]
-                    logging.info(f"Using language '{language}' from metadata")
-                
-                # Work directly in the current directory
-                target_dir = base_dir
-            else:
-                # Create formatted directory name
-                formatted_dir_name = f"{industry}_{role if role else 'general'}"
-                formatted_dir_name = self.file_manager.sanitize_path(formatted_dir_name)
-                target_dir = base_dir / formatted_dir_name
-        else:
-            # Create formatted directory name
-            formatted_dir_name = f"{industry}_{role if role else 'general'}"
-            formatted_dir_name = self.file_manager.sanitize_path(formatted_dir_name)
-            target_dir = base_dir / formatted_dir_name
-        
-        # Ensure we have industry information
-        if not industry:
-            logging.error("Industry information is required but was not found in metadata or arguments")
+            level1_structure = self._generate_level1_folders(industry, language, role)
+            if not level1_structure or "folders" not in level1_structure:
+                logging.error("Failed to generate valid level 1 folder structure")
+                return False
+            return self._process_structure_only(level1_structure, target_dir, industry, language, role)
+        except ShortModeLimitReached:
+            logging.info("Folder generation stopped due to short mode limit.")
+            return True
+        except Exception as e:
+            logging.exception(f"Error during structure only generation: {e}")
             return False
-            
-        # Ensure we have language information
-        if language is None:
-            logging.error("Language information is required but was not found in metadata or arguments")
+
+    def generate_files_only(self, output_path: str, industry: str, language: str,
+                           role: Optional[str] = None, short_mode: bool = False) -> bool:
+        """Generate or update files only without modifying folder structure."""
+        self._reset_short_mode(short_mode)
+        try:
+            target_dir = Path(output_path) # Assumes path is the final target dir with structure
+            if not target_dir.exists():
+                 logging.error(f"Target directory {target_dir} does not exist. Run 'all' or 'structure' first.")
+                 return False
+            # Industry/language needed for regeneration prompts even if metadata has them
+            return self._regenerate_files(target_dir, industry, language, role) 
+        except ShortModeLimitReached:
+            logging.info("File generation stopped due to short mode limit.")
+            return True
+        except Exception as e:
+            logging.exception(f"Error during file only generation: {e}")
             return False
-            
-        # Create target directory if it doesn't exist
-        if not self.file_manager.ensure_directory(str(target_dir)):
-            return False
-            
-        # Generate level 1 folder structure
-        level1_structure = self._generate_level1_folders(industry, language, role)
-        if not level1_structure or "folders" not in level1_structure:
-            logging.error("Failed to generate valid level 1 folder structure")
-            return False
-            
-        # Process folder structure (creates folders and files)
-        return self._process_folder_structure(level1_structure, target_dir, industry, language, role)
+
+    # --- Remove previously added public methods --- 
+    # (generate_structure_and_content, generate_structure_only, regenerate_structure_content)
+    # These are replaced by the generate_all, etc. methods above.
     
-    def generate_structure_only(self, output_path: str, industry: str, role: Optional[str] = None,
-                               language: Optional[str] = None) -> bool:
-        """
-        Generate folder structure only without files.
-        
-        Args:
-            output_path: Base output path
-            industry: Industry context
-            role: Specific role within the industry (optional)
-            language: Language to use (optional)
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        # Check if we're operating in an existing directory with metadata
-        base_dir = Path(output_path)
-        if self.file_manager.file_exists(str(base_dir / ".metadata.json")):
-            metadata = self.file_manager.read_json_file(str(base_dir / ".metadata.json"))
-            if metadata:
-                # Update industry/role/language from metadata if not explicitly provided
-                if not industry and "industry" in metadata:
-                    industry = metadata["industry"]
-                    logging.info(f"Using industry '{industry}' from metadata")
-                
-                if role is None and "role" in metadata:
-                    role = metadata["role"]
-                    logging.info(f"Using role '{role}' from metadata")
-                
-                if language is None and "language" in metadata:
-                    language = metadata["language"]
-                    logging.info(f"Using language '{language}' from metadata")
-                
-                # Work directly in the current directory
-                target_dir = base_dir
-            else:
-                # Create formatted directory name
-                formatted_dir_name = f"{industry}_{role if role else 'general'}"
-                formatted_dir_name = self.file_manager.sanitize_path(formatted_dir_name)
-                target_dir = base_dir / formatted_dir_name
-        else:
-            # Create formatted directory name
-            formatted_dir_name = f"{industry}_{role if role else 'general'}"
-            formatted_dir_name = self.file_manager.sanitize_path(formatted_dir_name)
-            target_dir = base_dir / formatted_dir_name
-            
-        # Ensure we have industry information
-        if not industry:
-            logging.error("Industry information is required but was not found in metadata or arguments")
-            return False
-            
-        # Ensure we have language information
-        if language is None:
-            logging.error("Language information is required but was not found in metadata or arguments")
-            return False
-        
-        # Create target directory if it doesn't exist
-        if not self.file_manager.ensure_directory(str(target_dir)):
-            return False
-            
-        # Generate level 1 folder structure
-        level1_structure = self._generate_level1_folders(industry, language, role)
-        if not level1_structure or "folders" not in level1_structure:
-            logging.error("Failed to generate valid level 1 folder structure")
-            return False
-            
-        # Process folder structure (creates folders only)
-        return self._process_structure_only(level1_structure, target_dir, industry, language, role)
-    
+    # --- Internal Processing Methods --- 
+    # (These remain, with short mode checks already integrated)
     def _process_structure_only(self, level1_structure: Dict[str, Any], target_dir: Path,
                                industry: str, language: str, role: Optional[str] = None) -> bool:
         """
@@ -194,6 +137,9 @@ class FolderGenerator:
             if not isinstance(l1_folder_data, dict) or "description" not in l1_folder_data:
                 logging.warning(f"Invalid data for folder {l1_folder_name}, skipping")
                 continue
+                
+            # Check limit before creating L1 folder
+            if self._check_short_mode_limit(): raise ShortModeLimitReached()
                 
             # Create level 1 folder
             l1_folder_path = target_dir / self.file_manager.sanitize_path(l1_folder_name)
@@ -230,6 +176,9 @@ class FolderGenerator:
                 if not isinstance(l2_folder_data, dict) or "description" not in l2_folder_data:
                     logging.warning(f"Invalid data for level 2 folder {l2_folder_name}, skipping")
                     continue
+                    
+                # Check limit before creating L2 folder
+                if self._check_short_mode_limit(): raise ShortModeLimitReached()
                     
                 # Create level 2 folder
                 l2_folder_path = l1_folder_path / self.file_manager.sanitize_path(l2_folder_name)
@@ -269,6 +218,9 @@ class FolderGenerator:
                         logging.warning(f"Invalid data for level 3 folder {l3_folder_name}, skipping")
                         continue
                         
+                    # Check limit before creating L3 folder
+                    if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                        
                     # Create level 3 folder
                     l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
                     if not self.file_manager.ensure_directory(str(l3_folder_path)):
@@ -288,94 +240,8 @@ class FolderGenerator:
                     }
                     self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
         
-        logging.info("Folder structure creation completed")
+        logging.info("Folder structure creation completed (or stopped by short mode).")
         return success
-    
-    def generate_files_only(self, output_path: str, industry: str, role: Optional[str] = None,
-                          language: Optional[str] = None) -> bool:
-        """
-        Generate or update files only without modifying folder structure.
-        
-        Args:
-            output_path: Base output path
-            industry: Industry context (can be None if metadata exists)
-            role: Specific role within the industry (optional)
-            language: Language to use (optional)
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        # Set target directory
-        base_dir = Path(output_path)
-        
-        # Try to determine directory name from metadata if present
-        if self.file_manager.file_exists(str(base_dir / ".metadata.json")):
-            metadata = self.file_manager.read_json_file(str(base_dir / ".metadata.json"))
-            if metadata:
-                # Update industry/role/language from metadata if not explicitly provided
-                if not industry and "industry" in metadata:
-                    industry = metadata["industry"]
-                    logging.info(f"Using industry '{industry}' from metadata")
-                
-                if role is None and "role" in metadata:
-                    role = metadata["role"]
-                    logging.info(f"Using role '{role}' from metadata")
-                
-                if language is None and "language" in metadata:
-                    language = metadata["language"]
-                    logging.info(f"Using language '{language}' from metadata")
-                
-                # Work directly in the current directory
-                target_dir = base_dir
-            else:
-                # No metadata found, so create formatted directory
-                formatted_dir_name = f"{industry}_{role if role else 'general'}"
-                formatted_dir_name = self.file_manager.sanitize_path(formatted_dir_name)
-                target_dir = base_dir / formatted_dir_name
-        else:
-            # No metadata found, so create formatted directory
-            formatted_dir_name = f"{industry}_{role if role else 'general'}"
-            formatted_dir_name = self.file_manager.sanitize_path(formatted_dir_name)
-            target_dir = base_dir / formatted_dir_name
-        
-        # Ensure we have industry information
-        if not industry:
-            logging.error("Industry information is required but was not found in metadata or arguments")
-            return False
-            
-        # Ensure we have language information
-        if language is None:
-            logging.error("Language information is required but was not found in metadata or arguments")
-            return False
-        
-        # Check if target directory exists
-        if not target_dir.exists():
-            logging.error(f"Target directory {target_dir} does not exist. Run 'all' command first.")
-            return False
-            
-        # Traverse existing folder structure and regenerate files
-        return self._regenerate_files(target_dir, industry, language, role)
-    
-    def _generate_level1_folders(self, industry: str, language: str, 
-                               role: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Generate level 1 folder structure.
-        
-        Args:
-            industry: Industry context
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Dictionary with folder structure information
-        """
-        prompt = self._get_level1_folders_prompt(industry, language, role)
-        
-        return self.llm_client.get_json_completion(
-            prompt=prompt,
-            structure_hint="The JSON should have a structure with a 'folders' key containing objects",
-            max_attempts=3
-        )
     
     def _process_folder_structure(self, level1_structure: Dict[str, Any], target_dir: Path,
                                 industry: str, language: str, role: Optional[str] = None) -> bool:
@@ -412,6 +278,9 @@ class FolderGenerator:
             if not isinstance(l1_folder_data, dict) or "description" not in l1_folder_data:
                 logging.warning(f"Invalid data for folder {l1_folder_name}, skipping")
                 continue
+                
+            # Check limit before creating L1 folder
+            if self._check_short_mode_limit(): raise ShortModeLimitReached()
                 
             # Create level 1 folder
             l1_folder_path = target_dir / self.file_manager.sanitize_path(l1_folder_name)
@@ -466,6 +335,9 @@ class FolderGenerator:
                 if not isinstance(l2_folder_data, dict) or "description" not in l2_folder_data:
                     logging.warning(f"Invalid data for level 2 folder {l2_folder_name}, skipping")
                     continue
+                    
+                # Check limit before creating L2 folder
+                if self._check_short_mode_limit(): raise ShortModeLimitReached()
                     
                 # Create level 2 folder
                 l2_folder_path = l1_folder_path / self.file_manager.sanitize_path(l2_folder_name)
@@ -534,6 +406,9 @@ class FolderGenerator:
                         logging.warning(f"Invalid data for level 3 folder {l3_folder_name}, skipping")
                         continue
                         
+                    # Check limit before creating L3 folder
+                    if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                        
                     # Create level 3 folder
                     l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
                     if not self.file_manager.ensure_directory(str(l3_folder_path)):
@@ -571,6 +446,9 @@ class FolderGenerator:
                     # Create each file
                     for file_info in level3_files["files"]:
                         try:
+                            # Check limit before creating file
+                            if self._check_short_mode_limit(): raise ShortModeLimitReached()
+                            
                             if not isinstance(file_info, dict) or "name" not in file_info:
                                 continue
                                 
@@ -582,6 +460,8 @@ class FolderGenerator:
                                 industry, language, role, l2_folder_purpose
                             )
                             logging.info(f"Created file: {l1_folder_name}/{l2_folder_name}/{file_name}")
+                        except ShortModeLimitReached:
+                            raise # Re-raise to stop outer loops
                         except Exception as e:
                             logging.error(f"Error creating file: {e}")
                             success = False
@@ -747,6 +627,48 @@ class FolderGenerator:
         
         return success
     
+    # --- LLM Interaction and Prompt Generation --- 
+    def _generate_level1_folders(self, industry: str, language: str, 
+                               role: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Generate level 1 folder structure using LLM.
+        """
+        prompt = self._get_level1_folders_prompt(industry, language, role)
+        if not prompt:
+            logging.error("Failed to generate prompt for level 1 folders.")
+            # Return an empty structure or None to indicate failure
+            return {"folders": {}} 
+        
+        return self.llm_client.get_json_completion(
+            prompt=prompt,
+            structure_hint="The JSON should have a structure with a 'folders' key containing objects",
+            max_attempts=3
+        )
+    
+    def _generate_level2_folders(self, industry: str, l1_folder_name: str, 
+                               l1_description: str, language: str, 
+                               role: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Generate level 2 folder structure.
+        
+        Args:
+            industry: Industry context
+            l1_folder_name: Level 1 folder name
+            l1_description: Level 1 folder description
+            language: Language to use
+            role: Specific role within the industry (optional)
+            
+        Returns:
+            Dictionary with folder structure information
+        """
+        prompt = self._get_level2_folders_prompt(industry, l1_folder_name, l1_description, language, role)
+        
+        return self.llm_client.get_json_completion(
+            prompt=prompt,
+            structure_hint="The JSON should have a structure with a 'folders' key containing objects",
+            max_attempts=3
+        )
+    
     def _get_level1_folders_prompt(self, industry: str, language: str, role: Optional[str] = None) -> str:
         """
         Get prompt for level 1 folder generation.
@@ -785,30 +707,6 @@ class FolderGenerator:
             '    ...\n'
             '  }\n'
             "}"
-        )
-    
-    def _generate_level2_folders(self, industry: str, l1_folder_name: str, 
-                               l1_description: str, language: str, 
-                               role: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Generate level 2 folder structure.
-        
-        Args:
-            industry: Industry context
-            l1_folder_name: Level 1 folder name
-            l1_description: Level 1 folder description
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Dictionary with folder structure information
-        """
-        prompt = self._get_level2_folders_prompt(industry, l1_folder_name, l1_description, language, role)
-        
-        return self.llm_client.get_json_completion(
-            prompt=prompt,
-            structure_hint="The JSON should have a structure with a 'folders' key containing objects",
-            max_attempts=3
         )
     
     def _get_level2_folders_prompt(self, industry: str, l1_folder_name: str, 
@@ -1057,4 +955,33 @@ class FolderGenerator:
                 logging.error(f"Error creating timeseries file: {e}")
                 success = False
                 
-        return success 
+        return success
+
+    def _check_short_mode_limit(self) -> bool:
+        """Checks if the short mode item limit has been reached. Increments count if not."""
+        if not self._short_mode_enabled:
+            return False # Short mode not active
+
+        if self._item_count >= self.SHORT_MODE_LIMIT:
+            logging.info(f"Short mode limit ({self.SHORT_MODE_LIMIT} items) reached.")
+            return True # Limit reached
+        
+        # Increment only if limit not reached yet, to avoid counting the check itself
+        self._item_count += 1 
+        # Log the current count for visibility
+        logging.debug(f"Short mode item count: {self._item_count}/{self.SHORT_MODE_LIMIT}") 
+        return False # Limit not reached
+
+    def _reset_short_mode(self, short_mode: bool):
+        """Resets the counter and sets the mode for a new run."""
+        self._item_count = 0
+        self._short_mode_enabled = short_mode
+        if short_mode:
+            logging.info(f"Short mode enabled (limit: {self.SHORT_MODE_LIMIT} items).")
+
+    # ... other private methods like _generate_level[1-3]_folders/files ...
+    # These generation methods don't directly create files/folders on disk, 
+    # so they don't need the short mode check. The check happens when the
+    # structures returned by these methods are processed.
+
+    # ... rest of the existing methods ... 

@@ -1,0 +1,93 @@
+{
+    "folder_structure": "Bitte schlagen Sie eine Projektordnerstruktur im JSON-Format für folgende Branche vor: {industry}{role_prompt}\n\nErstellen Sie eine umfassende und detaillierte Ordnerstruktur, die folgende Kriterien erfüllt:\n\n1. Mindestens 15-20 Hauptordner enthalten\n2. Jeder Hauptordner sollte mindestens 3-5 Unterordner enthalten\n3. Die Ordnerhierarchie sollte mindestens 3-4 Ebenen tief sein (z.B. Hauptordner/Unterordner/Unter-Unterordner)\n4. Jeder Ordner der untersten Ebene sollte mindestens 3-5 Dateien enthalten\n5. Spezielle Ordnerstrukturen widerspiegeln, die für die Branche und Rolle spezifisch sind\n\nWICHTIG: Alle Ordner- und Dateinamen sollten folgende Richtlinien einhalten:\n- Vermeiden Sie allgemeine und abstrakte Namen wie \"Ordner 1\" oder \"Dokument 2\"\n- Verwenden Sie spezifische Terminologie, die branchenspezifische Begriffe und tatsächliche Geschäftsprozesse widerspiegelt\n- Erstellen Sie Dateinamen, die den Zweck und Inhalt des Dokuments klar angeben\n- Fügen Sie bei Bedarf spezifische Namen von Abteilungen, Projekten, Produkten, Kunden usw. ein\n- Geben Sie Dokumenttypen deutlich an (Angebote, Berichte, Handbücher usw.)\n\nWICHTIG: Für Ordnerbeschreibungen bieten Sie detaillierten Geschäftskontext, der Folgendes erklärt:\n- Der geschäftliche Zweck und die Funktion jedes Ordners\n- Wie der Ordner im täglichen Geschäftsbetrieb und in Arbeitsabläufen verwendet wird\n- Welche Abteilungen oder Rollen typischerweise mit diesen Dokumenten arbeiten\n- Welche Geschäftsprozesse diese Dokumente unterstützen\n- Wie der Ordnerinhalt mit Geschäftszielen zusammenhängt\n\nDateien sollten hauptsächlich gängige Geschäftsdateien sein, wie Word-Dokumente (.docx), Excel (.xlsx), PDF, Textdateien (.txt) usw.\n\nAlle Namen und Beschreibungen sollten auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\nSchließen Sie Ordner ein, die sich auf verschiedene Bereiche der Geschäftstätigkeit beziehen, wie Projektmanagement, Dokumentenmanagement, Datenanalyse, Berichte, Besprechungsunterlagen, Vertragsdokumente usw.\n\nFür Berichte, Sitzungsprotokolle oder datierte Dokumente fügen Sie das Datum im Format JJJJ-MM-TT in den Dateinamen ein.\n\nBitte antworten Sie im folgenden Format:\n{{\n    \"Ordnername\": {{\n        \"folders\": {{\n            \"Unterordnername\": {{\n                \"files\": [\n                    {{\"name\": \"dateiname.erweiterung\", \"type\": \"docx|xlsx|pdf\", \"description\": \"kurze Beschreibung\"}}\n                ],\n                \"folders\": {{...}}\n            }}\n        }},\n        \"files\": [\n            {{\"name\": \"dateiname.erweiterung\", \"type\": \"docx|xlsx|pdf\", \"description\": \"kurze Beschreibung\"}}\n        ]\n    }}\n}}\n\nGeben Sie nur das JSON zurück, keine zusätzliche Erklärung ist erforderlich.",
+    
+    "folder_structure_prompt": {
+        "system": "Sie sind ein KI-Assistent, der auf die Erstellung gut organisierter Ordnerstrukturen für Unternehmen spezialisiert ist. Alle Ordnernamen und Dateinamen müssen auf Deutsch sein. Sie müssen NUR mit gültigen JSON-Daten antworten, ohne zusätzlichen Text davor oder danach. Fügen Sie keine Erklärungen, Anmerkungen oder Nachrichten um das JSON herum ein. Umschließen Sie das JSON nicht mit Codeblöcken oder Markdown-Formatierung.",
+        "level1": "Erstellen Sie eine Ordnerstruktur der Ebene 1 für die {industry}-Branche. Jeder Ordner sollte eine klare Beschreibung seines Zwecks und seiner Geschäftsfunktion haben.\n\n{date_range}\n\nBitte antworten Sie mit einer JSON-Struktur im folgenden Format:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"Ordnername1\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    \"Ordnername2\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    ...\n  }}\n}}\n\nErstellen Sie spezifische und geeignete Ordnernamen für die {industry}-Branche. Jeder Ordner sollte eine detaillierte Beschreibung haben, die seinen Geschäftszweck erklärt.\n\nWICHTIG: Alle Ordnernamen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.\n\nWICHTIG: Geben Sie NUR das JSON-Objekt zurück, ohne zusätzlichen Text, Anmerkungen oder Erklärungen davor oder danach. Umschließen Sie das JSON nicht mit Codeblöcken. Fügen Sie keine Phrasen wie 'Hier ist das JSON' oder 'Ich hoffe, das hilft' ein.",
+        "level2": "Erstellen Sie eine Ordnerstruktur der Ebene 2 für die {industry}-Branche{role_text} innerhalb des Ordners der Ebene 1 mit dem Namen \"{l1_folder_name}\".\n\nBeschreibung des Ordners der Ebene 1: {l1_description}\n\nBitte erstellen Sie spezifische und geeignete Ordner der Ebene 2, die logischerweise in diesen Ordner der Ebene 1 gehören würden. Fügen Sie eine klare Beschreibung für den Zweck jedes Ordners hinzu.\n\nAntworten Sie im folgenden JSON-Format:\n\n{{\n  \"folders\": {{\n    \"Ordnername1\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    \"Ordnername2\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    ...\n  }}\n}}\n\nErstellen Sie spezifische Ordnernamen, die zum Zweck des übergeordneten Ordners und den Merkmalen der {industry}-Branche passen. Jeder Ordner sollte eine detaillierte Beschreibung haben, die seinen Geschäftszweck erklärt.\n\nWICHTIG: Alle Ordnernamen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.\n\nWICHTIG: Geben Sie NUR das JSON-Objekt zurück, ohne zusätzlichen Text, Anmerkungen oder Erklärungen davor oder danach. Umschließen Sie das JSON nicht mit Codeblöcken. Fügen Sie keine Phrasen wie 'Hier ist das JSON' oder 'Ich hoffe, das hilft' ein.",
+        "level3": "Erstellen Sie eine Ordnerstruktur der Ebene 3 für die {industry}-Branche{role_text}.\n\nOrdner der Ebene 1: {l1_folder_name} - {l1_description}\nOrdner der Ebene 2: {l2_folder_name} - {l2_description}\n\nBitte erstellen Sie spezifische und geeignete Ordner der Ebene 3, die logischerweise in diesen Ordner der Ebene 2 gehören würden. Fügen Sie eine klare Beschreibung für den Zweck jedes Ordners hinzu.\n\nAntworten Sie im folgenden JSON-Format:\n\n{{\n  \"folders\": {{\n    \"Ordnername1\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    \"Ordnername2\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    ...\n  }}\n}}\n\nErstellen Sie spezifische Ordnernamen, die zum Zweck des übergeordneten Ordners und den Merkmalen der {industry}-Branche passen. Jeder Ordner sollte eine detaillierte Beschreibung haben, die seinen Geschäftszweck erklärt.\n\nWICHTIG: Alle Ordnernamen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.\n\nWICHTIG: Geben Sie NUR das JSON-Objekt zurück, ohne zusätzlichen Text, Anmerkungen oder Erklärungen davor oder danach. Umschließen Sie das JSON nicht mit Codeblöcken. Fügen Sie keine Phrasen wie 'Hier ist das JSON' oder 'Ich hoffe, das hilft' ein.",
+        "level3_folders_prompt": "Erstellen Sie eine Ordnerstruktur der Ebene 3 für die {industry}-Branche{role_text}.\n\nOrdner der Ebene 1: {l1_folder_name} - {l1_description}\nOrdner der Ebene 2: {l2_folder_name} - {l2_description}\n\nBitte erstellen Sie spezifische und geeignete Ordner der Ebene 3, die logischerweise in diesen Ordner der Ebene 2 gehören würden. Fügen Sie eine klare Beschreibung für den Zweck jedes Ordners hinzu.\n\nWICHTIG: Geben Sie NUR Ordner zurück, keine Dateien. Dateien werden in einem separaten Schritt generiert.\n\nAntworten Sie im folgenden JSON-Format:\n\n{{\n  \"folders\": {{\n    \"Ordnername1\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    \"Ordnername2\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    ...\n  }}\n}}\n\nErstellen Sie spezifische Ordnernamen, die zum Zweck des übergeordneten Ordners und den Merkmalen der {industry}-Branche passen. Jeder Ordner sollte eine detaillierte Beschreibung haben, die seinen Geschäftszweck erklärt.\n\nWICHTIG: Alle Ordnernamen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.\n\nWICHTIG: Geben Sie NUR das JSON-Objekt zurück, ohne zusätzlichen Text, Anmerkungen oder Erklärungen davor oder danach. Umschließen Sie das JSON nicht mit Codeblöcken. Fügen Sie keine Phrasen wie 'Hier ist das JSON' oder 'Ich hoffe, das hilft' ein.",
+        "level3_files_prompt": "Erstellen Sie Dateien für einen Ordner der Ebene 3 in der {industry}-Branche{role_text}.\n\nOrdner der Ebene 1: {l1_folder_name} - {l1_description}\nOrdner der Ebene 2: {l2_folder_name} - {l2_description}\n\nDieser Ordner enthält die folgenden Unterordner: {folder_structure}\n\nBitte erstellen Sie geeignete Dateien, die logischerweise in diesen Ordner der Ebene 2 gehören würden. Dies sind Dateien direkt im Ordner der Ebene 2, nicht in seinen Unterordnern.\n\nAntworten Sie im folgenden JSON-Format:\n\n{{\n  \"files\": [\n    {{\n      \"name\": \"Dateiname.erweiterung\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Klare Beschreibung des Zwecks der Datei\"\n    }},\n    {{\n      \"name\": \"Dateiname.erweiterung\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Klare Beschreibung des Zwecks der Datei\"\n    }},\n    ...\n  ]\n}}\n\nErstellen Sie spezifische Dateinamen, die zum Zweck des übergeordneten Ordners und den Merkmalen der {industry}-Branche passen. Jede Datei sollte eine detaillierte Beschreibung haben, die ihren Geschäftszweck erklärt.\n\nWICHTIG: Alle Dateinamen müssen auf Deutsch sein. Verwenden Sie keine Dateinamen in anderen Sprachen.\n\nWICHTIG: Geben Sie NUR das JSON-Objekt zurück, ohne zusätzlichen Text, Anmerkungen oder Erklärungen davor oder danach. Umschließen Sie das JSON nicht mit Codeblöcken. Fügen Sie keine Phrasen wie 'Hier ist das JSON' oder 'Ich hoffe, das hilft' ein."
+    },
+    
+    "json_fix_prompts": {
+        "fix_json": "Die folgende JSON-Struktur ist ungültig oder konnte nicht korrekt analysiert werden.\nBitte korrigieren Sie die Struktur und geben Sie ein gültiges JSON-Format zurück.\nStellen Sie sicher, dass alle Schlüssel und Werte ordnungsgemäß in Anführungszeichen gesetzt sind und alle Klammern ausgeglichen sind.\n\nProblematische Antwort:\n{failed_response}\n\nBitte geben Sie nur die korrigierte JSON-Struktur ohne zusätzliche Erklärung zurück.\n\nWICHTIG: Alle Ordnernamen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen."
+    },
+    
+    "json_format_instructions": {
+        "json_format_instruction": "Bitte formatieren Sie Ihre Antwort als gültiges JSON-Objekt mit korrekten Klammern und Anführungszeichen. Alle Ordnernamen müssen auf Deutsch sein.",
+        "json_array_instruction": "Bitte geben Sie NUR das {key} als JSON-Array zurück. Geben Sie NUR die {key}-Daten zurück.",
+        "json_object_instruction": "Bitte geben Sie NUR das {key} als JSON-Objekt zurück. Geben Sie NUR die {key}-Daten zurück.",
+        "json_structure_hint": "Das JSON sollte nur die '{key}'-Daten enthalten, entweder als Array oder als Objekt. Alle Ordnernamen müssen auf Deutsch sein.",
+        "json_error_message": "Bei der Analyse Ihrer vorherigen Antwort ist ein Fehler aufgetreten. Bitte stellen Sie sicher, dass Sie ein syntaktisch gültiges JSON-Objekt mit korrekten Klammern bereitstellen. Alle Ordnernamen müssen auf Deutsch sein.",
+        "structure_error_message": "Das JSON MUSS diese Schlüssel enthalten: {keys}. Alle Ordnernamen müssen auf Deutsch sein.",
+        "structure_error_format": "WICHTIG: JSON muss die folgenden Schlüssel enthalten: {keys}. Alle Ordnernamen müssen auf Deutsch sein.",
+        "parsing_error_message": "WICHTIG: Bei der Analyse Ihrer vorherigen Antwort ist ein Fehler aufgetreten. Bitte stellen Sie ein gültiges JSON-Objekt mit korrekten Klammern bereit. Alle Ordnernamen müssen auf Deutsch sein.",
+        "level1_folders_prompt": "Erstellen Sie eine Ordnerstruktur der Ebene 1 für die {industry}-Branche{role_text}. Jeder Ordner sollte eine klare Beschreibung seines Zwecks und seiner Geschäftsfunktion haben.\n\n{date_range}\n\nBitte antworten Sie mit einer JSON-Struktur im folgenden Format:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"Ordnername1\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    \"Ordnername2\": {{\n      \"description\": \"Klare Beschreibung des Geschäftszwecks des Ordners\"\n    }},\n    ...\n  }}\n}}\n\nErstellen Sie spezifische und geeignete Ordnernamen für die {industry}-Branche. Jeder Ordner sollte eine detaillierte Beschreibung haben, die seinen Geschäftszweck erklärt.\n\nWICHTIG: Alle Ordnernamen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.\n\nWICHTIG: Geben Sie NUR das JSON-Objekt zurück, ohne zusätzlichen Text, Anmerkungen oder Erklärungen davor oder danach. Umschließen Sie das JSON nicht mit Codeblöcken. Fügen Sie keine Phrasen wie 'Hier ist das JSON' oder 'Ich hoffe, das hilft' ein."
+    },
+    
+    "ui_strings": {
+        "sheet_title": "Übersicht",
+        "industry_label": "Branche:",
+        "role_label": "Rolle:",
+        "filename_label": "Dateiname:",
+        "description_label": "Beschreibung:",
+        "footer_text": "Diese Datei wurde als Beispiel generiert.",
+        "doc_sample_text": "Dieses Dokument wurde als Beispiel generiert.",
+        "pdf_sample_text": "Dieses Dokument wurde als Beispiel generiert.",
+        "industry_footer": "Branche: {industry}",
+        "role_footer": ", Rolle: {role_text}",
+        "date_footer": ", Datum: {date}",
+        "file_info_header": "Dateiinformationen",
+        "content_header": "Inhalt",
+        "overview_header": "Übersicht",
+        "context_header": "Geschäftskontext",
+        "period_label": "Zeitraum:",
+        "not_specified": "Nicht angegeben",
+        "fallback_file_template": "# {file_name}\n\n{description}\n\nBranche: {industry}\nRolle: {role}\n",
+        "file_list_header": "Dateien:",
+        "error_messages": {
+            "unknown_extension": "Unbekannte Dateierweiterung für: {file_path} - Alternative Vorschläge: {suggestions}",
+            "unsupported_extension": "Nicht unterstützte Dateierweiterung: {ext}. Verwende stattdessen {new_ext}.",
+            "fallback_file_error": "Fehler beim Erstellen der Fallback-Datei: {error}",
+            "invalid_date_format": "Ungültiges Datumsformat: {error}. Verwende Standard (letzter Monat).",
+            "language_mapping_not_found": "Sprachzuordnungsdatei nicht gefunden: {file}",
+            "template_file_not_found": "Vorlagendatei {file} nicht gefunden. Verwende Standard-en-US-Vorlage.",
+            "json_parsing_error": "JSON-Parsing-Fehler: {error}",
+            "folder_structure_not_found": "Ordnerstrukturvorlage in Sprachvorlagen nicht gefunden. Verwende einfache Eingabeaufforderung."
+        },
+        "cli_args": {
+            "description": "Erzeugt eine Verzeichnisstruktur basierend auf Branche und Rolle.",
+            "industry": "Branche für Ordnerstruktur",
+            "role": "Geschäftsrolle für Ordnerstruktur",
+            "output": "Ausgabeverzeichnis (Standard: Branchenname)",
+            "language": "Sprache für generierte Inhalte (Standard: Systemsprache)",
+            "date_range": "Datumsbereich im Format JJJJ-MM-TT:JJJJ-MM-TT",
+            "scenario": "Geschäftsszenario generieren",
+            "min_files": "Minimale Anzahl von Dateien pro Ordner (Standard: 3)",
+            "file": "Nur bestimmte Datei(en) generieren, durch Kommas getrennte Pfade",
+            "force": "Vorhandene Ordner überschreiben erzwingen",
+            "scan": "Bestehende Struktur vor der Generierung scannen",
+            "max_depth": "Maximale Ordnertiefe (Standard: 3)",
+            "model": "Zu verwendendendes Ollama-Modell (Standard: gemma3:4b)",
+            "structure": "Nur Ordnerstruktur erstellen, ohne Dateien zu generieren"
+        }
+    },
+    
+    "date_formats": {
+        "role_prompt": "\nSie erstellen eine Ordnerstruktur für einen {role}, der in dieser Branche arbeitet.",
+        "date_range_prompt": "\nFügen Sie geeignete datumsbasierte Ordner und Dateinamen ein, die für den Zeitraum von {start_date} bis {end_date} relevant wären.",
+        "date_organization_prompt": "\nZiehen Sie die Organisation zeitsensibler Dokumente in einer chronologischen Struktur mit separaten Ordnern für verschiedene Jahre ({start_year}-{end_year}) und gegebenenfalls Quartale/Monate innerhalb dieser Jahre in Betracht.",
+        "existing_structure_prompt": "\nBitte bauen Sie auf der folgenden bestehenden Ordnerstruktur auf oder ergänzen Sie sie. Erstellen Sie kompatible neue Inhalte, die neben dieser Struktur Sinn machen würden:\n{structure}",
+        "document_date_prompt": "\n\nDieses Dokument ist vom {date} datiert. Fügen Sie dieses Datum in die Dokumentkopfzeile/den Titel ein und stellen Sie sicher, dass alle Inhalte für dieses Datum angemessen sind. Verweisen Sie auf dieses Datum im gesamten Dokument, wo es relevant ist.",
+        "spreadsheet_date_prompt": "\n\nDieses Tabellenblatt ist vom {date} datiert. Fügen Sie dieses Datum in die Tabellenkopfzeile ein und stellen Sie sicher, dass alle Daten für diesen Zeitraum angemessen sind. Wenn dies ein Bericht oder ein Tracking-Dokument ist, fügen Sie Daten in das Tabellenblatt ein, die am oder vor dem {date} liegen.",
+        "text_date_prompt": "\n\nDiese Textdatei ist vom {date} datiert. Fügen Sie dieses Datum in den Dateiinhalt ein und stellen Sie sicher, dass alle Informationen für dieses Datum angemessen sind.",
+        "example_prompt": "\n\nHier sind Beispiele für ähnliche {doc_type} als Referenz:\n\n{examples}\n\nErstellen Sie Inhalte in einem ähnlichen {style_type}, aber mit unterschiedlichen {content_type}, die für den aktuellen Kontext angemessen sind.",
+        "scenario_role_prompt": "Sie arbeiten als {role}.",
+        "scenario_date_range_prompt": "Der Zeitraum ist von {start_date} bis {end_date}.",
+        "scenario_prompt": "\nBitte generieren Sie die Ordnerstruktur basierend auf folgendem Geschäftsszenario:\n\n{scenario}",
+        "scenario_context_prompt": "Geschäftsszenario-Kontext:\n{scenario}",
+        "date_range_text": "Zeitraum: {start_date} - {end_date}",
+        "append_date_range": "\n\n{date_range_text}\n"
+    }
+} 

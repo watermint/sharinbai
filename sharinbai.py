@@ -27,6 +27,7 @@ def main():
         subparser.add_argument('--model', '-m', type=str, default='llama3', help='Ollama model to use')
         subparser.add_argument('--role', '-r', type=str, default=None, help='Specific role within the industry (can be omitted if .metadata.json exists)')
         subparser.add_argument('--ollama-url', type=str, default=None, help='URL for the Ollama API server.')
+        subparser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items)')
     all_parser = subparsers.add_parser('all', help='Create folder structure and generate all files')
     add_common_args(all_parser)
     file_parser = subparsers.add_parser('file', help='Generate or update files in existing folder structure')
@@ -135,24 +136,27 @@ def main():
             success = folder_generator.generate_all(
                 settings.output_path, 
                 settings.industry,
+                settings.language,
                 settings.role,
-                settings.language
+                args.short
             )
         elif args.command == 'file':
             logging.info(f"Generating files only for {settings.industry} industry")
             success = folder_generator.generate_files_only(
                 settings.output_path,
                 settings.industry,
+                settings.language,
                 settings.role,
-                settings.language
+                args.short
             )
         elif args.command == 'structure':
             logging.info(f"Creating folder structure only for {settings.industry} industry")
             success = folder_generator.generate_structure_only(
                 settings.output_path,
                 settings.industry,
+                settings.language,
                 settings.role,
-                settings.language
+                args.short
             )
         else:
             logging.error(f"Unknown command: {args.command}")
