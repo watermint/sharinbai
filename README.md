@@ -140,6 +140,23 @@ The program determines parameters in the following order:
 2. Values from `.metadata.json` in the target directory (if exists)
 3. Interactive user input (when neither of the above is available)
 
+### Multiple Roles in the Same Structure
+
+You can generate multiple role-specific folders and files within the same folder structure by using the `--role` option:
+
+1. First, create a base structure:
+   ```
+   python sharinbai.py structure --industry healthcare --role doctor
+   ```
+
+2. Then, generate content for additional roles using the same structure:
+   ```
+   python sharinbai.py file --role nurse
+   python sharinbai.py file --role administrator
+   ```
+
+The program will use the industry and language settings from `.metadata.json` but temporarily override the role, allowing you to create content for multiple roles within the same structure.
+
 ### How Interactive Prompting Works
 
 When required information is missing, Sharinbai will prompt you for input:
@@ -149,27 +166,32 @@ When required information is missing, Sharinbai will prompt you for input:
    Please enter the industry for the folder structure:
    ```
 
+   Please enter your desired industry. You may enter a general industry such as “Construction,” or a more specific industry such as “Civil engineering contractor specializing in tunnel construction.”
+
+
 2. **Role** - Optional contextual information
    ```
-   Please enter a specific role within the industry (optional, press Enter to skip):
+   Please enter the business role for which the folder structure is intended:
    ```
+
+   Please enter your desired role. You may enter a general roles such as "Sales" or "Legal,", or a more specific role such as "Project Manager of Highway tunnel project".
 
 3. **Language** - Will show supported languages and prompt for choice
    ```
    Supported languages:
-     en
-     en-GB
-     ja
-     ko
-     zh
-     zh-TW
-     de
-     es
-     fr
-     it
-     pt
-     vi
-   Please enter the language for the folder structure (default: en):
+   1. de
+   2. en
+   3. en-GB
+   4. es
+   5. fr
+   6. it
+   7. ja
+   8. ko
+   9. pt
+   10. vi
+   11. zh
+   12. zh-TW
+   Please select a language (enter language code or number from the list): 
    ```
    
    > **Note:** While Sharinbai supports the languages listed above, the actual content generation depends on the LLM model's language capabilities. Not all models support all languages equally well. For best results with non-English languages, consider using larger models like `gemma3:12b` or models specifically trained for multilingual support.
@@ -177,6 +199,14 @@ When required information is missing, Sharinbai will prompt you for input:
 ### Working with Existing Structures
 
 When working with existing folder structures (using the `file` command), Sharinbai automatically reads the `.metadata.json` file to retrieve industry, role, and language information. This means you don't need to specify these parameters again.
+
+If you want to temporarily override the industry or role stored in `.metadata.json`, you can use the `--industry` or `--role` options:
+
+```
+python sharinbai.py file --role data_scientist
+```
+
+This allows you to generate content for different roles while maintaining the same base folder structure.
 
 ## Examples
 

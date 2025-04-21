@@ -127,11 +127,11 @@ def main():
     parser = argparse.ArgumentParser(description='Generate industry-specific folder structures with placeholder files')
     subparsers = parser.add_subparsers(dest='command', help='Command to execute')
     def add_common_args(subparser):
-        subparser.add_argument('--industry', '-i', type=str, help='Industry for the folder structure (can be omitted if .metadata.json exists)')
+        subparser.add_argument('--industry', '-i', type=str, help='Industry for the folder structure (if .metadata.json exists, this will temporarily override the stored value)')
         subparser.add_argument('--path', '-p', type=str, default='./out', help='Path where to create the folder structure')
         subparser.add_argument('--language', '-l', type=str, help='Language for the folder structure (can be omitted if .metadata.json exists)')
         subparser.add_argument('--model', '-m', type=str, default='llama3', help='Ollama model to use')
-        subparser.add_argument('--role', '-r', type=str, default=None, help='Specific role within the industry (can be omitted if .metadata.json exists)')
+        subparser.add_argument('--role', '-r', type=str, default=None, help='Specific role within the industry (if .metadata.json exists, this will temporarily override the stored value)')
         subparser.add_argument('--ollama-url', type=str, default=None, help='URL for the Ollama API server.')
         subparser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items)')
     all_parser = subparsers.add_parser('all', help='Create folder structure and generate all files')
@@ -168,6 +168,10 @@ def main():
     # Set up logging early to capture any issues
     setup_logging(settings.log_level, settings.output_path)
     
+    # Store original command line arguments for industry and role
+    cli_industry = args.industry
+    cli_role = args.role
+    
     # If working with existing structure, try to retrieve metadata
     if args.command in ['file'] or (args.command in ['all', 'structure'] and Path(settings.output_path).exists()):
         target_dir = Path(settings.output_path) / "target"
@@ -177,20 +181,39 @@ def main():
             file_manager = FileManager()
             metadata = file_manager.read_json_file(str(metadata_path))
             if metadata:
-                # Update industry from metadata if not provided by args
-                if not args.industry and 'industry' in metadata:
-                    settings.industry = metadata['industry']
-                    logging.info(f"Retrieved industry '{settings.industry}' from metadata")
+                # Store metadata values
+                metadata_industry = metadata.get('industry')
+                metadata_role = metadata.get('role')
+                metadata_language = metadata.get('language')
                 
-                # Update role from metadata if not provided by args
-                if not args.role and 'role' in metadata:
-                    settings.role = metadata['role']
-                    logging.info(f"Retrieved role '{settings.role}' from metadata")
+                # Set base values from metadata
+                if metadata_industry:
+                    # Only use metadata industry if not explicitly provided via CLI
+                    if not cli_industry:
+                        settings.industry = metadata_industry
+                        logging.info(f"Retrieved industry '{settings.industry}' from metadata")
+                
+                if metadata_role:
+                    # Only use metadata role if not explicitly provided via CLI
+                    if not cli_role:
+                        settings.role = metadata_role
+                        logging.info(f"Retrieved role '{settings.role}' from metadata")
                 
                 # Update language from metadata if not provided by args
-                if not args.language and 'language' in metadata:
-                    settings.language = metadata['language']
+                if not args.language and metadata_language:
+                    settings.language = metadata_language
                     logging.info(f"Retrieved language '{settings.language}' from metadata")
+    
+    # Priority override: CLI arguments take precedence over metadata
+    if cli_industry:
+        if settings.industry != cli_industry:
+            logging.info(f"Temporarily overriding industry from '{settings.industry}' to '{cli_industry}'")
+        settings.industry = cli_industry
+    
+    if cli_role:
+        if settings.role != cli_role:
+            logging.info(f"Temporarily overriding role from '{settings.role}' to '{cli_role}'")
+        settings.role = cli_role
     
     # Ask for industry/role/language if not provided and needed for new structure
     if args.command in ['all', 'structure']:
