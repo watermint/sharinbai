@@ -54,7 +54,23 @@ Sharinbai requires Ollama to run AI models locally on your machine. Follow these
 
 For more details, visit the [Ollama documentation](https://github.com/ollama/ollama/blob/main/README.md).
 
-### 2. Setting up Python and Virtual Environment
+### 2. Download the Repository
+
+If you are not familiar with the `git` command, you can download the repository as a ZIP file:
+
+- 1. Go to the GitHub page: https://github.com/watermint/sharinbai
+- 2. Click the green **Code** button, then select **Download ZIP**.
+- 3. After downloading, unzip the file to your desired location.
+- 4. Open a terminal and change directory to the unzipped folder (e.g., `cd sharinbai`).
+
+Alternatively, you can use the following `git` command to clone the repository:
+
+```
+git clone https://github.com/watermint/sharinbai.git
+cd sharinbai
+```
+
+### 3. Setting up Python and Virtual Environment
 
 Virtual environments allow you to isolate Python packages for different projects. This prevents conflicts between package versions.
 
@@ -73,12 +89,6 @@ Virtual environments allow you to isolate Python packages for different projects
      ```
    
    After activating, your command prompt should show `(venv)` at the beginning, indicating you're now working in the virtual environment.
-
-3. Clone this repository:
-   ```
-   git clone https://github.com/yourusername/sharinbai.git
-   cd sharinbai
-   ```
 
 4. Install required dependencies:
    ```
@@ -166,7 +176,7 @@ When required information is missing, Sharinbai will prompt you for input:
    Please enter the industry for the folder structure:
    ```
 
-   Please enter your desired industry. You may enter a general industry such as “Construction,” or a more specific industry such as “Civil engineering contractor specializing in tunnel construction.”
+   Please enter your desired industry. You may enter a general industry such as "Construction," or a more specific industry such as "Civil engineering contractor specializing in tunnel construction."
 
 
 2. **Role** - Optional contextual information
@@ -174,7 +184,7 @@ When required information is missing, Sharinbai will prompt you for input:
    Please enter the business role for which the folder structure is intended:
    ```
 
-   Please enter your desired role. You may enter a general roles such as "Sales" or "Legal,", or a more specific role such as "Project Manager of Highway tunnel project".
+   Please enter your desired role. You may enter a general roles such as "Sales" or "Legal," or a more specific role such as "Project Manager of Highway tunnel project".
 
 3. **Language** - Will show supported languages and prompt for choice
    ```
