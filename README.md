@@ -87,6 +87,34 @@ python sharinbai.py all --industry legal --language ja
 python sharinbai.py file --industry education --role professor
 ```
 
+## Testing
+
+The project includes a comprehensive test suite to ensure code quality and reliability. The tests use Python's unittest framework with mocking to isolate components.
+
+### Running Tests
+
+You can run all tests using either:
+
+```
+# Using the provided test runner script
+./run_tests.py
+
+# Using pytest
+pytest
+
+# Using unittest discover
+python -m unittest discover
+```
+
+### Test Coverage
+
+To generate a test coverage report:
+
+```
+coverage run -m pytest
+coverage report
+```
+
 ## Project Structure
 
 ```
@@ -98,8 +126,10 @@ sharinbai/
 │   │   └── generators/  # File generators for different formats
 │   ├── foundation/      # Foundation for LLM communication
 │   └── structure/       # Folder structure generation
+├── tests/               # Unit tests
 ├── requirements.txt     # Dependencies
 ├── sharinbai.py         # Main entry point
+├── run_tests.py         # Test runner
 └── README.md            # This file
 ```
 
