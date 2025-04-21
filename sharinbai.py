@@ -25,9 +25,49 @@ from src.config.language_utils import (
 from src.structure.folder_generator import FolderGenerator
 from src.content.file_manager import FileManager
 
+def extract_placeholders(text: str) -> set:
+    """
+    Extract placeholders in the format {placeholder} from a string.
+    
+    Args:
+        text: The string to extract placeholders from
+        
+    Returns:
+        Set of placeholder names
+    """
+    import re
+    if not isinstance(text, str):
+        return set()
+    
+    # Find all {placeholder} occurrences
+    placeholders = set(re.findall(r'\{([^{}]+)\}', text))
+    return placeholders
+
+def get_value_at_key_path(obj, key_path):
+    """
+    Get the value at a specific key path in a nested dictionary.
+    
+    Args:
+        obj: Dictionary to navigate
+        key_path: Dot-separated key path
+        
+    Returns:
+        Value at the key path or None if not found
+    """
+    parts = key_path.split(".")
+    current = obj
+    
+    for part in parts:
+        if isinstance(current, dict) and part in current:
+            current = current[part]
+        else:
+            return None
+    
+    return current
+
 def test_languages():
     """
-    Test all supported language resources and detect missing keys.
+    Test all supported language resources and detect missing keys and placeholders.
     """
     file_manager = FileManager()
     language_files = get_available_language_files()
@@ -60,20 +100,40 @@ def test_languages():
     reference_keys = set()
     extract_keys(resources[reference_lang], "", reference_keys)
     
-    # Second pass: check for missing keys
+    # Build a mapping of placeholders for each key in the reference language
+    reference_placeholders = {}
+    for key in reference_keys:
+        value = get_value_at_key_path(resources[reference_lang], key)
+        if isinstance(value, str):
+            placeholders = extract_placeholders(value)
+            if placeholders:
+                reference_placeholders[key] = placeholders
+    
+    # Second pass: check for missing keys and placeholders
     has_issues = False
+    
     for lang_code, resource in resources.items():
         if lang_code == reference_lang:
             continue
             
         print(f"\nChecking {lang_code}:")
         missing_keys = []
+        missing_placeholders = {}
         
         # Check for missing keys against reference language
         for key in reference_keys:
             if not key_exists(resource, key):
                 missing_keys.append(key)
                 has_issues = True
+            elif key in reference_placeholders:
+                # Check for missing placeholders in this key
+                target_value = get_value_at_key_path(resource, key)
+                if isinstance(target_value, str):
+                    target_placeholders = extract_placeholders(target_value)
+                    missing = reference_placeholders[key] - target_placeholders
+                    if missing:
+                        missing_placeholders[key] = missing
+                        has_issues = True
         
         if missing_keys:
             print(f"  Missing {len(missing_keys)} key(s):")
@@ -81,6 +141,11 @@ def test_languages():
                 print(f"    - {key}")
         else:
             print("  No missing keys found.")
+            
+        if missing_placeholders:
+            print(f"  Missing placeholders in {len(missing_placeholders)} key(s):")
+            for key, placeholders in sorted(missing_placeholders.items()):
+                print(f"    - {key}: {', '.join(sorted(placeholders))}")
     
     return not has_issues
 
