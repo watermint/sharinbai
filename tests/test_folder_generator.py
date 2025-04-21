@@ -193,8 +193,12 @@ class TestFolderGenerator(unittest.TestCase):
             # Check that the proper methods were called with correct args
             mock_gen_l1.assert_called_once_with("healthcare", "en", "doctor")
             
-            # Get expected target path
-            target_dir = os.path.join(self.temp_dir, "healthcare_doctor")
+            # Check that file_manager was called to create logs and target directories
+            self.mock_file_manager.ensure_directory.assert_any_call(os.path.join(self.temp_dir, "logs"))
+            self.mock_file_manager.ensure_directory.assert_any_call(os.path.join(self.temp_dir, "target"))
+            
+            # Verify process_folder_structure was called with correct args
+            target_dir = os.path.join(self.temp_dir, "target")
             mock_process.assert_called_once_with(level1_structure, unittest.mock.ANY, "healthcare", "en", "doctor")
         
     def test_generate_files_only(self):
@@ -220,7 +224,7 @@ class TestFolderGenerator(unittest.TestCase):
             # Verify _regenerate_files was called with correct args
             mock_regen.assert_called_once()
             call_args = mock_regen.call_args[0]
-            self.assertTrue("healthcare_doctor" in str(call_args[0]))
+            self.assertTrue("target" in str(call_args[0]))
             self.assertEqual("healthcare", call_args[1])
             self.assertEqual("en", call_args[2])
             self.assertEqual("doctor", call_args[3])

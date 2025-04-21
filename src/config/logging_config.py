@@ -48,12 +48,11 @@ def setup_logging(log_level: str = "INFO", output_path: str = ".") -> None:
     logger.addHandler(console_handler)
     
     try:
-        # Ensure output directory exists before trying to create logs directory
-        output_dir = Path(output_path)
-        output_dir.mkdir(exist_ok=True, parents=True)
+        # Use the base directory for logs
+        base_dir = Path(output_path)
         
-        # Create logs directory
-        logs_dir = output_dir / "logs"
+        # Create logs directory directly in the base path
+        logs_dir = base_dir / "logs"
         logs_dir.mkdir(exist_ok=True, parents=True)
         
         # File handler for logging to a file

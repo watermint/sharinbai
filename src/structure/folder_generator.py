@@ -60,10 +60,16 @@ class FolderGenerator:
                 language = language_or_role
                 
             base_dir = Path(output_path)
-            # Simplified target dir logic (assuming sharinbai.py handles existence/metadata checks)
-            target_dir = base_dir / self.file_manager.sanitize_path(f"{industry}_{role if role else 'general'}_{language}")
+            
+            # Create logs and target directories
+            logs_dir = base_dir / "logs"
+            target_dir = base_dir / "target"
+            
+            if not self.file_manager.ensure_directory(str(logs_dir)):
+                return False
+                
             if not self.file_manager.ensure_directory(str(target_dir)):
-                 return False
+                return False
             
             level1_structure = self._generate_level1_folders(industry, language, role)
             if not level1_structure or "folders" not in level1_structure:
@@ -96,7 +102,14 @@ class FolderGenerator:
                 language = language_or_role
                 
             base_dir = Path(output_path)
-            target_dir = base_dir / self.file_manager.sanitize_path(f"{industry}_{role if role else 'general'}_{language}")
+            
+            # Create logs and target directories
+            logs_dir = base_dir / "logs"
+            target_dir = base_dir / "target"
+            
+            if not self.file_manager.ensure_directory(str(logs_dir)):
+                return False
+                
             if not self.file_manager.ensure_directory(str(target_dir)):
                 return False
                 
@@ -131,7 +144,8 @@ class FolderGenerator:
                 language = language_or_role
                 
             base_dir = Path(output_path)
-            target_dir = base_dir / self.file_manager.sanitize_path(f"{industry}_{role if role else 'general'}_{language}")
+            target_dir = base_dir / "target"
+            
             if not target_dir.exists():
                  logging.error(f"Target directory {target_dir} does not exist. Run 'all' or 'structure' first.")
                  return False
@@ -147,10 +161,6 @@ class FolderGenerator:
             logging.exception(f"Error during file only generation: {e}")
             return False
 
-    # --- Remove previously added public methods --- 
-    # (generate_structure_and_content, generate_structure_only, regenerate_structure_content)
-    # These are replaced by the generate_all, etc. methods above.
-    
     # --- Internal Processing Methods --- 
     # (These remain, with short mode checks already integrated)
     def _process_structure_only(self, level1_structure: Dict[str, Any], target_dir: Path,

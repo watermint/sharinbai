@@ -170,7 +170,7 @@ def main():
     
     # If working with existing structure, try to retrieve metadata
     if args.command in ['file'] or (args.command in ['all', 'structure'] and Path(settings.output_path).exists()):
-        target_dir = Path(settings.output_path)
+        target_dir = Path(settings.output_path) / "target"
         metadata_path = target_dir / ".metadata.json"
         
         if metadata_path.exists():
