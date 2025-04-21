@@ -1,0 +1,90 @@
+{
+    "json_format_instructions": {
+        "json_format_instruction": "回答を適切な括弧と引用符を持つ有効なJSONオブジェクトとして整形してください。すべてのフォルダ名やキー名は日本語で記述してください。英語の名前は使用しないでください。",
+        "json_array_instruction": "{key}のみをJSON配列として返してください。{key}データのみを返してください。",
+        "json_object_instruction": "{key}のみをJSONオブジェクトとして返してください。{key}データのみを返してください。",
+        "json_structure_hint": "JSONには '{key}' データのみを含め、配列またはオブジェクトとして返してください。すべての名前は日本語で記述してください。英語の名前は使用しないでください。",
+        "json_error_message": "前回の応答の解析中にエラーが発生しました。正しい括弧を含む構文的に有効なJSONオブジェクトを提供してください。すべてのフォルダ名は日本語で作成してください。英語の名前は使用しないでください。",
+        "structure_error_message": "JSONは次のキーを含む必要があります: {keys}。すべてのフォルダ名やキー名は日本語で記述してください。英語の名前は使用しないでください。",
+        "structure_error_format": "重要: JSONには以下のキーを含める必要があります: {keys}。すべての名前は日本語で記述してください。英語の名前は使用しないでください。",
+        "parsing_error_message": "重要: 前回の応答の解析中にエラーが発生しました。正しい括弧を含む有効なJSONオブジェクトを提供してください。すべてのフォルダ名は日本語で作成してください。英語の名前は使用しないでください。",
+        "level1_folders_prompt": "{industry}業界{role_text}のためのレベル1フォルダ構造を作成してください。各フォルダには、その目的とビジネス機能の明確な説明を含めてください。\n\n{date_range}\n\n以下のJSON形式で回答してください：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"フォルダ名1\": {{\n      \"description\": \"フォルダのビジネス目的に関する明確な説明\"\n    }},\n    \"フォルダ名2\": {{\n      \"description\": \"フォルダのビジネス目的に関する明確な説明\"\n    }},\n    ...\n  }}\n}}\n\n{industry}業界に適した具体的で適切なフォルダ名を作成してください。各フォルダにはそのビジネス目的を説明する詳細な説明を付けてください。\n\n重要: すべてのフォルダ名は日本語で作成してください。「Marketing」ではなく「マーケティング」、「HR」ではなく「人事部」、「Finance」ではなく「財務部」のように日本語の名前を使用してください。英語のフォルダ名は使用しないでください。\n\n重要: JSONオブジェクトのみを返してください。JSONの前後に追加のテキスト、説明、コメントを含めないでください。「JSONは以下の通りです」や「これでお役に立てれば幸いです」などのフレーズは含めないでください。JSONをコードブロックで囲まないでください。"
+    },
+    "json_fix_prompts": {
+        "fix_json": "以下のJSON構造は無効であるか、正しく解析できませんでした。\n構造を修正し、有効なJSON形式で返してください。\nすべてのキーと値が適切に引用符で囲まれていること、すべての括弧が均衡していることを確認してください。\n\n問題のあるレスポンス:\n{failed_response}\n\n追加の説明なしで、修正されたJSON構造のみを返してください。\n\n重要: すべてのフォルダ名は日本語で作成してください。英語のフォルダ名に変更しないでください。例えば、「マーケティング」を「Marketing」に変更しないでください。英語の名前は使用せず、必ず日本語の名前を使用してください。"
+    },
+    "date_formats": {
+        "role_prompt": "\nあなたは、この業界で働く{role}向けのフォルダ構造を作成しています。",
+        "date_range_prompt": "\n{start_date}から{end_date}までの期間に関連する日付ベースのフォルダやファイル名を含めてください。",
+        "date_organization_prompt": "\n時間に関連する文書を、異なる年（{start_year}～{end_year}）や、可能であれば各年内の四半期/月ごとのフォルダで整理することを検討してください。",
+        "existing_structure_prompt": "\n以下の既存のフォルダ構造に基づくか、補完するような構造を作成してください。この構造と一緒に意味をなす互換性のある新しいコンテンツを作成してください：\n{structure}",
+        "document_date_prompt": "\n\nこの文書の日付は{date}です。この日付を文書のヘッダー/タイトルに含め、すべての内容がこの日付に適切であることを確認してください。関連する場合は、文書全体でこの日付を参照してください。",
+        "spreadsheet_date_prompt": "\n\nこのスプレッドシートの日付は{date}です。スプレッドシートのヘッダーにこの日付を含め、すべてのデータがこの期間に適切であることを確認してください。これがレポートまたは追跡文書である場合は、{date}以前の日付をスプレッドシート内に含めてください。",
+        "text_date_prompt": "\n\nこのテキストファイルの日付は{date}です。ファイルコンテンツにこの日付を含め、すべての情報がこの日付に適切であることを確認してください。",
+        "example_prompt": "\n\n参考として、同様の{doc_type}の例を以下に示します：\n\n{examples}\n\n同様の{style_type}で、現在のコンテキストに適した異なる{content_type}でコンテンツを作成してください。",
+        "scenario_role_prompt": "あなたは{role}として働いています。",
+        "scenario_date_range_prompt": "期間は{start_date}から{end_date}までです。",
+        "scenario_prompt": "\n以下の業務シナリオに基づいてフォルダ構造を生成してください：\n\n{scenario}",
+        "scenario_context_prompt": "ビジネスシナリオのコンテキスト：\n{scenario}",
+        "date_range_text": "対象期間: {start_date} から {end_date} まで",
+        "append_date_range": "\n\n{date_range_text}\n"
+    },
+    "file_generation_prompts": {
+        "random_files_prompt": "{count}個の「{folder_name}」フォルダに適したファイル名を{industry}業界向けに生成してください。各ファイルには名前、タイプ、説明を付けてください。次のファイルタイプのみを使用してください: docx, xlsx, pdf, txt。以下の形式のJSONオブジェクトで応答してください:{{\"files\": [{{\"name\": \"ファイル名.拡張子\", \"type\": \"ファイル拡張子（docx、xlsx、pdf、またはtxt）\", \"description\": \"ファイルの内容に関する簡単な説明\"}}]}}。レベル{folder_level}フォルダの場合、ファイルは{folder_name}に関連し、{keywords}に関するものにしてください。「テンプレート」、「サンプル」、「例」などのプレースホルダーテキストを含むファイル名は使用しないでください。ファイル名は具体的、実用的、現実的なものにしてください。"
+    },
+    "folder_structure": "以下の業界のためにプロジェクトフォルダ構造をJSON形式で提案してください: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n詳細かつ実用的なフォルダ構造を作成してください。\n\n重要: すべてのフォルダ名とファイル名は日本語で記述してください。英語の名前は使用しないでください。\n\n応答はJSONオブジェクトのみで、追加の説明やテキストは含めないでください。",
+    "folder_structure_prompt": {
+        "system": "あなたは企業向けのフォルダ構造を作成するAIアシスタントです。すべてのフォルダ名とファイル名は日本語で記述してください。応答は有効なJSONデータのみで、追加のテキストや説明は含めないでください。JSONやコードブロックで囲まないでください。",
+        "level1": "{industry}業界のレベル1フォルダ構造を作成してください。各フォルダにはその目的とビジネス機能の明確な説明を含めてください。\n\n{date_range}\n\n以下のJSON形式で回答してください：\n\n{\n  \"industry\": \"{industry}\",\n  \"folders\": {\n    \"フォルダ名1\": {\n      \"description\": \"フォルダのビジネス目的に関する明確な説明\"\n    },\n    ...\n  }\n}\n\n{industry}業界に適した具体的なフォルダ名を作成し、各フォルダには詳細な説明を付けてください。重要: すべて日本語で記述してください。JSONオブジェクトのみを返してください。",
+        "level2": "{industry}業界{role_text}のレベル1フォルダ「{l1_folder_name}」内に適切なレベル2フォルダ構造を作成してください。\n\nレベル1フォルダの説明: {l1_description}\n\n以下のJSON形式で回答してください：\n\n{\n  \"folders\": {\n    \"フォルダ名1\": {\n      \"description\": \"フォルダのビジネス目的に関する明確な説明\"\n    },\n    ...\n  }\n}\n\n親フォルダの目的や{industry}業界の特性に適した具体的なフォルダ名を作成し、詳細な説明を付けてください。重要: すべて日本語で記述してください。JSONオブジェクトのみを返してください。",
+        "level3": "{industry}業界{role_text}のレベル1フォルダ: {l1_folder_name} - {l1_description}\nレベル2フォルダ: {l2_folder_name} - {l2_description}\n\nこのレベル2フォルダ内に論理的に属する具体的なレベル3フォルダを作成し、それぞれの目的を明確に説明してください。\n\n以下のJSON形式で回答してください：\n\n{\n  \"folders\": {\n    \"フォルダ名1\": {\n      \"description\": \"フォルダのビジネス目的に関する明確な説明\"\n    },\n    ...\n  }\n}\n\n親フォルダの目的や{industry}業界の特性に適した具体的なフォルダ名を作成し、詳細な説明を付けてください。重要: すべて日本語で記述してください。JSONオブジェクトのみを返してください。",
+        "level3_folders_prompt": "{industry}業界{role_text}のレベル1フォルダ: {l1_folder_name} - {l1_description}\nレベル2フォルダ: {l2_folder_name} - {l2_description}\n\nこのレベル2フォルダ内に論理的に属する具体的なレベル3フォルダを作成し、それぞれの目的を明確に説明してください。\n\n以下のJSON形式で回答してください：\n\n{\n  \"folders\": {\n    \"フォルダ名1\": {\n      \"description\": \"フォルダのビジネス目的に関する明確な説明\"\n    },\n    ...\n  }\n}\n\n親フォルダの目的や{industry}業界の特性に適した具体的なフォルダ名を作成し、詳細な説明を付けてください。重要: すべて日本語で記述してください。JSONオブジェクトのみを返してください。",
+        "level3_files_prompt": "{industry}業界{role_text}のレベル1フォルダ: {l1_folder_name} - {l1_description}\nレベル2フォルダ: {l2_folder_name} - {l2_description}\n\nこのフォルダには次のサブフォルダが含まれます: {folder_structure}\n\nこのレベル2フォルダに直接属する適切なファイルを作成してください（サブフォルダ内ではなく）。\n\n{industry_info}\n\n以下のJSON形式で回答してください：\n\n{\n  \"files\": [\n    {\n      \"name\": \"ファイル名.拡張子\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"ファイルの目的に関する明確な説明\"\n    },\n    ...\n  ]\n}\n\n親フォルダの目的や{industry}業界の特性に適した具体的なファイル名を作成し、詳細な説明を付けてください。重要: すべて日本語で記述してください。JSONオブジェクトのみを返してください。"
+    },
+    "ui_strings": {
+        "sheet_title": "概要",
+        "industry_label": "業界：",
+        "role_label": "役職：",
+        "filename_label": "ファイル名：",
+        "description_label": "説明：",
+        "footer_text": "このファイルはサンプルとして生成されました。",
+        "doc_sample_text": "この文書はサンプルとして生成されました。",
+        "pdf_sample_text": "この文書はサンプルとして生成されました。",
+        "industry_footer": "業種: {industry}",
+        "role_footer": "、役割: {role_text}",
+        "date_footer": "、日付: {date}",
+        "file_info_header": "ファイル情報",
+        "content_header": "内容",
+        "overview_header": "概要",
+        "context_header": "業務コンテキスト",
+        "period_label": "期間：",
+        "not_specified": "指定なし",
+        "fallback_file_template": "# {file_name}\n\n{description}\n\n業界: {industry}\n役割: {role}\n",
+        "file_list_header": "ファイル:",
+        "error_messages": {
+            "unknown_extension": "ファイル拡張子が不明です: {file_path} - 代替案: {suggestions}",
+            "unsupported_extension": "サポートされていないファイル拡張子: {ext}。代わりに {new_ext} を使用します。",
+            "fallback_file_error": "フォールバックファイルの作成に失敗しました: {error}",
+            "invalid_date_format": "日付形式が無効です: {error}。デフォルト（先月）を使用します。",
+            "language_mapping_not_found": "言語マッピングファイルが見つかりません: {file}",
+            "template_file_not_found": "テンプレートファイル {file} が見つかりません。デフォルトのen-USテンプレートを使用します。",
+            "json_parsing_error": "JSONパースエラー: {error}",
+            "folder_structure_not_found": "言語テンプレートにフォルダ構造テンプレートが見つかりません。基本的なプロンプトを使用します。"
+        },
+        "cli_args": {
+            "description": "業界と役割に基づいてディレクトリ構造を生成します。",
+            "industry": "フォルダ構造を生成する業界",
+            "role": "フォルダ構造の対象となるビジネスロール",
+            "output": "出力ディレクトリ（デフォルト：業界名）",
+            "language": "生成するコンテンツの言語（デフォルト：システム言語）",
+            "date_range": "YYYY-MM-DD:YYYY-MM-DD形式の日付範囲",
+            "scenario": "ビジネスシナリオを生成する",
+            "min_files": "フォルダごとの最小ファイル数（デフォルト：3）",
+            "file": "特定のファイルのみを生成（コンマ区切りのパス）",
+            "force": "既存のフォルダを上書きする",
+            "scan": "生成前に既存の構造をスキャンする",
+            "max_depth": "最大フォルダ階層の深さ（デフォルト：3）",
+            "model": "使用するOllamaモデル（デフォルト：gemma3:4b）"
+        }
+    }
+} 

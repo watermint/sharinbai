@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# IDE
+.idea/
+.vscode/
+
+# Virtual environments
+.venv*/
+venv/
+ENV/
+
+# Output and generated files
+output/
+
+# Logs
+debug.log
+*.log
+
+# MacOS metadata
+.DS_Store

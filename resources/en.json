@@ -1,0 +1,92 @@
+{
+    "folder_structure": "Please propose a project folder structure in JSON format for the following industry: {industry}{role_prompt}\n\nCreate an extensive and detailed folder structure that meets the following criteria:\n\n1. Include at least 15-20 main folders\n2. Each main folder should contain at least 3-5 subfolders\n3. Folder hierarchy should have at least 3-4 levels of depth (e.g., Main Folder/Subfolder/Sub-subfolder)\n4. Each bottom-level folder should contain at least 3-5 files\n5. Reflect specialized folder structures specific to the industry and role\n\nIMPORTANT: All folder and file names should adhere to the following guidelines:\n- Avoid generic and abstract names like \"Folder 1\" or \"Document 2\"\n- Use specific terminology that reflects industry-specific terms and actual business processes\n- Create file names that clearly indicate the purpose and content of the document\n- Include specific names of departments, projects, products, clients, etc. when relevant\n- Clearly indicate document types (proposals, reports, manuals, etc.)\n\nIMPORTANT: For folder descriptions, provide detailed business context explaining:\n- The business purpose and function of each folder\n- How the folder is used in daily business operations and workflows\n- Which departments or roles typically work with these documents\n- What business processes these documents support\n- How the folder content relates to business objectives\n\nFiles should primarily be common business files such as Word documents (.docx), Excel (.xlsx), PDF, text files (.txt), etc.\n\nAll names and descriptions should be in English. Do not use folder names in other languages.{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\nInclude folders related to various areas of business operations, such as project management, document management, data analysis, reports, meeting materials, contractual documents, etc.\n\nFor any reports, meeting minutes, or dated documents, include the date in the filename in YYYY-MM-DD format.\n\nPlease respond in the following format:\n{{\n    \"Folder Name\": {{\n        \"folders\": {{\n            \"Subfolder Name\": {{\n                \"files\": [\n                    {{\"name\": \"filename.extension\", \"type\": \"docx|xlsx|pdf\", \"description\": \"brief description\"}}\n                ],\n                \"folders\": {{...}}\n            }}\n        }},\n        \"files\": [\n            {{\"name\": \"filename.extension\", \"type\": \"docx|xlsx|pdf\", \"description\": \"brief description\"}}\n        ]\n    }}\n}}\n\nReturn only the JSON, no additional explanation is needed.",
+    
+    "folder_structure_prompt": {
+        "system": "You are an AI assistant specialized in creating well-organized folder structures for businesses. All folder names and file names must be in English. You must respond with ONLY valid JSON data without any other text before or after. Do not include any explanations, remarks, or messages surrounding the JSON. Do not wrap the JSON in code blocks or markdown formatting.",
+        "level1": "Create a Level 1 folder structure for {industry} industry. Each folder should have a clear description of its purpose and business function.\n\n{date_range}\n\nPlease respond with a JSON structure in the following format:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    ...\n  }}\n}}\n\nCreate specific and appropriate folder names for the {industry} industry. Each folder should have a detailed description explaining its business purpose.\n\nIMPORTANT: All folder names must be in English. Do not use folder names in other languages.\n\nIMPORTANT: Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
+        "level2": "Create a Level 2 folder structure for the {industry} industry{role_text} within the Level 1 folder named \"{l1_folder_name}\".\n\nLevel 1 folder description: {l1_description}\n\nPlease create specific and appropriate Level 2 folders that would logically belong inside this Level 1 folder. Include a clear description for each folder's purpose.\n\nRespond in the following JSON format:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    ...\n  }}\n}}\n\nCreate specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.\n\nIMPORTANT: All folder names must be in English. Do not use folder names in other languages.\n\nIMPORTANT: Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
+        "level3": "Create a Level 3 folder structure for the {industry} industry{role_text}.\n\nLevel 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}\n\nPlease create specific and appropriate Level 3 folders that would logically belong inside this Level 2 folder. Include a clear description for each folder's purpose.\n\nRespond in the following JSON format:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    ...\n  }}\n}}\n\nCreate specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.\n\nIMPORTANT: All folder names must be in English. Do not use folder names in other languages.\n\nIMPORTANT: Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
+        "level3_folders_prompt": "Create a Level 3 folder structure for the {industry} industry{role_text}.\n\nLevel 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}\n\nPlease create specific and appropriate Level 3 folders that would logically belong inside this Level 2 folder. Include a clear description for each folder's purpose.\n\nIMPORTANT: Return ONLY folders, not files. Files will be generated in a separate step.\n\nRespond in the following JSON format:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    ...\n  }}\n}}\n\nCreate specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.\n\nIMPORTANT: All folder names must be in English. Do not use folder names in other languages.\n\nIMPORTANT: Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
+        "level3_files_prompt": "Create files for a Level 3 folder in the {industry} industry{role_text}.\n\nLevel 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}\n\nThis folder contains the following sub-folders: {folder_structure}\n\nPlease create appropriate files that would logically belong inside this Level 2 folder. These are files directly in the Level 2 folder, not inside its sub-folders.\n\nRespond in the following JSON format:\n\n{{\n  \"files\": [\n    {{\n      \"name\": \"FileName1.extension\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Clear description of the file's purpose\"\n    }},\n    {{\n      \"name\": \"FileName2.extension\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Clear description of the file's purpose\"\n    }},\n    ...\n  ]\n}}\n\nCreate specific file names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each file should have a detailed description explaining its business purpose.\n\nIMPORTANT: All file names must be in English. Do not use file names in other languages.\n\nIMPORTANT: Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+    },
+    
+    "json_fix_prompts": {
+        "fix_json": "The following JSON structure is invalid or could not be correctly parsed.\nPlease fix the structure and return valid JSON format.\nEnsure all keys and values are properly quoted and all brackets are balanced.\n\nProblematic response:\n{failed_response}\n\nPlease return only the corrected JSON structure without additional explanation.\n\nIMPORTANT: All folder names must be in English. Do not translate them to other languages."
+    },
+    
+    "json_format_instructions": {
+        "json_format_instruction": "Please format your response as a valid JSON object with proper braces and quotes. All folder names must be in English.",
+        "json_array_instruction": "Please ONLY return the {key} as a JSON array. Return ONLY the {key} data.",
+        "json_object_instruction": "Please ONLY return the {key} as a JSON object. Return ONLY the {key} data.",
+        "json_structure_hint": "The JSON should contain only the '{key}' data, either as an array or as an object. All folder names must be in English.",
+        "json_error_message": "There was an error parsing your previous response. Please ensure you provide a syntactically valid JSON object with proper braces. All folder names must be in English.",
+        "structure_error_message": "The JSON MUST include these keys: {keys}. All folder names must be in English.",
+        "structure_error_format": "IMPORTANT: JSON must include the following keys: {keys}. All folder names must be in English.",
+        "parsing_error_message": "IMPORTANT: There was an error parsing your previous response. Please provide a valid JSON object with correct braces. All folder names must be in English.",
+        "level1_folders_prompt": "Create a Level 1 folder structure for {industry} industry{role_text}. Each folder should have a clear description of its purpose and business function.\n\n{date_range}\n\nPlease respond with a JSON structure in the following format:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Clear description of the folder's business purpose\"\n    }},\n    ...\n  }}\n}}\n\nCreate specific and appropriate folder names for the {industry} industry. Each folder should have a detailed description explaining its business purpose.\n\nIMPORTANT: All folder names must be in English. Do not use folder names in other languages.\n\nIMPORTANT: Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+    },
+    
+    "ui_strings": {
+        "sheet_title": "Overview",
+        "industry_label": "Industry:",
+        "role_label": "Role:",
+        "filename_label": "File name:",
+        "description_label": "Description:",
+        "footer_text": "This file was generated as a sample.",
+        "doc_sample_text": "This document was generated as a sample.",
+        "pdf_sample_text": "This document was generated as a sample.",
+        "industry_footer": "Industry: {industry}",
+        "role_footer": ", Role: {role_text}",
+        "date_footer": ", Date: {date}",
+        "file_info_header": "File Information",
+        "content_header": "Content",
+        "overview_header": "Overview",
+        "context_header": "Business Context",
+        "period_label": "Period:",
+        "not_specified": "Not specified",
+        "fallback_file_template": "# {file_name}\n\n{description}\n\nIndustry: {industry}\nRole: {role}\n",
+        "file_list_header": "Files:",
+        "error_messages": {
+            "unknown_extension": "Unknown file extension for: {file_path} - Alternative suggestions: {suggestions}",
+            "unsupported_extension": "Unsupported file extension: {ext}. Using {new_ext} instead.",
+            "fallback_file_error": "Failed to create fallback file: {error}",
+            "invalid_date_format": "Invalid date format: {error}. Using default (last month).",
+            "language_mapping_not_found": "Language mapping file not found: {file}",
+            "template_file_not_found": "Template file {file} not found. Using default en-US template.",
+            "json_parsing_error": "JSON parsing error: {error}",
+            "folder_structure_not_found": "Folder structure template not found in language templates. Using basic prompt."
+        },
+        "cli_args": {
+            "description": "Generate a directory structure based on industry and role.",
+            "industry": "Industry for folder structure",
+            "role": "Business role for folder structure",
+            "output": "Output directory (default: industry name)",
+            "language": "Language for generated content (default: system language)",
+            "date_range": "Date range in format YYYY-MM-DD:YYYY-MM-DD",
+            "scenario": "Generate business scenario",
+            "min_files": "Minimum number of files per folder (default: 3)",
+            "file": "Generate only specific file(s), comma separated paths",
+            "force": "Force overwrite existing folder",
+            "scan": "Scan existing structure before generation",
+            "max_depth": "Maximum folder depth (default: 3)",
+            "model": "Ollama model to use (default: gemma3:4b)"
+        }
+    },
+    
+    "date_formats": {
+        "role_prompt": "\nYou are creating a folder structure for a {role} working in this industry.",
+        "date_range_prompt": "\nInclude appropriate date-based folders and filenames that would be relevant for the time period from {start_date} to {end_date}.",
+        "date_organization_prompt": "\nConsider organizing time-sensitive documents in a chronological structure with separate folders for different years ({start_year}-{end_year}) and potentially quarters/months within those years where appropriate.",
+        "existing_structure_prompt": "\nPlease build upon or complement the following existing folder structure. Create compatible new content that would make sense alongside this structure:\n{structure}",
+        "document_date_prompt": "\n\nThis document is dated {date}. Include this date in the document header/title and ensure all content is appropriate for this date. Reference this date throughout the document where relevant.",
+        "spreadsheet_date_prompt": "\n\nThis spreadsheet is dated {date}. Include this date in the spreadsheet header and ensure all data is appropriate for this time period. If this is a report or tracking document, include dates within the spreadsheet that are on or before {date}.",
+        "text_date_prompt": "\n\nThis text file is dated {date}. Include this date in the file content and ensure all information is appropriate for this date.",
+        "example_prompt": "\n\nHere are examples of similar {doc_type} for reference:\n\n{examples}\n\nCreate content in a similar {style_type} but with different {content_type} appropriate for the current context.",
+        "scenario_role_prompt": "You are working as a {role}.",
+        "scenario_date_range_prompt": "The time period is from {start_date} to {end_date}.",
+        "scenario_prompt": "\nPlease generate the folder structure based on the following business scenario:\n\n{scenario}",
+        "scenario_context_prompt": "Business Scenario Context:\n{scenario}",
+        "date_range_text": "Date Range: {start_date} - {end_date}",
+        "append_date_range": "\n\n{date_range_text}\n"
+    }
+} 

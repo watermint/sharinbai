@@ -1,0 +1,115 @@
+{
+    "language_templates": {
+        "ja": ["japanese", "日本語", "japan", "ja", "jp", "ja-JP"],
+        "en": ["english", "英語", "en", "us", "usa", "america", "en-US"],
+        "en-GB": ["uk", "british", "england", "great britain", "en-GB"],
+        "default": "en"
+    },
+    
+    "doc_type_mapping": {
+        "docx": {
+            "ja": "文書",
+            "en": "documents",
+            "en-GB": "documents"
+        },
+        "xlsx": {
+            "ja": "Excelシート",
+            "en": "Excel sheets",
+            "en-GB": "Excel sheets"
+        },
+        "pdf": {
+            "ja": "PDFドキュメント",
+            "en": "PDF documents",
+            "en-GB": "PDF documents"
+        }
+    },
+    
+    "style_type_mapping": {
+        "docx": {
+            "ja": "スタイルとフォーマット",
+            "en": "style and format",
+            "en-GB": "style and format"
+        },
+        "xlsx": {
+            "ja": "構造",
+            "en": "structure",
+            "en-GB": "structure"
+        },
+        "pdf": {
+            "ja": "スタイルとフォーマット",
+            "en": "style and format",
+            "en-GB": "style and format"
+        }
+    },
+    
+    "content_type_mapping": {
+        "docx": {
+            "ja": "情報",
+            "en": "information",
+            "en-GB": "information"
+        },
+        "xlsx": {
+            "ja": "データ",
+            "en": "data",
+            "en-GB": "data"
+        },
+        "pdf": {
+            "ja": "情報",
+            "en": "information",
+            "en-GB": "information"
+        }
+    },
+    
+    "date_formats": {
+        "prompt": {
+            "ja": "{year}年{month}月{day}日",
+            "en": "{month_name} {day}, {year}",
+            "en-GB": "{day} {month_name} {year}"
+        },
+        "filename": {
+            "ja": "%Y-%m-%d",
+            "en": "%Y-%m-%d",
+            "en-GB": "%d-%m-%Y"
+        },
+        "short": {
+            "ja": "%Y/%m/%d",
+            "en": "%m/%d/%Y",
+            "en-GB": "%d/%m/%Y"
+        },
+        "long": {
+            "ja": "{year}年{month}月{day}日",
+            "en": "{month_name} {day}, {year}",
+            "en-GB": "{day} {month_name} {year}"
+        },
+        "default": {
+            "ja": "{year}年{month}月{day}日",
+            "en": "{month_name} {day}, {year}",
+            "en-GB": "{day} {month_name} {year}"
+        }
+    },
+    
+    "ui_strings": {
+        "example_prefix": {
+            "ja": "例 {index}：",
+            "en": "EXAMPLE {index}:",
+            "en-GB": "EXAMPLE {index}:"
+        },
+        "role_prefix": {
+            "ja": "\nビジネスロール：",
+            "en": "\nBusiness Role: ",
+            "en-GB": "\nBusiness Role: "
+        }
+    },
+    
+    "role_templates": {
+        "ja": {
+            "role_format": "（{role}として）"
+        },
+        "en": {
+            "role_format": " as a {role}"
+        },
+        "en-GB": {
+            "role_format": " as a {role}"
+        }
+    }
+} 
