@@ -1,103 +1,96 @@
 {
-    "folder_structure": "Vui lòng đề xuất cấu trúc thư mục dự án ở định dạng JSON cho ngành sau: {industry}{role_prompt}\n\nTạo cấu trúc thư mục chi tiết và bao quát đáp ứng các tiêu chí sau:\n\n1. Bao gồm ít nhất 15-20 thư mục chính\n2. Mỗi thư mục chính nên chứa ít nhất 3-5 thư mục con\n3. Hệ thống phân cấp thư mục nên có ít nhất 3-4 cấp độ sâu (ví dụ: Thư mục chính/Thư mục con/Thư mục con cấp 2)\n4. Mỗi thư mục cấp thấp nhất nên chứa ít nhất 3-5 tệp\n5. Phản ánh cấu trúc thư mục chuyên biệt đặc thù cho ngành và vai trò\n\nQUAN TRỌNG: Tất cả tên thư mục và tệp phải tuân theo các nguyên tắc sau:\n- Tránh các tên chung chung và trừu tượng như \"Thư mục 1\" hoặc \"Tài liệu 2\"\n- Sử dụng thuật ngữ cụ thể phản ánh các thuật ngữ chuyên ngành và quy trình kinh doanh thực tế\n- Tạo tên tệp chỉ rõ mục đích và nội dung của tài liệu\n- Bao gồm tên cụ thể của các phòng ban, dự án, sản phẩm, khách hàng, v.v. khi có liên quan\n- Chỉ rõ các loại tài liệu (đề xuất, báo cáo, hướng dẫn, v.v.)\n\nQUAN TRỌNG: Đối với mô tả thư mục, hãy cung cấp bối cảnh kinh doanh chi tiết giải thích:\n- Mục đích kinh doanh và chức năng của từng thư mục\n- Cách thư mục được sử dụng trong hoạt động kinh doanh và quy trình làm việc hàng ngày\n- Phòng ban hoặc vai trò nào thường làm việc với các tài liệu này\n- Những quy trình kinh doanh nào được các tài liệu này hỗ trợ\n- Nội dung thư mục liên quan đến mục tiêu kinh doanh như thế nào\n\nTệp chủ yếu nên là các tệp kinh doanh phổ biến như tài liệu Word (.docx), Excel (.xlsx), PDF, tệp văn bản (.txt), v.v.\n\nTất cả tên và mô tả phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\nBao gồm các thư mục liên quan đến nhiều lĩnh vực hoạt động kinh doanh, chẳng hạn như quản lý dự án, quản lý tài liệu, phân tích dữ liệu, báo cáo, tài liệu họp, tài liệu hợp đồng, v.v.\n\nĐối với bất kỳ báo cáo, biên bản họp hoặc tài liệu ghi ngày tháng nào, hãy bao gồm ngày tháng trong tên tệp theo định dạng YYYY-MM-DD.\n\nVui lòng phản hồi theo định dạng sau:\n{{\n    \"Tên Thư mục\": {{\n        \"folders\": {{\n            \"Tên Thư mục con\": {{\n                \"files\": [\n                    {{\"name\": \"têệp.phần_mở_rộng\", \"type\": \"docx|xlsx|pdf\", \"description\": \"mô tả ngắn gọn\"}}\n                ],\n                \"folders\": {{...}}\n            }}\n        }},\n        \"files\": [\n            {{\"name\": \"têệp.phần_mở_rộng\", \"type\": \"docx|xlsx|pdf\", \"description\": \"mô tả ngắn gọn\"}}\n        ]\n    }}\n}}\n\nChỉ trả về JSON, không cần giải thích thêm.",
-    
-    "folder_structure_prompt": {
-        "system": "Bạn là một trợ lý AI chuyên tạo cấu trúc thư mục được tổ chức tốt cho các doanh nghiệp. Tất cả tên thư mục và tên tệp phải bằng tiếng Anh. Bạn phải phản hồi CHỈ bằng dữ liệu JSON hợp lệ mà không có bất kỳ văn bản nào khác trước hoặc sau đó. Không bao gồm bất kỳ giải thích, nhận xét hoặc tin nhắn nào xung quanh JSON. Không gói JSON trong các khối mã hoặc định dạng markdown.",
-        "level1": "Tạo cấu trúc thư mục Cấp 1 cho ngành {industry}. Mỗi thư mục nên có mô tả rõ ràng về mục đích và chức năng kinh doanh của nó.\n\n{date_range}\n\nVui lòng phản hồi bằng cấu trúc JSON theo định dạng sau:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
-        "level2": "Tạo cấu trúc thư mục Cấp 2 cho ngành {industry}{role_text} trong thư mục Cấp 1 có tên \"{l1_folder_name}\".\n\nMô tả thư mục Cấp 1: {l1_description}\n\nVui lòng tạo các thư mục Cấp 2 cụ thể và phù hợp thuộc về logic bên trong thư mục Cấp 1 này. Bao gồm mô tả rõ ràng về mục đích của từng thư mục.\n\nPhản hồi ở định dạng JSON sau:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể phù hợp với mục đích của thư mục mẹ và đặc điểm của ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
-        "level3": "Tạo cấu trúc thư mục Cấp 3 cho ngành {industry}{role_text}.\n\nThư mục Cấp 1: {l1_folder_name} - {l1_description}\nThư mục Cấp 2: {l2_folder_name} - {l2_description}\n\nVui lòng tạo các thư mục Cấp 3 cụ thể và phù hợp thuộc về logic bên trong thư mục Cấp 2 này. Bao gồm mô tả rõ ràng về mục đích của từng thư mục.\n\nPhản hồi ở định dạng JSON sau:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể phù hợp với mục đích của thư mục mẹ và đặc điểm của ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
-        "level3_folders_prompt": "Tạo cấu trúc thư mục Cấp 3 cho ngành {industry}{role_text}.\n\nThư mục Cấp 1: {l1_folder_name} - {l1_description}\nThư mục Cấp 2: {l2_folder_name} - {l2_description}\n\nVui lòng tạo các thư mục Cấp 3 cụ thể và phù hợp thuộc về logic bên trong thư mục Cấp 2 này. Bao gồm mô tả rõ ràng về mục đích của từng thư mục.\n\nQUAN TRỌNG: Chỉ trả về thư mục, không phải tệp. Tệp sẽ được tạo trong một bước riêng biệt.\n\nPhản hồi ở định dạng JSON sau:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể phù hợp với mục đích của thư mục mẹ và đặc điểm của ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
-        "level3_files_prompt": "Tạo tệp cho thư mục Cấp 3 trong ngành {industry}{role_text}.\n\nThư mục Cấp 1: {l1_folder_name} - {l1_description}\nThư mục Cấp 2: {l2_folder_name} - {l2_description}\n\nThư mục này chứa các thư mục con sau: {folder_structure}\n\nVui lòng tạo các tệp phù hợp thuộc về logic bên trong thư mục Cấp 2 này. Đây là các tệp trực tiếp trong thư mục Cấp 2, không phải bên trong các thư mục con của nó.\n\nPhản hồi ở định dạng JSON sau:\n\n{{\n  \"files\": [\n    {{\n      \"name\": \"FileName1.extension\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Mô tả rõ ràng về mục đích của tệp\"\n    }},\n    {{\n      \"name\": \"FileName2.extension\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Mô tả rõ ràng về mục đích của tệp\"\n    }},\n    ...\n  ]\n}}\n\nTạo tên tệp cụ thể phù hợp với mục đích của thư mục mẹ và đặc điểm của ngành {industry}. Mỗi tệp nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên tệp phải bằng tiếng Anh. Không sử dụng tên tệp bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'."
-    },
-    
-    "json_fix_prompts": {
-        "fix_json": "Cấu trúc JSON sau không hợp lệ hoặc không thể phân tích cú pháp chính xác.\nVui lòng sửa cấu trúc và trả về định dạng JSON hợp lệ.\nĐảm bảo tất cả các khóa và giá trị được trích dẫn đúng cách và tất cả các dấu ngoặc được cân bằng.\n\nPhản hồi có vấn đề:\n{failed_response}\n\nVui lòng chỉ trả về cấu trúc JSON đã sửa mà không cần giải thích thêm.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không dịch chúng sang các ngôn ngữ khác."
-    },
-    
-    "json_format_instructions": {
-        "json_format_instruction": "Vui lòng định dạng phản hồi của bạn dưới dạng đối tượng JSON hợp lệ với dấu ngoặc nhọn và dấu ngoặc kép phù hợp. Tất cả tên thư mục phải bằng tiếng Anh.",
-        "json_array_instruction": "Vui lòng CHỈ trả về {key} dưới dạng mảng JSON. Chỉ trả về dữ liệu {key}.",
-        "json_object_instruction": "Vui lòng CHỈ trả về {key} dưới dạng đối tượng JSON. Chỉ trả về dữ liệu {key}.",
-        "json_structure_hint": "JSON chỉ nên chứa dữ liệu '{key}', dưới dạng mảng hoặc đối tượng. Tất cả tên thư mục phải bằng tiếng Anh.",
-        "json_error_message": "Đã xảy ra lỗi khi phân tích cú pháp phản hồi trước đó của bạn. Vui lòng đảm bảo bạn cung cấp một đối tượng JSON hợp lệ về mặt cú pháp với dấu ngoặc nhọn phù hợp. Tất cả tên thư mục phải bằng tiếng Anh.",
-        "structure_error_message": "JSON PHẢI bao gồm các khóa sau: {keys}. Tất cả tên thư mục phải bằng tiếng Anh.",
-        "structure_error_format": "QUAN TRỌNG: JSON phải bao gồm các khóa sau: {keys}. Tất cả tên thư mục phải bằng tiếng Anh.",
-        "parsing_error_message": "QUAN TRỌNG: Đã xảy ra lỗi khi phân tích cú pháp phản hồi trước đó của bạn. Vui lòng cung cấp một đối tượng JSON hợp lệ với dấu ngoặc nhọn chính xác. Tất cả tên thư mục phải bằng tiếng Anh.",
-        "level1_folders_prompt": "Tạo cấu trúc thư mục Cấp 1 cho ngành {industry}{role_text}. Mỗi thư mục nên có mô tả rõ ràng về mục đích và chức năng kinh doanh của nó.\n\n{date_range}\n\nVui lòng phản hồi bằng cấu trúc JSON theo định dạng sau:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'."
-    },
-    
-    "prompts": {
-        "content_generation": "Vui lòng tạo nội dung cho {description} trong ngành {industry}{role_context}. Nội dung nên được viết bằng {language}{file_type_context}. Giữ nội dung ngắn gọn và chuyên nghiệp.",
-        "role_context": " (dành cho {role})",
-        "file_type_context": ". Đầu ra nên ở định dạng {file_type}"
-    },
-    
     "content_generation": {
         "xlsx_generation": "Tạo nội dung cho một bảng tính Excel. Trả về một đối tượng JSON với cấu trúc sau:\n{\n  \"sheets\": [\n    {\n      \"name\": \"TênBảng\",\n      \"headers\": [\"TiêuĐề1\", \"TiêuĐề2\", ...],\n      \"data\": [\n        [\"DòngHàng1Ô1\", \"DòngHàng1Ô2\", ...],\n        [\"DòngHàng2Ô1\", \"DòngHàng2Ô2\", ...]\n      ]\n    }\n  ]\n}"
     },
-    
-    "ui_strings": {
-        "sheet_title": "Tổng quan",
-        "industry_label": "Ngành:",
-        "role_label": "Vai trò:",
-        "filename_label": "Tên tệp:",
-        "description_label": "Mô tả:",
-        "footer_text": "Tệp này được tạo dưới dạng mẫu.",
-        "doc_sample_text": "Tài liệu này được tạo dưới dạng mẫu.",
-        "pdf_sample_text": "Tài liệu này được tạo dưới dạng mẫu.",
-        "industry_footer": "Ngành: {industry}",
-        "role_footer": ", Vai trò: {role_text}",
-        "date_footer": ", Ngày: {date}",
-        "file_info_header": "Thông tin tệp",
-        "content_header": "Nội dung",
-        "overview_header": "Tổng quan",
-        "context_header": "Bối cảnh kinh doanh",
-        "period_label": "Giai đoạn:",
-        "not_specified": "Không xác định",
-        "fallback_file_template": "# {file_name}\n\n{description}\n\nNgành: {industry}\nVai trò: {role}\n",
-        "file_list_header": "Các tệp:",
-        "error_messages": {
-            "unknown_extension": "Phần mở rộng tệp không xác định cho: {file_path} - Đề xuất thay thế: {suggestions}",
-            "unsupported_extension": "Phần mở rộng tệp không được hỗ trợ: {ext}. Sử dụng {new_ext} thay thế.",
-            "fallback_file_error": "Không thể tạo tệp dự phòng: {error}",
-            "invalid_date_format": "Định dạng ngày không hợp lệ: {error}. Sử dụng mặc định (tháng trước).",
-            "language_mapping_not_found": "Không tìm thấy tệp ánh xạ ngôn ngữ: {file}",
-            "template_file_not_found": "Không tìm thấy tệp mẫu {file}. Sử dụng mẫu en-US mặc định.",
-            "json_parsing_error": "Lỗi phân tích cú pháp JSON: {error}",
-            "folder_structure_not_found": "Không tìm thấy mẫu cấu trúc thư mục trong các mẫu ngôn ngữ. Sử dụng lời nhắc cơ bản."
-        },
-        "cli_args": {
-            "description": "Tạo cấu trúc thư mục dựa trên ngành và vai trò.",
-            "industry": "Ngành cho cấu trúc thư mục",
-            "role": "Vai trò kinh doanh cho cấu trúc thư mục",
-            "output": "Thư mục đầu ra (mặc định: tên ngành)",
-            "language": "Ngôn ngữ cho nội dung được tạo (mặc định: ngôn ngữ hệ thống)",
-            "date_range": "Phạm vi ngày theo định dạng YYYY-MM-DD:YYYY-MM-DD",
-            "scenario": "Tạo kịch bản kinh doanh",
-            "min_files": "Số lượng tệp tối thiểu cho mỗi thư mục (mặc định: 3)",
-            "file": "Chỉ tạo (các) tệp cụ thể, đường dẫn được phân tách bằng dấu phẩy",
-            "force": "Buộc ghi đè thư mục hiện có",
-            "scan": "Quét cấu trúc hiện có trước khi tạo",
-            "max_depth": "Độ sâu thư mục tối đa (mặc định: 3)",
-            "model": "Mô hình Ollama để sử dụng (mặc định: gemma3:4b)",
-            "structure": "Chỉ tạo cấu trúc thư mục mà không tạo bất kỳ tệp nào"
-        }
-    },
-    
     "date_formats": {
-        "role_prompt": "\nBạn đang tạo cấu trúc thư mục cho một {role} làm việc trong ngành này.",
-        "date_range_prompt": "\nBao gồm các thư mục và tên tệp dựa trên ngày tháng phù hợp sẽ liên quan đến khoảng thời gian từ {start_date} đến {end_date}.",
+        "append_date_range": "\n\n{date_range_text}\n",
         "date_organization_prompt": "\nXem xét việc sắp xếp các tài liệu nhạy cảm về thời gian theo cấu trúc thời gian với các thư mục riêng cho các năm khác nhau ({start_year}-{end_year}) và có thể cả quý/tháng trong những năm đó nếu thích hợp.",
-        "existing_structure_prompt": "\nVui lòng xây dựng hoặc bổ sung cấu trúc thư mục hiện có sau đây. Tạo nội dung mới tương thích có ý nghĩa cùng với cấu trúc này:\n{structure}",
+        "date_range_prompt": "\nBao gồm các thư mục và tên tệp dựa trên ngày tháng phù hợp sẽ liên quan đến khoảng thời gian từ {start_date} đến {end_date}.",
+        "date_range_text": "Phạm vi ngày: {start_date} - {end_date}",
         "document_date_prompt": "\n\nTài liệu này ghi ngày {date}. Bao gồm ngày này trong tiêu đề/tiêu đề tài liệu và đảm bảo tất cả nội dung phù hợp với ngày này. Tham chiếu ngày này trong suốt tài liệu nếu có liên quan.",
-        "spreadsheet_date_prompt": "\n\nBảng tính này ghi ngày {date}. Bao gồm ngày này trong tiêu đề bảng tính và đảm bảo tất cả dữ liệu phù hợp với khoảng thời gian này. Nếu đây là tài liệu báo cáo hoặc theo dõi, hãy bao gồm các ngày trong bảng tính vào hoặc trước {date}.",
-        "text_date_prompt": "\n\nTệp văn bản này ghi ngày {date}. Bao gồm ngày này trong nội dung tệp và đảm bảo tất cả thông tin phù hợp với ngày này.",
         "example_prompt": "\n\nDưới đây là các ví dụ về {doc_type} tương tự để tham khảo:\n\n{examples}\n\nTạo nội dung theo {style_type} tương tự nhưng với {content_type} khác phù hợp với ngữ cảnh hiện tại.",
-        "scenario_role_prompt": "Bạn đang làm việc với vai trò là {role}.",
+        "existing_structure_prompt": "\nVui lòng xây dựng hoặc bổ sung cấu trúc thư mục hiện có sau đây. Tạo nội dung mới tương thích có ý nghĩa cùng với cấu trúc này:\n{structure}",
+        "role_prompt": "\nBạn đang tạo cấu trúc thư mục cho một {role} làm việc trong ngành này.",
+        "scenario_context_prompt": "Bối cảnh kịch bản kinh doanh:\n{scenario}",
         "scenario_date_range_prompt": "Khoảng thời gian là từ {start_date} đến {end_date}.",
         "scenario_prompt": "\nVui lòng tạo cấu trúc thư mục dựa trên kịch bản kinh doanh sau:\n\n{scenario}",
-        "scenario_context_prompt": "Bối cảnh kịch bản kinh doanh:\n{scenario}",
-        "date_range_text": "Phạm vi ngày: {start_date} - {end_date}",
-        "append_date_range": "\n\n{date_range_text}\n"
+        "scenario_role_prompt": "Bạn đang làm việc với vai trò là {role}.",
+        "spreadsheet_date_prompt": "\n\nBảng tính này ghi ngày {date}. Bao gồm ngày này trong tiêu đề bảng tính và đảm bảo tất cả dữ liệu phù hợp với khoảng thời gian này. Nếu đây là tài liệu báo cáo hoặc theo dõi, hãy bao gồm các ngày trong bảng tính vào hoặc trước {date}.",
+        "text_date_prompt": "\n\nTệp văn bản này ghi ngày {date}. Bao gồm ngày này trong nội dung tệp và đảm bảo tất cả thông tin phù hợp với ngày này."
+    },
+    "folder_structure": "Vui lòng đề xuất cấu trúc thư mục dự án ở định dạng JSON cho ngành sau: {industry}{role_prompt}\n\nTạo cấu trúc thư mục chi tiết và bao quát đáp ứng các tiêu chí sau:\n\n1. Bao gồm ít nhất 15-20 thư mục chính\n2. Mỗi thư mục chính nên chứa ít nhất 3-5 thư mục con\n3. Hệ thống phân cấp thư mục nên có ít nhất 3-4 cấp độ sâu (ví dụ: Thư mục chính/Thư mục con/Thư mục con cấp 2)\n4. Mỗi thư mục cấp thấp nhất nên chứa ít nhất 3-5 tệp\n5. Phản ánh cấu trúc thư mục chuyên biệt đặc thù cho ngành và vai trò\n\nQUAN TRỌNG: Tất cả tên thư mục và tệp phải tuân theo các nguyên tắc sau:\n- Tránh các tên chung chung và trừu tượng như \"Thư mục 1\" hoặc \"Tài liệu 2\"\n- Sử dụng thuật ngữ cụ thể phản ánh các thuật ngữ chuyên ngành và quy trình kinh doanh thực tế\n- Tạo tên tệp chỉ rõ mục đích và nội dung của tài liệu\n- Bao gồm tên cụ thể của các phòng ban, dự án, sản phẩm, khách hàng, v.v. khi có liên quan\n- Chỉ rõ các loại tài liệu (đề xuất, báo cáo, hướng dẫn, v.v.)\n\nQUAN TRỌNG: Đối với mô tả thư mục, hãy cung cấp bối cảnh kinh doanh chi tiết giải thích:\n- Mục đích kinh doanh và chức năng của từng thư mục\n- Cách thư mục được sử dụng trong hoạt động kinh doanh và quy trình làm việc hàng ngày\n- Phòng ban hoặc vai trò nào thường làm việc với các tài liệu này\n- Những quy trình kinh doanh nào được các tài liệu này hỗ trợ\n- Nội dung thư mục liên quan đến mục tiêu kinh doanh như thế nào\n\nTệp chủ yếu nên là các tệp kinh doanh phổ biến như tài liệu Word (.docx), Excel (.xlsx), PDF, tệp văn bản (.txt), v.v.\n\nTất cả tên và mô tả phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\nBao gồm các thư mục liên quan đến nhiều lĩnh vực hoạt động kinh doanh, chẳng hạn như quản lý dự án, quản lý tài liệu, phân tích dữ liệu, báo cáo, tài liệu họp, tài liệu hợp đồng, v.v.\n\nĐối với bất kỳ báo cáo, biên bản họp hoặc tài liệu ghi ngày tháng nào, hãy bao gồm ngày tháng trong tên tệp theo định dạng YYYY-MM-DD.\n\nVui lòng phản hồi theo định dạng sau:\n{{\n    \"Tên Thư mục\": {{\n        \"folders\": {{\n            \"Tên Thư mục con\": {{\n                \"files\": [\n                    {{\"name\": \"têệp.phần_mở_rộng\", \"type\": \"docx|xlsx|pdf\", \"description\": \"mô tả ngắn gọn\"}}\n                ],\n                \"folders\": {{...}}\n            }}\n        }},\n        \"files\": [\n            {{\"name\": \"têệp.phần_mở_rộng\", \"type\": \"docx|xlsx|pdf\", \"description\": \"mô tả ngắn gọn\"}}\n        ]\n    }}\n}}\n\nChỉ trả về JSON, không cần giải thích thêm.",
+    "folder_structure_prompt": {
+        "level1": "Tạo cấu trúc thư mục Cấp 1 cho ngành {industry}. Mỗi thư mục nên có mô tả rõ ràng về mục đích và chức năng kinh doanh của nó.\n\n{date_range}\n\nVui lòng phản hồi bằng cấu trúc JSON theo định dạng sau:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
+        "level2": "Tạo cấu trúc thư mục Cấp 2 cho ngành {industry}{role_text} trong thư mục Cấp 1 có tên \"{l1_folder_name}\".\n\nMô tả thư mục Cấp 1: {l1_description}\n\nVui lòng tạo các thư mục Cấp 2 cụ thể và phù hợp thuộc về logic bên trong thư mục Cấp 1 này. Bao gồm mô tả rõ ràng về mục đích của từng thư mục.\n\nPhản hồi ở định dạng JSON sau:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể phù hợp với mục đích của thư mục mẹ và đặc điểm của ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
+        "level3": "Tạo cấu trúc thư mục Cấp 3 cho ngành {industry}{role_text}.\n\nThư mục Cấp 1: {l1_folder_name} - {l1_description}\nThư mục Cấp 2: {l2_folder_name} - {l2_description}\n\nVui lòng tạo các thư mục Cấp 3 cụ thể và phù hợp thuộc về logic bên trong thư mục Cấp 2 này. Bao gồm mô tả rõ ràng về mục đích của từng thư mục.\n\nPhản hồi ở định dạng JSON sau:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể phù hợp với mục đích của thư mục mẹ và đặc điểm của ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
+        "level3_files_prompt": "Tạo tệp cho thư mục Cấp 3 trong ngành {industry}{role_text}.\n\nThư mục Cấp 1: {l1_folder_name} - {l1_description}\nThư mục Cấp 2: {l2_folder_name} - {l2_description}\n\nThư mục này chứa các thư mục con sau: {folder_structure}\n\nVui lòng tạo các tệp phù hợp thuộc về logic bên trong thư mục Cấp 2 này. Đây là các tệp trực tiếp trong thư mục Cấp 2, không phải bên trong các thư mục con của nó.\n\nPhản hồi ở định dạng JSON sau:\n\n{{\n  \"files\": [\n    {{\n      \"name\": \"FileName1.extension\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Mô tả rõ ràng về mục đích của tệp\"\n    }},\n    {{\n      \"name\": \"FileName2.extension\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Mô tả rõ ràng về mục đích của tệp\"\n    }},\n    ...\n  ]\n}}\n\nTạo tên tệp cụ thể phù hợp với mục đích của thư mục mẹ và đặc điểm của ngành {industry}. Mỗi tệp nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên tệp phải bằng tiếng Anh. Không sử dụng tên tệp bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
+        "level3_folders_prompt": "Tạo cấu trúc thư mục Cấp 3 cho ngành {industry}{role_text}.\n\nThư mục Cấp 1: {l1_folder_name} - {l1_description}\nThư mục Cấp 2: {l2_folder_name} - {l2_description}\n\nVui lòng tạo các thư mục Cấp 3 cụ thể và phù hợp thuộc về logic bên trong thư mục Cấp 2 này. Bao gồm mô tả rõ ràng về mục đích của từng thư mục.\n\nQUAN TRỌNG: Chỉ trả về thư mục, không phải tệp. Tệp sẽ được tạo trong một bước riêng biệt.\n\nPhản hồi ở định dạng JSON sau:\n\n{{\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể phù hợp với mục đích của thư mục mẹ và đặc điểm của ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
+        "system": "Bạn là một trợ lý AI chuyên tạo cấu trúc thư mục được tổ chức tốt cho các doanh nghiệp. Tất cả tên thư mục và tên tệp phải bằng tiếng Anh. Bạn phải phản hồi CHỈ bằng dữ liệu JSON hợp lệ mà không có bất kỳ văn bản nào khác trước hoặc sau đó. Không bao gồm bất kỳ giải thích, nhận xét hoặc tin nhắn nào xung quanh JSON. Không gói JSON trong các khối mã hoặc định dạng markdown."
+    },
+    "json_fix_prompts": {
+        "fix_json": "Cấu trúc JSON sau không hợp lệ hoặc không thể phân tích cú pháp chính xác.\nVui lòng sửa cấu trúc và trả về định dạng JSON hợp lệ.\nĐảm bảo tất cả các khóa và giá trị được trích dẫn đúng cách và tất cả các dấu ngoặc được cân bằng.\n\nPhản hồi có vấn đề:\n{failed_response}\n\nVui lòng chỉ trả về cấu trúc JSON đã sửa mà không cần giải thích thêm.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không dịch chúng sang các ngôn ngữ khác."
+    },
+    "json_format_instructions": {
+        "json_array_instruction": "Vui lòng CHỈ trả về {key} dưới dạng mảng JSON. Chỉ trả về dữ liệu {key}.",
+        "json_error_message": "Đã xảy ra lỗi khi phân tích cú pháp phản hồi trước đó của bạn. Vui lòng đảm bảo bạn cung cấp một đối tượng JSON hợp lệ về mặt cú pháp với dấu ngoặc nhọn phù hợp. Tất cả tên thư mục phải bằng tiếng Anh.",
+        "json_format_instruction": "Vui lòng định dạng phản hồi của bạn dưới dạng đối tượng JSON hợp lệ với dấu ngoặc nhọn và dấu ngoặc kép phù hợp. Tất cả tên thư mục phải bằng tiếng Anh.",
+        "json_object_instruction": "Vui lòng CHỈ trả về {key} dưới dạng đối tượng JSON. Chỉ trả về dữ liệu {key}.",
+        "json_structure_hint": "JSON chỉ nên chứa dữ liệu '{key}', dưới dạng mảng hoặc đối tượng. Tất cả tên thư mục phải bằng tiếng Anh.",
+        "level1_folders_prompt": "Tạo cấu trúc thư mục Cấp 1 cho ngành {industry}{role_text}. Mỗi thư mục nên có mô tả rõ ràng về mục đích và chức năng kinh doanh của nó.\n\n{date_range}\n\nVui lòng phản hồi bằng cấu trúc JSON theo định dạng sau:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
+        "parsing_error_message": "QUAN TRỌNG: Đã xảy ra lỗi khi phân tích cú pháp phản hồi trước đó của bạn. Vui lòng cung cấp một đối tượng JSON hợp lệ với dấu ngoặc nhọn chính xác. Tất cả tên thư mục phải bằng tiếng Anh.",
+        "structure_error_format": "QUAN TRỌNG: JSON phải bao gồm các khóa sau: {keys}. Tất cả tên thư mục phải bằng tiếng Anh.",
+        "structure_error_message": "JSON PHẢI bao gồm các khóa sau: {keys}. Tất cả tên thư mục phải bằng tiếng Anh."
+    },
+    "prompts": {
+        "content_generation": "Vui lòng tạo nội dung cho {description} trong ngành {industry}{role_context}. Nội dung nên được viết bằng {language}{file_type_context}. Giữ nội dung ngắn gọn và chuyên nghiệp.",
+        "file_type_context": ". Đầu ra nên ở định dạng {file_type}",
+        "role_context": " (dành cho {role})"
+    },
+    "ui_strings": {
+        "cli_args": {
+            "date_range": "Phạm vi ngày theo định dạng YYYY-MM-DD:YYYY-MM-DD",
+            "description": "Tạo cấu trúc thư mục dựa trên ngành và vai trò.",
+            "file": "Chỉ tạo (các) tệp cụ thể, đường dẫn được phân tách bằng dấu phẩy",
+            "force": "Buộc ghi đè thư mục hiện có",
+            "industry": "Ngành cho cấu trúc thư mục",
+            "language": "Ngôn ngữ cho nội dung được tạo (mặc định: ngôn ngữ hệ thống)",
+            "max_depth": "Độ sâu thư mục tối đa (mặc định: 3)",
+            "min_files": "Số lượng tệp tối thiểu cho mỗi thư mục (mặc định: 3)",
+            "model": "Mô hình Ollama để sử dụng (mặc định: gemma3:4b)",
+            "output": "Thư mục đầu ra (mặc định: tên ngành)",
+            "role": "Vai trò kinh doanh cho cấu trúc thư mục",
+            "scan": "Quét cấu trúc hiện có trước khi tạo",
+            "scenario": "Tạo kịch bản kinh doanh",
+            "structure": "Chỉ tạo cấu trúc thư mục mà không tạo bất kỳ tệp nào"
+        },
+        "content_header": "Nội dung",
+        "context_header": "Bối cảnh kinh doanh",
+        "date_footer": ", Ngày: {date}",
+        "description_label": "Mô tả:",
+        "doc_sample_text": "Tài liệu này được tạo dưới dạng mẫu.",
+        "error_messages": {
+            "fallback_file_error": "Không thể tạo tệp dự phòng: {error}",
+            "folder_structure_not_found": "Không tìm thấy mẫu cấu trúc thư mục trong các mẫu ngôn ngữ. Sử dụng lời nhắc cơ bản.",
+            "invalid_date_format": "Định dạng ngày không hợp lệ: {error}. Sử dụng mặc định (tháng trước).",
+            "json_parsing_error": "Lỗi phân tích cú pháp JSON: {error}",
+            "language_mapping_not_found": "Không tìm thấy tệp ánh xạ ngôn ngữ: {file}",
+            "template_file_not_found": "Không tìm thấy tệp mẫu {file}. Sử dụng mẫu en-US mặc định.",
+            "unknown_extension": "Phần mở rộng tệp không xác định cho: {file_path} - Đề xuất thay thế: {suggestions}",
+            "unsupported_extension": "Phần mở rộng tệp không được hỗ trợ: {ext}. Sử dụng {new_ext} thay thế."
+        },
+        "fallback_file_template": "# {file_name}\n\n{description}\n\nNgành: {industry}\nVai trò: {role}\n",
+        "file_info_header": "Thông tin tệp",
+        "file_list_header": "Các tệp:",
+        "filename_label": "Tên tệp:",
+        "footer_text": "Tệp này được tạo dưới dạng mẫu.",
+        "industry_footer": "Ngành: {industry}",
+        "industry_label": "Ngành:",
+        "not_specified": "Không xác định",
+        "overview_header": "Tổng quan",
+        "pdf_sample_text": "Tài liệu này được tạo dưới dạng mẫu.",
+        "period_label": "Giai đoạn:",
+        "role_footer": ", Vai trò: {role_text}",
+        "role_label": "Vai trò:",
+        "sheet_title": "Tổng quan"
     }
-} 
+}

@@ -1,103 +1,96 @@
 {
-    "folder_structure": "Por favor, proponha uma estrutura de pastas de projeto em formato JSON para a seguinte indústria: {industry}{role_prompt}\n\nCrie uma estrutura de pastas extensa e detalhada que atenda aos seguintes critérios:\n\n1. Incluir pelo menos 15-20 pastas principais\n2. Cada pasta principal deve conter pelo menos 3-5 subpastas\n3. A hierarquia de pastas deve ter pelo menos 3-4 níveis de profundidade (por exemplo, Pasta Principal/Subpasta/Sub-subpasta)\n4. Cada pasta de nível inferior deve conter pelo menos 3-5 arquivos\n5. Refletir estruturas de pastas especializadas específicas para a indústria e o papel\n\nIMPORTANTE: Todos os nomes de pastas e arquivos devem seguir estas diretrizes:\n- Evite nomes genéricos e abstratos como \"Pasta 1\" ou \"Documento 2\"\n- Use terminologia específica que reflita termos específicos da indústria e processos comerciais reais\n- Crie nomes de arquivos que indiquem claramente o propósito e conteúdo do documento\n- Inclua nomes específicos de departamentos, projetos, produtos, clientes, etc. quando relevante\n- Indique claramente os tipos de documentos (propostas, relatórios, manuais, etc.)\n\nIMPORTANTE: Para as descrições das pastas, forneça um contexto empresarial detalhado explicando:\n- O propósito e função empresarial de cada pasta\n- Como a pasta é usada nas operações comerciais diárias e fluxos de trabalho\n- Quais departamentos ou funções normalmente trabalham com esses documentos\n- Quais processos de negócios esses documentos apoiam\n- Como o conteúdo da pasta se relaciona aos objetivos de negócios\n\nOs arquivos devem ser principalmente arquivos comerciais comuns, como documentos Word (.docx), Excel (.xlsx), PDF, arquivos de texto (.txt), etc.\n\nTodos os nomes e descrições devem estar em português. Não use nomes de pastas em outros idiomas.{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\nInclua pastas relacionadas a várias áreas de operações comerciais, como gerenciamento de projetos, gerenciamento de documentos, análise de dados, relatórios, materiais de reunião, documentos contratuais, etc.\n\nPara quaisquer relatórios, atas de reunião ou documentos datados, inclua a data no nome do arquivo no formato AAAA-MM-DD.\n\nPor favor, responda no seguinte formato:\n{{\n    \"Nome da Pasta\": {{\n        \"folders\": {{\n            \"Nome da Subpasta\": {{\n                \"files\": [\n                    {{\"name\": \"nomearquivo.extensão\", \"type\": \"docx|xlsx|pdf\", \"description\": \"breve descrição\"}}\n                ],\n                \"folders\": {{...}}\n            }}\n        }},\n        \"files\": [\n            {{\"name\": \"nomearquivo.extensão\", \"type\": \"docx|xlsx|pdf\", \"description\": \"breve descrição\"}}\n        ]\n    }}\n}}\n\nRetorne apenas o JSON, nenhuma explicação adicional é necessária.",
-    
-    "folder_structure_prompt": {
-        "system": "Você é um assistente de IA especializado em criar estruturas de pastas bem organizadas para empresas. Todos os nomes de pastas e arquivos devem estar em português. Você deve responder APENAS com dados JSON válidos sem qualquer outro texto antes ou depois. Não inclua explicações, comentários ou mensagens em torno do JSON. Não envolva o JSON em blocos de código ou formatação markdown.",
-        "level1": "Crie uma estrutura de pastas de Nível 1 para a indústria {industry}. Cada pasta deve ter uma descrição clara de seu propósito e função comercial.\n\n{date_range}\n\nPor favor, responda com uma estrutura JSON no seguinte formato:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos e apropriados para a indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
-        "level2": "Crie uma estrutura de pastas de Nível 2 para a indústria {industry}{role_text} dentro da pasta de Nível 1 chamada \"{l1_folder_name}\".\n\nDescrição da pasta de Nível 1: {l1_description}\n\nPor favor, crie pastas de Nível 2 específicas e apropriadas que logicamente pertenceriam a esta pasta de Nível 1. Inclua uma descrição clara do propósito de cada pasta.\n\nResponda no seguinte formato JSON:\n\n{{\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos apropriados ao propósito da pasta principal e às características da indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
-        "level3": "Crie uma estrutura de pastas de Nível 3 para a indústria {industry}{role_text}.\n\nPasta de Nível 1: {l1_folder_name} - {l1_description}\nPasta de Nível 2: {l2_folder_name} - {l2_description}\n\nPor favor, crie pastas de Nível 3 específicas e apropriadas que logicamente pertenceriam a esta pasta de Nível 2. Inclua uma descrição clara do propósito de cada pasta.\n\nResponda no seguinte formato JSON:\n\n{{\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos apropriados ao propósito da pasta principal e às características da indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
-        "level3_folders_prompt": "Crie uma estrutura de pastas de Nível 3 para a indústria {industry}{role_text}.\n\nPasta de Nível 1: {l1_folder_name} - {l1_description}\nPasta de Nível 2: {l2_folder_name} - {l2_description}\n\nPor favor, crie pastas de Nível 3 específicas e apropriadas que logicamente pertenceriam a esta pasta de Nível 2. Inclua uma descrição clara do propósito de cada pasta.\n\nIMPORTANTE: Retorne APENAS pastas, não arquivos. Os arquivos serão gerados em uma etapa separada.\n\nResponda no seguinte formato JSON:\n\n{{\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos apropriados ao propósito da pasta principal e às características da indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
-        "level3_files_prompt": "Crie arquivos para uma pasta de Nível 3 na indústria {industry}{role_text}.\n\nPasta de Nível 1: {l1_folder_name} - {l1_description}\nPasta de Nível 2: {l2_folder_name} - {l2_description}\n\nEsta pasta contém as seguintes subpastas: {folder_structure}\n\nPor favor, crie arquivos apropriados que logicamente pertenceriam a esta pasta de Nível 2. Estes são arquivos diretamente na pasta de Nível 2, não dentro de suas subpastas.\n\nResponda no seguinte formato JSON:\n\n{{\n  \"files\": [\n    {{\n      \"name\": \"NomeArquivo1.extensão\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Descrição clara do propósito do arquivo\"\n    }},\n    {{\n      \"name\": \"NomeArquivo2.extensão\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Descrição clara do propósito do arquivo\"\n    }},\n    ...\n  ]\n}}\n\nCrie nomes de arquivos específicos apropriados ao propósito da pasta principal e às características da indústria {industry}. Cada arquivo deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de arquivos devem estar em português. Não use nomes de arquivos em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'."
-    },
-    
-    "json_fix_prompts": {
-        "fix_json": "A seguinte estrutura JSON é inválida ou não pôde ser analisada corretamente.\nPor favor, corrija a estrutura e retorne um formato JSON válido.\nCertifique-se de que todas as chaves e valores estão corretamente entre aspas e que todos os colchetes estão balanceados.\n\nResposta problemática:\n{failed_response}\n\nPor favor, retorne apenas a estrutura JSON corrigida sem explicação adicional.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas."
-    },
-    
-    "json_format_instructions": {
-        "json_format_instruction": "Por favor, formate sua resposta como um objeto JSON válido com chaves e aspas apropriadas. Todos os nomes de pastas devem estar em português.",
-        "json_array_instruction": "Por favor, retorne APENAS a {key} como um array JSON. Retorne APENAS os dados {key}.",
-        "json_object_instruction": "Por favor, retorne APENAS a {key} como um objeto JSON. Retorne APENAS os dados {key}.",
-        "json_structure_hint": "O JSON deve conter apenas os dados '{key}', seja como um array ou como um objeto. Todos os nomes de pastas devem estar em português.",
-        "json_error_message": "Houve um erro ao analisar sua resposta anterior. Por favor, certifique-se de fornecer um objeto JSON sintaticamente válido com chaves apropriadas. Todos os nomes de pastas devem estar em português.",
-        "structure_error_message": "O JSON DEVE incluir estas chaves: {keys}. Todos os nomes de pastas devem estar em português.",
-        "structure_error_format": "IMPORTANTE: O JSON deve incluir as seguintes chaves: {keys}. Todos os nomes de pastas devem estar em português.",
-        "parsing_error_message": "IMPORTANTE: Houve um erro ao analisar sua resposta anterior. Por favor, forneça um objeto JSON válido com chaves corretas. Todos os nomes de pastas devem estar em português.",
-        "level1_folders_prompt": "Crie uma estrutura de pastas de Nível 1 para a indústria {industry}{role_text}. Cada pasta deve ter uma descrição clara de seu propósito e função comercial.\n\n{date_range}\n\nPor favor, responda com uma estrutura JSON no seguinte formato:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos e apropriados para a indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'."
-    },
-    
-    "prompts": {
-        "content_generation": "Gere conteúdo para {description} na indústria {industry}{role_context}. O conteúdo deve ser em {language}{file_type_context}. Seja conciso e profissional.",
-        "role_context": " como {role}",
-        "file_type_context": " e no formato {file_type}"
-    },
-    
     "content_generation": {
         "xlsx_generation": "Gere conteúdo para uma planilha Excel. Responda com um objeto JSON com a seguinte estrutura:\n{\n  \"sheets\": [\n    {\n      \"name\": \"NomeDaFolha\",\n      \"headers\": [\"Cabeçalho1\", \"Cabeçalho2\", ...],\n      \"data\": [\n        [\"Linha1Célula1\", \"Linha1Célula2\", ...],\n        [\"Linha2Célula1\", \"Linha2Célula2\", ...]\n      ]\n    }\n  ]\n}"
     },
-    
-    "ui_strings": {
-        "sheet_title": "Visão Geral",
-        "industry_label": "Indústria:",
-        "role_label": "Função:",
-        "filename_label": "Nome do arquivo:",
-        "description_label": "Descrição:",
-        "footer_text": "Este arquivo foi gerado como exemplo.",
-        "doc_sample_text": "Este documento foi gerado como exemplo.",
-        "pdf_sample_text": "Este documento foi gerado como exemplo.",
-        "industry_footer": "Indústria: {industry}",
-        "role_footer": ", Função: {role_text}",
-        "date_footer": ", Data: {date}",
-        "file_info_header": "Informações do Arquivo",
-        "content_header": "Conteúdo",
-        "overview_header": "Visão Geral",
-        "context_header": "Contexto Empresarial",
-        "period_label": "Período:",
-        "not_specified": "Não especificado",
-        "fallback_file_template": "# {file_name}\n\n{description}\n\nIndústria: {industry}\nFunção: {role}\n",
-        "file_list_header": "Arquivos:",
-        "error_messages": {
-            "unknown_extension": "Extensão de arquivo desconhecida para: {file_path} - Sugestões alternativas: {suggestions}",
-            "unsupported_extension": "Extensão de arquivo não suportada: {ext}. Usando {new_ext} em seu lugar.",
-            "fallback_file_error": "Falha ao criar arquivo de fallback: {error}",
-            "invalid_date_format": "Formato de data inválido: {error}. Usando o padrão (mês passado).",
-            "language_mapping_not_found": "Arquivo de mapeamento de idioma não encontrado: {file}",
-            "template_file_not_found": "Arquivo de template {file} não encontrado. Usando o template en-US padrão.",
-            "json_parsing_error": "Erro de análise JSON: {error}",
-            "folder_structure_not_found": "Template de estrutura de pastas não encontrado nos templates de idioma. Usando prompt básico."
-        },
-        "cli_args": {
-            "description": "Gera uma estrutura de diretório baseada na indústria e na função.",
-            "industry": "Indústria para estrutura de pastas",
-            "role": "Função empresarial para estrutura de pastas",
-            "output": "Diretório de saída (padrão: nome da indústria)",
-            "language": "Idioma para conteúdo gerado (padrão: idioma do sistema)",
-            "date_range": "Intervalo de datas no formato AAAA-MM-DD:AAAA-MM-DD",
-            "scenario": "Gerar cenário de negócios",
-            "min_files": "Número mínimo de arquivos por pasta (padrão: 3)",
-            "file": "Gerar apenas arquivo(s) específico(s), caminhos separados por vírgula",
-            "force": "Forçar sobrescrição de pasta existente",
-            "scan": "Escanear estrutura existente antes da geração",
-            "max_depth": "Profundidade máxima de pastas (padrão: 3)",
-            "model": "Modelo Ollama a ser usado (padrão: gemma3:4b)",
-            "structure": "Criar apenas estrutura de pastas sem gerar arquivos"
-        }
-    },
-    
     "date_formats": {
-        "role_prompt": "\nVocê está criando uma estrutura de pastas para um {role} trabalhando nesta indústria.",
-        "date_range_prompt": "\nInclua pastas e nomes de arquivos baseados em datas que seriam relevantes para o período de {start_date} a {end_date}.",
+        "append_date_range": "\n\n{date_range_text}\n",
         "date_organization_prompt": "\nConsidere organizar documentos sensíveis ao tempo em uma estrutura cronológica com pastas separadas para diferentes anos ({start_year}-{end_year}) e potencialmente trimestres/meses dentro desses anos quando apropriado.",
-        "existing_structure_prompt": "\nPor favor, desenvolva ou complemente a seguinte estrutura de pastas existente. Crie novo conteúdo compatível que faça sentido junto com esta estrutura:\n{structure}",
+        "date_range_prompt": "\nInclua pastas e nomes de arquivos baseados em datas que seriam relevantes para o período de {start_date} a {end_date}.",
+        "date_range_text": "Intervalo de Datas: {start_date} - {end_date}",
         "document_date_prompt": "\n\nEste documento é datado de {date}. Inclua esta data no cabeçalho/título do documento e certifique-se de que todo o conteúdo seja apropriado para esta data. Faça referência a esta data ao longo do documento onde relevante.",
-        "spreadsheet_date_prompt": "\n\nEsta planilha é datada de {date}. Inclua esta data no cabeçalho da planilha e certifique-se de que todos os dados sejam apropriados para este período de tempo. Se isto for um relatório ou documento de acompanhamento, inclua datas dentro da planilha que estejam em ou antes de {date}.",
-        "text_date_prompt": "\n\nEste arquivo de texto é datado de {date}. Inclua esta data no conteúdo do arquivo e certifique-se de que todas as informações sejam apropriadas para esta data.",
         "example_prompt": "\n\nAqui estão exemplos de {doc_type} similares para referência:\n\n{examples}\n\nCrie conteúdo em um {style_type} similar, mas com {content_type} diferentes apropriados para o contexto atual.",
-        "scenario_role_prompt": "Você está trabalhando como {role}.",
+        "existing_structure_prompt": "\nPor favor, desenvolva ou complemente a seguinte estrutura de pastas existente. Crie novo conteúdo compatível que faça sentido junto com esta estrutura:\n{structure}",
+        "role_prompt": "\nVocê está criando uma estrutura de pastas para um {role} trabalhando nesta indústria.",
+        "scenario_context_prompt": "Contexto do Cenário Empresarial:\n{scenario}",
         "scenario_date_range_prompt": "O período é de {start_date} a {end_date}.",
         "scenario_prompt": "\nPor favor, gere a estrutura de pastas baseada no seguinte cenário empresarial:\n\n{scenario}",
-        "scenario_context_prompt": "Contexto do Cenário Empresarial:\n{scenario}",
-        "date_range_text": "Intervalo de Datas: {start_date} - {end_date}",
-        "append_date_range": "\n\n{date_range_text}\n"
+        "scenario_role_prompt": "Você está trabalhando como {role}.",
+        "spreadsheet_date_prompt": "\n\nEsta planilha é datada de {date}. Inclua esta data no cabeçalho da planilha e certifique-se de que todos os dados sejam apropriados para este período de tempo. Se isto for um relatório ou documento de acompanhamento, inclua datas dentro da planilha que estejam em ou antes de {date}.",
+        "text_date_prompt": "\n\nEste arquivo de texto é datado de {date}. Inclua esta data no conteúdo do arquivo e certifique-se de que todas as informações sejam apropriadas para esta data."
+    },
+    "folder_structure": "Por favor, proponha uma estrutura de pastas de projeto em formato JSON para a seguinte indústria: {industry}{role_prompt}\n\nCrie uma estrutura de pastas extensa e detalhada que atenda aos seguintes critérios:\n\n1. Incluir pelo menos 15-20 pastas principais\n2. Cada pasta principal deve conter pelo menos 3-5 subpastas\n3. A hierarquia de pastas deve ter pelo menos 3-4 níveis de profundidade (por exemplo, Pasta Principal/Subpasta/Sub-subpasta)\n4. Cada pasta de nível inferior deve conter pelo menos 3-5 arquivos\n5. Refletir estruturas de pastas especializadas específicas para a indústria e o papel\n\nIMPORTANTE: Todos os nomes de pastas e arquivos devem seguir estas diretrizes:\n- Evite nomes genéricos e abstratos como \"Pasta 1\" ou \"Documento 2\"\n- Use terminologia específica que reflita termos específicos da indústria e processos comerciais reais\n- Crie nomes de arquivos que indiquem claramente o propósito e conteúdo do documento\n- Inclua nomes específicos de departamentos, projetos, produtos, clientes, etc. quando relevante\n- Indique claramente os tipos de documentos (propostas, relatórios, manuais, etc.)\n\nIMPORTANTE: Para as descrições das pastas, forneça um contexto empresarial detalhado explicando:\n- O propósito e função empresarial de cada pasta\n- Como a pasta é usada nas operações comerciais diárias e fluxos de trabalho\n- Quais departamentos ou funções normalmente trabalham com esses documentos\n- Quais processos de negócios esses documentos apoiam\n- Como o conteúdo da pasta se relaciona aos objetivos de negócios\n\nOs arquivos devem ser principalmente arquivos comerciais comuns, como documentos Word (.docx), Excel (.xlsx), PDF, arquivos de texto (.txt), etc.\n\nTodos os nomes e descrições devem estar em português. Não use nomes de pastas em outros idiomas.{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\nInclua pastas relacionadas a várias áreas de operações comerciais, como gerenciamento de projetos, gerenciamento de documentos, análise de dados, relatórios, materiais de reunião, documentos contratuais, etc.\n\nPara quaisquer relatórios, atas de reunião ou documentos datados, inclua a data no nome do arquivo no formato AAAA-MM-DD.\n\nPor favor, responda no seguinte formato:\n{{\n    \"Nome da Pasta\": {{\n        \"folders\": {{\n            \"Nome da Subpasta\": {{\n                \"files\": [\n                    {{\"name\": \"nomearquivo.extensão\", \"type\": \"docx|xlsx|pdf\", \"description\": \"breve descrição\"}}\n                ],\n                \"folders\": {{...}}\n            }}\n        }},\n        \"files\": [\n            {{\"name\": \"nomearquivo.extensão\", \"type\": \"docx|xlsx|pdf\", \"description\": \"breve descrição\"}}\n        ]\n    }}\n}}\n\nRetorne apenas o JSON, nenhuma explicação adicional é necessária.",
+    "folder_structure_prompt": {
+        "level1": "Crie uma estrutura de pastas de Nível 1 para a indústria {industry}. Cada pasta deve ter uma descrição clara de seu propósito e função comercial.\n\n{date_range}\n\nPor favor, responda com uma estrutura JSON no seguinte formato:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos e apropriados para a indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
+        "level2": "Crie uma estrutura de pastas de Nível 2 para a indústria {industry}{role_text} dentro da pasta de Nível 1 chamada \"{l1_folder_name}\".\n\nDescrição da pasta de Nível 1: {l1_description}\n\nPor favor, crie pastas de Nível 2 específicas e apropriadas que logicamente pertenceriam a esta pasta de Nível 1. Inclua uma descrição clara do propósito de cada pasta.\n\nResponda no seguinte formato JSON:\n\n{{\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos apropriados ao propósito da pasta principal e às características da indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
+        "level3": "Crie uma estrutura de pastas de Nível 3 para a indústria {industry}{role_text}.\n\nPasta de Nível 1: {l1_folder_name} - {l1_description}\nPasta de Nível 2: {l2_folder_name} - {l2_description}\n\nPor favor, crie pastas de Nível 3 específicas e apropriadas que logicamente pertenceriam a esta pasta de Nível 2. Inclua uma descrição clara do propósito de cada pasta.\n\nResponda no seguinte formato JSON:\n\n{{\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos apropriados ao propósito da pasta principal e às características da indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
+        "level3_files_prompt": "Crie arquivos para uma pasta de Nível 3 na indústria {industry}{role_text}.\n\nPasta de Nível 1: {l1_folder_name} - {l1_description}\nPasta de Nível 2: {l2_folder_name} - {l2_description}\n\nEsta pasta contém as seguintes subpastas: {folder_structure}\n\nPor favor, crie arquivos apropriados que logicamente pertenceriam a esta pasta de Nível 2. Estes são arquivos diretamente na pasta de Nível 2, não dentro de suas subpastas.\n\nResponda no seguinte formato JSON:\n\n{{\n  \"files\": [\n    {{\n      \"name\": \"NomeArquivo1.extensão\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Descrição clara do propósito do arquivo\"\n    }},\n    {{\n      \"name\": \"NomeArquivo2.extensão\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"Descrição clara do propósito do arquivo\"\n    }},\n    ...\n  ]\n}}\n\nCrie nomes de arquivos específicos apropriados ao propósito da pasta principal e às características da indústria {industry}. Cada arquivo deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de arquivos devem estar em português. Não use nomes de arquivos em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
+        "level3_folders_prompt": "Crie uma estrutura de pastas de Nível 3 para a indústria {industry}{role_text}.\n\nPasta de Nível 1: {l1_folder_name} - {l1_description}\nPasta de Nível 2: {l2_folder_name} - {l2_description}\n\nPor favor, crie pastas de Nível 3 específicas e apropriadas que logicamente pertenceriam a esta pasta de Nível 2. Inclua uma descrição clara do propósito de cada pasta.\n\nIMPORTANTE: Retorne APENAS pastas, não arquivos. Os arquivos serão gerados em uma etapa separada.\n\nResponda no seguinte formato JSON:\n\n{{\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos apropriados ao propósito da pasta principal e às características da indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
+        "system": "Você é um assistente de IA especializado em criar estruturas de pastas bem organizadas para empresas. Todos os nomes de pastas e arquivos devem estar em português. Você deve responder APENAS com dados JSON válidos sem qualquer outro texto antes ou depois. Não inclua explicações, comentários ou mensagens em torno do JSON. Não envolva o JSON em blocos de código ou formatação markdown."
+    },
+    "json_fix_prompts": {
+        "fix_json": "A seguinte estrutura JSON é inválida ou não pôde ser analisada corretamente.\nPor favor, corrija a estrutura e retorne um formato JSON válido.\nCertifique-se de que todas as chaves e valores estão corretamente entre aspas e que todos os colchetes estão balanceados.\n\nResposta problemática:\n{failed_response}\n\nPor favor, retorne apenas a estrutura JSON corrigida sem explicação adicional.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas."
+    },
+    "json_format_instructions": {
+        "json_array_instruction": "Por favor, retorne APENAS a {key} como um array JSON. Retorne APENAS os dados {key}.",
+        "json_error_message": "Houve um erro ao analisar sua resposta anterior. Por favor, certifique-se de fornecer um objeto JSON sintaticamente válido com chaves apropriadas. Todos os nomes de pastas devem estar em português.",
+        "json_format_instruction": "Por favor, formate sua resposta como um objeto JSON válido com chaves e aspas apropriadas. Todos os nomes de pastas devem estar em português.",
+        "json_object_instruction": "Por favor, retorne APENAS a {key} como um objeto JSON. Retorne APENAS os dados {key}.",
+        "json_structure_hint": "O JSON deve conter apenas os dados '{key}', seja como um array ou como um objeto. Todos os nomes de pastas devem estar em português.",
+        "level1_folders_prompt": "Crie uma estrutura de pastas de Nível 1 para a indústria {industry}{role_text}. Cada pasta deve ter uma descrição clara de seu propósito e função comercial.\n\n{date_range}\n\nPor favor, responda com uma estrutura JSON no seguinte formato:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos e apropriados para a indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'.",
+        "parsing_error_message": "IMPORTANTE: Houve um erro ao analisar sua resposta anterior. Por favor, forneça um objeto JSON válido com chaves corretas. Todos os nomes de pastas devem estar em português.",
+        "structure_error_format": "IMPORTANTE: O JSON deve incluir as seguintes chaves: {keys}. Todos os nomes de pastas devem estar em português.",
+        "structure_error_message": "O JSON DEVE incluir estas chaves: {keys}. Todos os nomes de pastas devem estar em português."
+    },
+    "prompts": {
+        "content_generation": "Gere conteúdo para {description} na indústria {industry}{role_context}. O conteúdo deve ser em {language}{file_type_context}. Seja conciso e profissional.",
+        "file_type_context": " e no formato {file_type}",
+        "role_context": " como {role}"
+    },
+    "ui_strings": {
+        "cli_args": {
+            "date_range": "Intervalo de datas no formato AAAA-MM-DD:AAAA-MM-DD",
+            "description": "Gera uma estrutura de diretório baseada na indústria e na função.",
+            "file": "Gerar apenas arquivo(s) específico(s), caminhos separados por vírgula",
+            "force": "Forçar sobrescrição de pasta existente",
+            "industry": "Indústria para estrutura de pastas",
+            "language": "Idioma para conteúdo gerado (padrão: idioma do sistema)",
+            "max_depth": "Profundidade máxima de pastas (padrão: 3)",
+            "min_files": "Número mínimo de arquivos por pasta (padrão: 3)",
+            "model": "Modelo Ollama a ser usado (padrão: gemma3:4b)",
+            "output": "Diretório de saída (padrão: nome da indústria)",
+            "role": "Função empresarial para estrutura de pastas",
+            "scan": "Escanear estrutura existente antes da geração",
+            "scenario": "Gerar cenário de negócios",
+            "structure": "Criar apenas estrutura de pastas sem gerar arquivos"
+        },
+        "content_header": "Conteúdo",
+        "context_header": "Contexto Empresarial",
+        "date_footer": ", Data: {date}",
+        "description_label": "Descrição:",
+        "doc_sample_text": "Este documento foi gerado como exemplo.",
+        "error_messages": {
+            "fallback_file_error": "Falha ao criar arquivo de fallback: {error}",
+            "folder_structure_not_found": "Template de estrutura de pastas não encontrado nos templates de idioma. Usando prompt básico.",
+            "invalid_date_format": "Formato de data inválido: {error}. Usando o padrão (mês passado).",
+            "json_parsing_error": "Erro de análise JSON: {error}",
+            "language_mapping_not_found": "Arquivo de mapeamento de idioma não encontrado: {file}",
+            "template_file_not_found": "Arquivo de template {file} não encontrado. Usando o template en-US padrão.",
+            "unknown_extension": "Extensão de arquivo desconhecida para: {file_path} - Sugestões alternativas: {suggestions}",
+            "unsupported_extension": "Extensão de arquivo não suportada: {ext}. Usando {new_ext} em seu lugar."
+        },
+        "fallback_file_template": "# {file_name}\n\n{description}\n\nIndústria: {industry}\nFunção: {role}\n",
+        "file_info_header": "Informações do Arquivo",
+        "file_list_header": "Arquivos:",
+        "filename_label": "Nome do arquivo:",
+        "footer_text": "Este arquivo foi gerado como exemplo.",
+        "industry_footer": "Indústria: {industry}",
+        "industry_label": "Indústria:",
+        "not_specified": "Não especificado",
+        "overview_header": "Visão Geral",
+        "pdf_sample_text": "Este documento foi gerado como exemplo.",
+        "period_label": "Período:",
+        "role_footer": ", Função: {role_text}",
+        "role_label": "Função:",
+        "sheet_title": "Visão Geral"
     }
-} 
+}

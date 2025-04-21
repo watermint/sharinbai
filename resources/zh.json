@@ -1,96 +1,96 @@
 {
-    "json_format_instructions": {
-        "json_format_instruction": "请将回答格式化为带有适当括号和引号的有效JSON对象。所有文件夹名和键名请使用中文，不要使用英文名称。",
-        "json_array_instruction": "仅以JSON数组返回{key}。只返回{key}数据。",
-        "json_object_instruction": "仅以JSON对象返回{key}。只返回{key}数据。",
-        "json_structure_hint": "JSON中只包含'{key}'数据，并以数组或对象返回。所有名称请用中文，不要用英文名称。",
-        "json_error_message": "解析上次响应时发生错误。请提供包含正确括号的语法有效的JSON对象。所有文件夹名请用中文创建，不要使用英文名称。",
-        "structure_error_message": "JSON必须包含以下键: {keys}。所有文件夹名和键名请用中文，不要用英文名称。",
-        "structure_error_format": "重要: JSON必须包含以下键: {keys}。所有名称请用中文，不要用英文名称。",
-        "parsing_error_message": "重要: 解析上次响应时发生错误。请提供包含正确括号的有效JSON对象。所有文件夹名请用中文创建，不要使用英文名称。",
-        "level1_folders_prompt": "请为{industry}行业{role_text}创建一级文件夹结构。每个文件夹需包含其用途和业务功能的明确说明。\n\n{date_range}\n\n请按以下JSON格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"文件夹名1\": {{\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    }},\n    \"文件夹名2\": {{\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    }},\n    ...\n  }}\n}}\n\n请为{industry}行业创建具体且合适的中文文件夹名，并为每个文件夹添加详细的业务目的说明。\n\n重要: 所有文件夹名请用中文创建，如用\"市场部\"而不是\"Marketing\"，\"人事部\"而不是\"HR\"，\"财务部\"而不是\"Finance\"。不要使用英文文件夹名。\n\n重要: 只返回JSON对象。不要在JSON前后添加额外文本、说明或注释。不要包含\"JSON如下\"或\"希望这对您有帮助\"等短语。不要用代码块包裹JSON。"
+    "content_generation": {
+        "xlsx_generation": "为Excel电子表格生成内容。请以下列JSON对象结构回应：\n{\n  \"sheets\": [\n    {\n      \"name\": \"工作表名称\",\n      \"headers\": [\"标题1\", \"标题2\", ...],\n      \"data\": [\n        [\"行1单元格1\", \"行1单元格2\", ...],\n        [\"行2单元格1\", \"行2单元格2\", ...]\n      ]\n    }\n  ]\n}"
+    },
+    "date_formats": {
+        "append_date_range": "\n\n{date_range_text}\n",
+        "date_organization_prompt": "\n请考虑将与时间相关的文档按不同年份（{start_year}～{end_year}）或每年内的季度/月文件夹进行整理。",
+        "date_range_prompt": "\n请包含与{start_date}至{end_date}期间相关的日期型文件夹或文件名。",
+        "date_range_text": "适用期间: {start_date} 至 {end_date}",
+        "document_date_prompt": "\n\n本文件日期为{date}。请将该日期包含在文档头部/标题中，并确保所有内容均与该日期相符。如有相关，请在文档中引用该日期。",
+        "example_prompt": "\n\n参考如下同类{doc_type}示例：\n\n{examples}\n\n请用类似{style_type}风格，结合当前上下文，生成不同的{content_type}内容。",
+        "existing_structure_prompt": "\n请基于以下已有文件夹结构或补充兼容的新结构。请创建与该结构配合使用的新内容：\n{structure}",
+        "role_prompt": "\n您正在为该行业的{role}创建文件夹结构。",
+        "scenario_context_prompt": "业务场景上下文：\n{scenario}",
+        "scenario_date_range_prompt": "期间为{start_date}至{end_date}。",
+        "scenario_prompt": "\n请根据以下业务场景生成文件夹结构：\n\n{scenario}",
+        "scenario_role_prompt": "您作为{role}工作。",
+        "spreadsheet_date_prompt": "\n\n本表格日期为{date}。请在表头包含该日期，并确保所有数据均与该期间相符。如为报告或追踪文档，请在表格中包含{date}之前的日期。",
+        "text_date_prompt": "\n\n本文本文件日期为{date}。请在内容中包含该日期，并确保所有信息均与该日期相符。"
+    },
+    "folder_structure": "请为以下行业建议项目文件夹结构，格式为JSON: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n请创建详细且实用的文件夹结构。\n\n重要: 所有文件夹名和文件名请用中文，不要用英文名称。\n\n只返回JSON对象，不要包含额外说明或文本。",
+    "folder_structure_prompt": {
+        "level1": "请为{industry}行业创建一级文件夹结构。每个文件夹需包含其用途和业务功能的明确说明。\n\n{date_range}\n\n请按以下JSON格式回答：\n\n{\n  \"industry\": \"{industry}\",\n  \"folders\": {\n    \"文件夹名1\": {\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    },\n    ...\n  }\n}\n\n请为{industry}行业创建具体的中文文件夹名，并为每个文件夹添加详细说明。重要: 全部用中文。只返回JSON对象。",
+        "level2": "请为{industry}行业{role_text}的一级文件夹\"{l1_folder_name}\"内创建合适的二级文件夹结构。\n\n一级文件夹说明: {l1_description}\n\n请按以下JSON格式回答：\n\n{\n  \"folders\": {\n    \"文件夹名1\": {\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    },\n    ...\n  }\n}\n\n请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。重要: 全部用中文。只返回JSON对象。",
+        "level3": "{industry}行业{role_text}的一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}\n\n请在该二级文件夹下创建具体的三级文件夹，并明确说明各自用途。\n\n请按以下JSON格式回答：\n\n{\n  \"folders\": {\n    \"文件夹名1\": {\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    },\n    ...\n  }\n}\n\n请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。重要: 全部用中文。只返回JSON对象。",
+        "level3_files_prompt": "{industry}行业{role_text}的一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}\n\n该文件夹包含以下子文件夹: {folder_structure}\n\n请为该二级文件夹（非子文件夹）直接创建合适的文件。\n\n{industry_info}\n\n请按以下JSON格式回答：\n\n{\n  \"files\": [\n    {\n      \"name\": \"文件名.扩展名\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"关于文件用途的明确说明\"\n    },\n    ...\n  ]\n}\n\n请为上级文件夹的用途和{industry}行业特性创建具体中文文件名，并添加详细说明。重要: 全部用中文。只返回JSON对象。",
+        "level3_folders_prompt": "{industry}行业{role_text}的一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}\n\n请在该二级文件夹下创建具体的三级文件夹，并明确说明各自用途。\n\n请按以下JSON格式回答：\n\n{\n  \"folders\": {\n    \"文件夹名1\": {\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    },\n    ...\n  }\n}\n\n请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。重要: 全部用中文。只返回JSON对象。",
+        "system": "您是为企业创建文件夹结构的AI助手。所有文件夹名和文件名请用中文。只返回有效JSON数据，不要包含额外文本或说明。不要用JSON或代码块包裹。"
     },
     "json_fix_prompts": {
         "fix_json": "以下JSON结构无效或无法正确解析。\n请修正结构并以有效的JSON格式返回。\n请确保所有键和值都用引号包裹，所有括号都成对出现。\n\n有问题的响应：\n{failed_response}\n\n只返回修正后的JSON结构，不要添加额外说明。\n\n重要: 所有文件夹名请用中文创建，不要改为英文。例如，不要将\"市场部\"改为\"Marketing\"。不要使用英文名称，必须使用中文名称。"
     },
-    "date_formats": {
-        "role_prompt": "\n您正在为该行业的{role}创建文件夹结构。",
-        "date_range_prompt": "\n请包含与{start_date}至{end_date}期间相关的日期型文件夹或文件名。",
-        "date_organization_prompt": "\n请考虑将与时间相关的文档按不同年份（{start_year}～{end_year}）或每年内的季度/月文件夹进行整理。",
-        "existing_structure_prompt": "\n请基于以下已有文件夹结构或补充兼容的新结构。请创建与该结构配合使用的新内容：\n{structure}",
-        "document_date_prompt": "\n\n本文件日期为{date}。请将该日期包含在文档头部/标题中，并确保所有内容均与该日期相符。如有相关，请在文档中引用该日期。",
-        "spreadsheet_date_prompt": "\n\n本表格日期为{date}。请在表头包含该日期，并确保所有数据均与该期间相符。如为报告或追踪文档，请在表格中包含{date}之前的日期。",
-        "text_date_prompt": "\n\n本文本文件日期为{date}。请在内容中包含该日期，并确保所有信息均与该日期相符。",
-        "example_prompt": "\n\n参考如下同类{doc_type}示例：\n\n{examples}\n\n请用类似{style_type}风格，结合当前上下文，生成不同的{content_type}内容。",
-        "scenario_role_prompt": "您作为{role}工作。",
-        "scenario_date_range_prompt": "期间为{start_date}至{end_date}。",
-        "scenario_prompt": "\n请根据以下业务场景生成文件夹结构：\n\n{scenario}",
-        "scenario_context_prompt": "业务场景上下文：\n{scenario}",
-        "date_range_text": "适用期间: {start_date} 至 {end_date}",
-        "append_date_range": "\n\n{date_range_text}\n"
-    },
-    "folder_structure": "请为以下行业建议项目文件夹结构，格式为JSON: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n请创建详细且实用的文件夹结构。\n\n重要: 所有文件夹名和文件名请用中文，不要用英文名称。\n\n只返回JSON对象，不要包含额外说明或文本。",
-    "folder_structure_prompt": {
-        "system": "您是为企业创建文件夹结构的AI助手。所有文件夹名和文件名请用中文。只返回有效JSON数据，不要包含额外文本或说明。不要用JSON或代码块包裹。",
-        "level1": "请为{industry}行业创建一级文件夹结构。每个文件夹需包含其用途和业务功能的明确说明。\n\n{date_range}\n\n请按以下JSON格式回答：\n\n{\n  \"industry\": \"{industry}\",\n  \"folders\": {\n    \"文件夹名1\": {\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    },\n    ...\n  }\n}\n\n请为{industry}行业创建具体的中文文件夹名，并为每个文件夹添加详细说明。重要: 全部用中文。只返回JSON对象。",
-        "level2": "请为{industry}行业{role_text}的一级文件夹\"{l1_folder_name}\"内创建合适的二级文件夹结构。\n\n一级文件夹说明: {l1_description}\n\n请按以下JSON格式回答：\n\n{\n  \"folders\": {\n    \"文件夹名1\": {\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    },\n    ...\n  }\n}\n\n请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。重要: 全部用中文。只返回JSON对象。",
-        "level3": "{industry}行业{role_text}的一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}\n\n请在该二级文件夹下创建具体的三级文件夹，并明确说明各自用途。\n\n请按以下JSON格式回答：\n\n{\n  \"folders\": {\n    \"文件夹名1\": {\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    },\n    ...\n  }\n}\n\n请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。重要: 全部用中文。只返回JSON对象。",
-        "level3_folders_prompt": "{industry}行业{role_text}的一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}\n\n请在该二级文件夹下创建具体的三级文件夹，并明确说明各自用途。\n\n请按以下JSON格式回答：\n\n{\n  \"folders\": {\n    \"文件夹名1\": {\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    },\n    ...\n  }\n}\n\n请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。重要: 全部用中文。只返回JSON对象。",
-        "level3_files_prompt": "{industry}行业{role_text}的一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}\n\n该文件夹包含以下子文件夹: {folder_structure}\n\n请为该二级文件夹（非子文件夹）直接创建合适的文件。\n\n{industry_info}\n\n请按以下JSON格式回答：\n\n{\n  \"files\": [\n    {\n      \"name\": \"文件名.扩展名\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"关于文件用途的明确说明\"\n    },\n    ...\n  ]\n}\n\n请为上级文件夹的用途和{industry}行业特性创建具体中文文件名，并添加详细说明。重要: 全部用中文。只返回JSON对象。"
-    },
-    "ui_strings": {
-        "sheet_title": "概览",
-        "industry_label": "行业：",
-        "role_label": "职位：",
-        "filename_label": "文件名：",
-        "description_label": "说明：",
-        "footer_text": "本文件为示例生成。",
-        "doc_sample_text": "本文档为示例生成。",
-        "pdf_sample_text": "本文档为示例生成。",
-        "industry_footer": "行业: {industry}",
-        "role_footer": "，角色: {role_text}",
-        "date_footer": "，日期: {date}",
-        "file_info_header": "文件信息",
-        "content_header": "内容",
-        "overview_header": "概览",
-        "context_header": "业务上下文",
-        "period_label": "期间：",
-        "not_specified": "未指定",
-        "fallback_file_template": "# {file_name}\n\n{description}\n\n行业: {industry}\n角色: {role}\n",
-        "file_list_header": "文件:",
-        "error_messages": {
-            "unknown_extension": "未知文件扩展名: {file_path} - 替代方案: {suggestions}",
-            "unsupported_extension": "不支持的文件扩展名: {ext}。将使用 {new_ext} 代替。",
-            "fallback_file_error": "回退文件创建失败: {error}",
-            "invalid_date_format": "日期格式无效: {error}。将使用默认（上月）。",
-            "language_mapping_not_found": "未找到语言映射文件: {file}",
-            "template_file_not_found": "未找到模板文件 {file}。将使用默认的en-US模板。",
-            "json_parsing_error": "JSON解析错误: {error}",
-            "folder_structure_not_found": "语言模板中未找到文件夹结构模板。将使用基础提示。"
-        },
-        "cli_args": {
-            "description": "根据行业和角色生成目录结构。",
-            "industry": "文件夹结构的行业",
-            "role": "文件夹结构的业务角色",
-            "output": "输出目录（默认：行业名称）",
-            "language": "生成内容的语言（默认：系统语言）",
-            "date_range": "日期范围，格式为YYYY-MM-DD:YYYY-MM-DD",
-            "scenario": "生成业务场景",
-            "min_files": "每个文件夹的最小文件数（默认：3）",
-            "file": "仅生成特定文件，以逗号分隔的路径",
-            "force": "强制覆盖现有文件夹",
-            "scan": "生成前扫描现有结构",
-            "max_depth": "最大文件夹深度（默认：3）",
-            "model": "使用的Ollama模型（默认：gemma3:4b）",
-            "structure": "仅创建文件夹结构，不生成任何文件"
-        }
-    },
-    "content_generation": {
-        "xlsx_generation": "为Excel电子表格生成内容。请以下列JSON对象结构回应：\n{\n  \"sheets\": [\n    {\n      \"name\": \"工作表名称\",\n      \"headers\": [\"标题1\", \"标题2\", ...],\n      \"data\": [\n        [\"行1单元格1\", \"行1单元格2\", ...],\n        [\"行2单元格1\", \"行2单元格2\", ...]\n      ]\n    }\n  ]\n}"
+    "json_format_instructions": {
+        "json_array_instruction": "仅以JSON数组返回{key}。只返回{key}数据。",
+        "json_error_message": "解析上次响应时发生错误。请提供包含正确括号的语法有效的JSON对象。所有文件夹名请用中文创建，不要使用英文名称。",
+        "json_format_instruction": "请将回答格式化为带有适当括号和引号的有效JSON对象。所有文件夹名和键名请使用中文，不要使用英文名称。",
+        "json_object_instruction": "仅以JSON对象返回{key}。只返回{key}数据。",
+        "json_structure_hint": "JSON中只包含'{key}'数据，并以数组或对象返回。所有名称请用中文，不要用英文名称。",
+        "level1_folders_prompt": "请为{industry}行业{role_text}创建一级文件夹结构。每个文件夹需包含其用途和业务功能的明确说明。\n\n{date_range}\n\n请按以下JSON格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"文件夹名1\": {{\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    }},\n    \"文件夹名2\": {{\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    }},\n    ...\n  }}\n}}\n\n请为{industry}行业创建具体且合适的中文文件夹名，并为每个文件夹添加详细的业务目的说明。\n\n重要: 所有文件夹名请用中文创建，如用\"市场部\"而不是\"Marketing\"，\"人事部\"而不是\"HR\"，\"财务部\"而不是\"Finance\"。不要使用英文文件夹名。\n\n重要: 只返回JSON对象。不要在JSON前后添加额外文本、说明或注释。不要包含\"JSON如下\"或\"希望这对您有帮助\"等短语。不要用代码块包裹JSON。",
+        "parsing_error_message": "重要: 解析上次响应时发生错误。请提供包含正确括号的有效JSON对象。所有文件夹名请用中文创建，不要使用英文名称。",
+        "structure_error_format": "重要: JSON必须包含以下键: {keys}。所有名称请用中文，不要用英文名称。",
+        "structure_error_message": "JSON必须包含以下键: {keys}。所有文件夹名和键名请用中文，不要用英文名称。"
     },
     "prompts": {
         "content_generation": "为{industry}行业的{description}{role_context}生成内容。内容应该使用{language}{file_type_context}。保持简洁专业。",
-        "role_context": "，作为{role}",
-        "file_type_context": "，格式为{file_type}"
+        "file_type_context": "，格式为{file_type}",
+        "role_context": "，作为{role}"
+    },
+    "ui_strings": {
+        "cli_args": {
+            "date_range": "日期范围，格式为YYYY-MM-DD:YYYY-MM-DD",
+            "description": "根据行业和角色生成目录结构。",
+            "file": "仅生成特定文件，以逗号分隔的路径",
+            "force": "强制覆盖现有文件夹",
+            "industry": "文件夹结构的行业",
+            "language": "生成内容的语言（默认：系统语言）",
+            "max_depth": "最大文件夹深度（默认：3）",
+            "min_files": "每个文件夹的最小文件数（默认：3）",
+            "model": "使用的Ollama模型（默认：gemma3:4b）",
+            "output": "输出目录（默认：行业名称）",
+            "role": "文件夹结构的业务角色",
+            "scan": "生成前扫描现有结构",
+            "scenario": "生成业务场景",
+            "structure": "仅创建文件夹结构，不生成任何文件"
+        },
+        "content_header": "内容",
+        "context_header": "业务上下文",
+        "date_footer": "，日期: {date}",
+        "description_label": "说明：",
+        "doc_sample_text": "本文档为示例生成。",
+        "error_messages": {
+            "fallback_file_error": "回退文件创建失败: {error}",
+            "folder_structure_not_found": "语言模板中未找到文件夹结构模板。将使用基础提示。",
+            "invalid_date_format": "日期格式无效: {error}。将使用默认（上月）。",
+            "json_parsing_error": "JSON解析错误: {error}",
+            "language_mapping_not_found": "未找到语言映射文件: {file}",
+            "template_file_not_found": "未找到模板文件 {file}。将使用默认的en-US模板。",
+            "unknown_extension": "未知文件扩展名: {file_path} - 替代方案: {suggestions}",
+            "unsupported_extension": "不支持的文件扩展名: {ext}。将使用 {new_ext} 代替。"
+        },
+        "fallback_file_template": "# {file_name}\n\n{description}\n\n行业: {industry}\n角色: {role}\n",
+        "file_info_header": "文件信息",
+        "file_list_header": "文件:",
+        "filename_label": "文件名：",
+        "footer_text": "本文件为示例生成。",
+        "industry_footer": "行业: {industry}",
+        "industry_label": "行业：",
+        "not_specified": "未指定",
+        "overview_header": "概览",
+        "pdf_sample_text": "本文档为示例生成。",
+        "period_label": "期间：",
+        "role_footer": "，角色: {role_text}",
+        "role_label": "职位：",
+        "sheet_title": "概览"
     }
-} 
+}
