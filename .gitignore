@@ -18,6 +18,7 @@ ENV/
 # Output and generated files
 output/
 test_output/
+logs/
 
 # Logs
 debug.log

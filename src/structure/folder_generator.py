@@ -638,6 +638,17 @@ class FolderGenerator:
                     
                     # Create files
                     self.statistics_tracker.start_tracking_item(f"file_content_for_{l1_folder_name}_{l2_folder_name}")
+                    
+                    # Check if files is a list or dictionary and handle accordingly
+                    if isinstance(level2_files["files"], list):
+                        logging.info(f"Files for {l1_folder_name}/{l2_folder_name} provided as a list, converting to dictionary")
+                        files_dict = {}
+                        for file_data in level2_files["files"]:
+                            if isinstance(file_data, dict) and "name" in file_data:
+                                files_dict[file_data["name"]] = {k: v for k, v in file_data.items() if k != "name"}
+                        level2_files["files"] = files_dict
+                    
+                    # Process the files
                     for file_name, file_data in level2_files["files"].items():
                         # Check limit before creating file
                         if self._check_short_mode_limit(): raise ShortModeLimitReached()

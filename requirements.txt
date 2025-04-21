@@ -6,6 +6,7 @@ fpdf>=1.7.2
 PyPDF2>=1.26.0
 babel>=2.9.0
 pillow>=8.0.0
+PyYAML>=6.0
 # Test dependencies
 pytest>=7.0.0
 coverage>=6.0.0 

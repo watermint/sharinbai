@@ -336,6 +336,7 @@ def main():
     # Add the batch command
     batch_parser = subparsers.add_parser('batch', help='Execute multiple tasks from a YAML file')
     batch_parser.add_argument('--file', '-f', type=str, required=True, help='Path to the batch YAML file')
+    batch_parser.add_argument('--log-path', type=str, default='./logs', help='Path where to store log files')
     
     subparsers.add_parser('list-languages', help='List supported languages')
     subparsers.add_parser('test-languages', help='Test all language resources for missing keys')
@@ -360,7 +361,7 @@ def main():
         sys.exit(0 if success else 1)
     elif args.command == 'batch':
         # Handle batch command
-        setup_logging(args.log_level, 'batch_execution')
+        setup_logging(args.log_level, args.log_path)
         logging.info(f"Processing batch file: {args.file}")
         success = process_batch_file(args.file, args.log_level)
         if success:
