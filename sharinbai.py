@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging
-import argparse
 import sys
 import os
+
+# Add project root to sys.path **BEFORE** other imports
+project_root = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, project_root)
+
+import logging
+import argparse
 from pathlib import Path
 from src.config.settings import Settings
 from src.config.logging_config import setup_logging

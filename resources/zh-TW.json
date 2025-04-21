@@ -30,7 +30,7 @@
         "append_date_range": "\n\n{date_range_text}\n"
     },
     "file_generation_prompts": {
-        "random_files_prompt": "請為「{folder_name}」資料夾產生{count}個適合{industry}產業的檔案名稱。每個檔案需包含名稱、類型和說明。僅可使用以下檔案類型: docx, xlsx, pdf, txt。請依下列JSON物件格式回答:{\"files\": [{\"name\": \"檔案名稱.副檔名\", \"type\": \"副檔名(docx、xlsx、pdf或txt)\", \"description\": \"檔案內容簡要說明\"}] }。如為{folder_level}層資料夾，檔案需與{folder_name}相關，且與{keywords}有關。不要使用「範本」「樣本」「範例」等佔位符檔案名稱。檔案名稱應具體、實用、真實。"
+        "random_files_prompt": "請為「{folder_name}」資料夾產生{count}個適合{industry}產業的檔案名稱。每個檔案需包含名稱、類型和說明。僅可使用以下檔案類型: docx, xlsx, pdf, txt, png, jpg。請依下列JSON物件格式回答:{\"files\": [{\"name\": \"檔案名稱.副檔名\", \"type\": \"副檔名(docx、xlsx、pdf、txt、png或jpg)\", \"description\": \"檔案內容簡要說明\"}] }。如為{folder_level}層資料夾，檔案需與{folder_name}相關，且與{keywords}有關。不要使用「範本」「樣本」「範例」等佔位符檔案名稱。檔案名稱應具體、實用、真實。"
     },
     "folder_structure": "請為下列產業建議專案資料夾結構，格式為JSON: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n請建立詳細且實用的資料夾結構。\n\n重要: 所有資料夾名稱和檔案名稱請用中文，不要用英文名稱。\n\n只返回JSON物件，不要包含額外說明或文字。",
     "folder_structure_prompt": {
@@ -87,5 +87,8 @@
             "model": "使用的Ollama模型（預設：gemma3:4b）",
             "structure": "僅建立資料夾結構，不生成任何檔案"
         }
+    },
+    "system_messages": {
+        "xlsx_generation": "為Excel試算表生成內容。請以下列JSON物件結構回應：\n{\n  \"sheets\": [\n    {\n      \"name\": \"工作表名稱\",\n      \"headers\": [\"標題1\", \"標題2\", ...],\n      \"data\": [\n        [\"第1行第1格\", \"第1行第2格\", ...],\n        [\"第2行第1格\", \"第2行第2格\", ...]\n      ]\n    }\n  ]\n}"
     }
 } 

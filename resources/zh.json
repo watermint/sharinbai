@@ -30,7 +30,7 @@
         "append_date_range": "\n\n{date_range_text}\n"
     },
     "file_generation_prompts": {
-        "random_files_prompt": "请为\"{folder_name}\"文件夹生成{count}个适合{industry}行业的文件名。每个文件需包含名称、类型和说明。仅可使用以下文件类型: docx, xlsx, pdf, txt。请按如下JSON对象格式回答:{\"files\": [{\"name\": \"文件名.扩展名\", \"type\": \"文件扩展名(docx、xlsx、pdf或txt)\", \"description\": \"文件内容简要说明\"}] }。如为{folder_level}级文件夹，文件需与{folder_name}相关，且与{keywords}有关。不要使用\"模板\"\"样本\"\"示例\"等占位符文件名。文件名应具体、实用、真实。"
+        "random_files_prompt": "为{industry}行业的\"{folder_name}\"文件夹生成{count}个适当的文件名。请提供每个文件的名称、类型和描述。只使用以下文件类型：docx, xlsx, pdf, txt, png, jpg。以下列JSON对象格式回应：{\"files\": [{\"name\": \"文件名.扩展名\", \"type\": \"文件扩展名(docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"简要描述文件内容\"}]}。对于级别{folder_level}的文件夹，文件应与{folder_name}相关并引用{keywords}。请勿使用包含\"模板\"、\"示例\"或\"样本\"等占位符文本的文件名。确保文件名具体、实用且实际。所有名称必须为中文。"
     },
     "folder_structure": "请为以下行业建议项目文件夹结构，格式为JSON: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n请创建详细且实用的文件夹结构。\n\n重要: 所有文件夹名和文件名请用中文，不要用英文名称。\n\n只返回JSON对象，不要包含额外说明或文本。",
     "folder_structure_prompt": {
@@ -87,5 +87,8 @@
             "model": "使用的Ollama模型（默认：gemma3:4b）",
             "structure": "仅创建文件夹结构，不生成任何文件"
         }
+    },
+    "system_messages": {
+        "xlsx_generation": "为Excel电子表格生成内容。请以下列JSON对象结构回应：\n{\n  \"sheets\": [\n    {\n      \"name\": \"工作表名称\",\n      \"headers\": [\"标题1\", \"标题2\", ...],\n      \"data\": [\n        [\"行1单元格1\", \"行1单元格2\", ...],\n        [\"行2单元格1\", \"行2单元格2\", ...]\n      ]\n    }\n  ]\n}"
     }
 } 

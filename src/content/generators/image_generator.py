@@ -4,6 +4,7 @@ Image file generator
 
 import logging
 import os
+from datetime import datetime
 from typing import Optional
 
 try:
@@ -67,7 +68,8 @@ class ImageGenerator(BaseGenerator):
             # Draw additional info
             info_text = [
                 f"Industry: {industry}",
-                f"Language: {language}"
+                f"Language: {language}",
+                f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
             ]
             if role:
                 info_text.append(f"Role: {role}")

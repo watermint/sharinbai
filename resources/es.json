@@ -26,6 +26,12 @@
         "level1_folders_prompt": "Crea una estructura de carpetas de Nivel 1 para la industria {industry}{role_text}. Cada carpeta debe tener una descripción clara de su propósito y función empresarial.\n\n{date_range}\n\nPor favor, responde con una estructura JSON en el siguiente formato:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"NombreCarpeta1\": {{\n      \"description\": \"Descripción clara del propósito empresarial de la carpeta\"\n    }},\n    \"NombreCarpeta2\": {{\n      \"description\": \"Descripción clara del propósito empresarial de la carpeta\"\n    }},\n    ...\n  }}\n}}\n\nCrea nombres de carpetas específicos y apropiados para la industria {industry}. Cada carpeta debe tener una descripción detallada que explique su propósito empresarial.\n\nIMPORTANTE: Todos los nombres de carpetas deben estar en español. No utilices nombres de carpetas en otros idiomas.\n\nIMPORTANTE: Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'."
     },
     
+    "prompts": {
+        "content_generation": "Genera contenido para {description} en la industria de {industry}{role_context}. El contenido debe estar en idioma {language}.{file_type_context} Sé conciso y profesional.",
+        "role_context": " para un {role}",
+        "file_type_context": " La salida debe estar en formato {file_type}."
+    },
+    
     "ui_strings": {
         "sheet_title": "Resumen",
         "industry_label": "Industria:",
@@ -89,5 +95,13 @@
         "scenario_context_prompt": "Contexto del Escenario Empresarial:\n{scenario}",
         "date_range_text": "Rango de Fechas: {start_date} - {end_date}",
         "append_date_range": "\n\n{date_range_text}\n"
+    },
+    
+    "system_messages": {
+        "xlsx_generation": "Genera contenido para una hoja de cálculo Excel. Responde con un objeto JSON con la siguiente estructura:\n{\n  \"sheets\": [\n    {\n      \"name\": \"NombreHoja\",\n      \"headers\": [\"Encabezado1\", \"Encabezado2\", ...],\n      \"data\": [\n        [\"Fila1Celda1\", \"Fila1Celda2\", ...],\n        [\"Fila2Celda1\", \"Fila2Celda2\", ...]\n      ]\n    }\n  ]\n}"
+    },
+    
+    "file_generation_prompts": {
+        "random_files_prompt": "Genera {count} nombres de archivos apropiados para la carpeta \"{folder_name}\" en la industria {industry}. Proporciona nombre, tipo y descripción para cada archivo. Utiliza únicamente los siguientes tipos de archivo: docx, xlsx, pdf, txt, png, jpg. Responde con un objeto JSON en el siguiente formato: {{\"files\": [{{\"name\": \"nombre_archivo.extensión\", \"type\": \"extensión del archivo (docx, xlsx, pdf, txt, png, jpg, jpeg, webp, gif)\", \"description\": \"breve descripción del contenido del archivo\"}}]}}. Para carpetas de nivel {folder_level}, los archivos deben estar relacionados con {folder_name} y hacer referencia a {keywords}. No uses nombres de archivos con textos de marcador de posición como \"plantilla\", \"ejemplo\" o \"muestra\". Asegúrate de que los nombres de los archivos sean específicos, prácticos y realistas. Todos los nombres deben estar en español."
     }
 } 

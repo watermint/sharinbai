@@ -30,7 +30,7 @@
         "append_date_range": "\n\n{date_range_text}\n"
     },
     "file_generation_prompts": {
-        "random_files_prompt": "{count}개의 \"{folder_name}\" 폴더에 적합한 파일명을 {industry} 업계용으로 생성하세요. 각 파일에는 이름, 유형, 설명을 포함하세요. 다음 파일 유형만 사용하세요: docx, xlsx, pdf, txt. 다음 형식의 JSON 객체로 응답하세요: {\"files\": [{\"name\": \"파일명.확장자\", \"type\": \"파일 확장자(docx, xlsx, pdf, 또는 txt)\", \"description\": \"파일 내용에 대한 간단한 설명\"}]}. {folder_level}단계 폴더의 경우, 파일은 {folder_name}과 관련되어야 하며, {keywords}에 관한 것이어야 합니다. \"템플릿\", \"샘플\", \"예시\"와 같은 플레이스홀더 텍스트가 포함된 파일명은 사용하지 마세요. 파일명은 구체적이고 실용적이며 현실적인 것으로 하세요."
+        "random_files_prompt": "{industry} 산업의 \"{folder_name}\" 폴더에 적합한 파일 이름 {count}개를 생성하세요. 각 파일의 이름, 유형 및 설명을 제공하세요. 다음 파일 유형만 사용하세요: docx, xlsx, pdf, txt, png. 다음 형식의 JSON 객체로 응답하세요: {{\"files\": [{{\"name\": \"파일명.확장자\", \"type\": \"파일 확장자(docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"파일 내용에 대한 간단한 설명\"}}]}}. {folder_level} 수준 폴더의 경우, 파일은 {folder_name}과 관련이 있어야 하며 {keywords}를 참조해야 합니다. \"템플릿\", \"예시\" 또는 \"샘플\"과 같은 자리표시자 텍스트가 있는 파일 이름을 사용하지 마세요. 파일 이름이 구체적이고, 실용적이며, 현실적인지 확인하세요. 모든 이름은 한국어여야 합니다."
     },
     "folder_structure": "다음 업계를 위한 프로젝트 폴더 구조를 JSON 형식으로 제안하세요: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n자세하고 실용적인 폴더 구조를 생성하세요.\n\n중요: 모든 폴더명과 파일명은 한국어로 작성하세요. 영어 이름은 사용하지 마세요.\n\n응답은 JSON 객체만으로, 추가 설명이나 텍스트를 포함하지 마세요.",
     "folder_structure_prompt": {
@@ -87,5 +87,8 @@
             "model": "사용할 Ollama 모델 (기본값: gemma3:4b)",
             "structure": "파일을 생성하지 않고 폴더 구조만 생성"
         }
+    },
+    "system_messages": {
+        "xlsx_generation": "Excel 스프레드시트에 대한 콘텐츠를 생성합니다. 다음 구조의 JSON 객체로 응답하세요:\n{\n  \"sheets\": [\n    {\n      \"name\": \"시트이름\",\n      \"headers\": [\"헤더1\", \"헤더2\", ...],\n      \"data\": [\n        [\"행1셀1\", \"행1셀2\", ...],\n        [\"행2셀1\", \"행2셀2\", ...]\n      ]\n    }\n  ]\n}"
     }
 } 

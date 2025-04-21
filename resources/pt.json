@@ -89,5 +89,13 @@
         "scenario_context_prompt": "Contexto do Cenário Empresarial:\n{scenario}",
         "date_range_text": "Intervalo de Datas: {start_date} - {end_date}",
         "append_date_range": "\n\n{date_range_text}\n"
+    },
+    
+    "system_messages": {
+        "xlsx_generation": "Gere conteúdo para uma planilha Excel. Responda com um objeto JSON com a seguinte estrutura:\n{\n  \"sheets\": [\n    {\n      \"name\": \"NomeDaFolha\",\n      \"headers\": [\"Cabeçalho1\", \"Cabeçalho2\", ...],\n      \"data\": [\n        [\"Linha1Célula1\", \"Linha1Célula2\", ...],\n        [\"Linha2Célula1\", \"Linha2Célula2\", ...]\n      ]\n    }\n  ]\n}"
+    },
+    
+    "file_generation_prompts": {
+        "random_files_prompt": "Gere {count} nomes de arquivos apropriados para a pasta \"{folder_name}\" na indústria {industry}. Forneça nome, tipo e descrição para cada arquivo. Use apenas os seguintes tipos de arquivo: docx, xlsx, pdf, txt, png, jpg. Responda com um objeto JSON no seguinte formato: {{\"files\": [{{\"name\": \"nome_do_arquivo.extensão\", \"type\": \"extensão do arquivo (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"breve descrição do conteúdo do arquivo\"}}]}}. Para pastas de nível {folder_level}, os arquivos devem estar relacionados a {folder_name} e fazer referência a {keywords}. Não use nomes de arquivos com textos de espaço reservado como \"modelo\", \"exemplo\" ou \"amostra\". Certifique-se de que os nomes dos arquivos sejam específicos, práticos e realistas. Todos os nomes devem estar em português."
     }
 } 

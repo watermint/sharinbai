@@ -97,7 +97,7 @@ class ContentGenerator:
             return self.generators[ext].generate(
                 directory, filename, description, industry, language, role
             )
-        elif ext in ["png", "jpg", "jpeg", "webp", "gif"]:
+        elif ext in ["png", "jpg"]:
             return self.generators["image"].generate(
                 directory, filename, description, industry, language, role
             )

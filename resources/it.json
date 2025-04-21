@@ -89,5 +89,13 @@
         "scenario_context_prompt": "Contesto dello Scenario Aziendale:\n{scenario}",
         "date_range_text": "Intervallo di Date: {start_date} - {end_date}",
         "append_date_range": "\n\n{date_range_text}\n"
+    },
+    
+    "system_messages": {
+        "xlsx_generation": "Genera contenuto per un foglio di calcolo Excel. Rispondi con un oggetto JSON con la seguente struttura:\n{\n  \"sheets\": [\n    {\n      \"name\": \"NomeFoglio\",\n      \"headers\": [\"Intestazione1\", \"Intestazione2\", ...],\n      \"data\": [\n        [\"Riga1Cella1\", \"Riga1Cella2\", ...],\n        [\"Riga2Cella1\", \"Riga2Cella2\", ...]\n      ]\n    }\n  ]\n}"
+    },
+    
+    "file_generation_prompts": {
+        "random_files_prompt": "Genera {count} nomi di file appropriati per la cartella \"{folder_name}\" nell'industria {industry}. Fornisci nome, tipo e descrizione per ogni file. Utilizza solo i seguenti tipi di file: docx, xlsx, pdf, txt, png, jpg. Rispondi con un oggetto JSON nel seguente formato: {{\"files\": [{{\"name\": \"nome_file.estensione\", \"type\": \"estensione del file (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"breve descrizione del contenuto del file\"}}]}}. Per le cartelle di livello {folder_level}, i file devono essere correlati a {folder_name} e fare riferimento a {keywords}. Non utilizzare nomi di file con testo segnaposto come \"modello\", \"esempio\" o \"campione\". Assicurati che i nomi dei file siano specifici, pratici e realistici. Tutti i nomi devono essere in italiano."
     }
 } 

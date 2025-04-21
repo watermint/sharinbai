@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Union, Tuple
 
-from ..config.file_manager import FileManager
+from ..content.file_manager import FileManager
 from ..content.content_generator import ContentGenerator
 from ..foundation.llm_client import OllamaClient
 from ..config.language_utils import get_translation
@@ -398,7 +398,7 @@ class FolderGenerator:
                 l2_metadata["folders"] = level3_structure["folders"]
                 
                 # Add files to metadata if available
-                if "files" in level3_files and isinstance(level3_files["files"], list):
+                if level3_files is not None and "files" in level3_files and isinstance(level3_files["files"], list):
                     l2_metadata["files"] = level3_files["files"]
                 
                 self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
@@ -447,7 +447,7 @@ class FolderGenerator:
                         )
                 
                 # Generate files for level 2 folder
-                if "files" in level3_files and isinstance(level3_files["files"], list):
+                if level3_files is not None and "files" in level3_files and isinstance(level3_files["files"], list):
                     logging.info(f"Creating {len(level3_files['files'])} files in {l1_folder_name}/{l2_folder_name}")
                     
                     # Create each file
@@ -993,10 +993,3 @@ class FolderGenerator:
         self._short_mode_enabled = short_mode
         if short_mode:
             logging.info(f"Short mode enabled (limit: {self.SHORT_MODE_LIMIT} items).")
-
-    # ... other private methods like _generate_level[1-3]_folders/files ...
-    # These generation methods don't directly create files/folders on disk, 
-    # so they don't need the short mode check. The check happens when the
-    # structures returned by these methods are processed.
-
-    # ... rest of the existing methods ... 

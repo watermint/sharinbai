@@ -26,6 +26,20 @@
         "level1_folders_prompt": "Tạo cấu trúc thư mục Cấp 1 cho ngành {industry}{role_text}. Mỗi thư mục nên có mô tả rõ ràng về mục đích và chức năng kinh doanh của nó.\n\n{date_range}\n\nVui lòng phản hồi bằng cấu trúc JSON theo định dạng sau:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"FolderName1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"FolderName2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.\n\nQUAN TRỌNG: Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'."
     },
     
+    "prompts": {
+        "content_generation": "Vui lòng tạo nội dung cho {description} trong ngành {industry}{role_context}. Nội dung nên được viết bằng {language}{file_type_context}. Giữ nội dung ngắn gọn và chuyên nghiệp.",
+        "role_context": " (dành cho {role})",
+        "file_type_context": ". Đầu ra nên ở định dạng {file_type}"
+    },
+    
+    "system_messages": {
+        "xlsx_generation": "Tạo nội dung cho một bảng tính Excel. Trả về một đối tượng JSON với cấu trúc sau:\n{\n  \"sheets\": [\n    {\n      \"name\": \"TênBảng\",\n      \"headers\": [\"TiêuĐề1\", \"TiêuĐề2\", ...],\n      \"data\": [\n        [\"DòngHàng1Ô1\", \"DòngHàng1Ô2\", ...],\n        [\"DòngHàng2Ô1\", \"DòngHàng2Ô2\", ...]\n      ]\n    }\n  ]\n}"
+    },
+    
+    "file_generation_prompts": {
+        "random_files_prompt": "Vui lòng tạo {count} tên tệp phù hợp cho thư mục \"{folder_name}\" trong ngành {industry}. Cung cấp tên, loại và mô tả cho mỗi tệp. Chỉ sử dụng các loại tệp sau: docx, xlsx, pdf, txt, png, jpg. Phản hồi với một đối tượng JSON theo định dạng sau: {{\"files\": [{{\"name\": \"tên_tệp.phần_mở_rộng\", \"type\": \"phần mở rộng tệp (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"mô tả ngắn gọn về nội dung tệp\"}}]}}. Đối với thư mục cấp {folder_level}, các tệp nên liên quan đến {folder_name} và thuộc về {keywords}. Không sử dụng tên tệp chứa văn bản giữ chỗ như \"mẫu\", \"ví dụ\", \"mẫu\". Đảm bảo tên tệp cụ thể, thực tế và thực tế."
+    },
+    
     "ui_strings": {
         "sheet_title": "Tổng quan",
         "industry_label": "Ngành:",

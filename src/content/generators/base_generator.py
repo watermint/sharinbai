@@ -3,11 +3,13 @@ Base generator for file content generation
 """
 
 import os
+import sys
 from abc import ABC, abstractmethod
 from typing import Optional
 
 from src.foundation.llm_client import OllamaClient
 from src.content.file_manager import FileManager
+from src.config.language_utils import get_translation
 
 class BaseGenerator(ABC):
     """Base abstract class for all content generators"""
@@ -68,12 +70,37 @@ class BaseGenerator(ABC):
             
         Returns:
             Formatted prompt for the LLM
+            
+        Raises:
+            SystemExit: If the required language resource is missing
         """
-        role_context = f" for a {role}" if role else ""
-        file_type_context = f" The output should be in {file_type} format." if file_type else ""
+        # Get the prompt template from language resources
+        prompt_template = get_translation("prompts.content_generation", language, None)
         
-        return (
-            f"Generate content for a {description} in the {industry} industry{role_context}. "
-            f"The content should be in {language} language.{file_type_context} "
-            f"Be concise and professional."
+        # Raise an error if no prompt template is found for this language
+        if not prompt_template:
+            error_msg = f"No prompt template found for language '{language}'"
+            print(error_msg, file=sys.stderr)
+            sys.exit(1)
+        
+        # Get role and file type parts from resources
+        role_template = get_translation("prompts.role_context", language, None)
+        file_type_template = get_translation("prompts.file_type_context", language, None)
+        
+        if not role_template or not file_type_template:
+            error_msg = f"Missing prompt components for language '{language}'"
+            print(error_msg, file=sys.stderr)
+            sys.exit(1)
+            
+        # Format the conditional parts
+        role_context = role_template.format(role=role) if role else ""
+        file_type_context = file_type_template.format(file_type=file_type) if file_type else ""
+        
+        # Return the complete formatted prompt
+        return prompt_template.format(
+            description=description,
+            industry=industry,
+            role_context=role_context,
+            language=language,
+            file_type_context=file_type_context
         ) 

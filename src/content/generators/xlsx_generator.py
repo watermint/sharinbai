@@ -41,23 +41,20 @@ class XlsxGenerator(BaseGenerator):
             
         file_path = self.get_file_path(directory, filename)
         
-        # Create system message for structured output
-        system_message = (
-            "You will create content for an Excel spreadsheet. "
-            "Return a JSON object with the following structure:\n"
-            "{\n"
-            '  "sheets": [\n'
-            "    {\n"
-            '      "name": "Sheet name",\n'
-            '      "headers": ["Header1", "Header2", ...],\n'
-            '      "data": [\n'
-            '        ["Row1Cell1", "Row1Cell2", ...],\n'
-            '        ["Row2Cell1", "Row2Cell2", ...]\n'
-            "      ]\n"
-            "    }\n"
-            "  ]\n"
-            "}"
-        )
+        # Load system message from language resources
+        try:
+            # Get language resources
+            lang_resources = self.get_language_resources(language)
+            
+            # Get system message for structured output
+            if "system_messages" not in lang_resources or "xlsx_generation" not in lang_resources["system_messages"]:
+                logging.error(f"Missing 'system_messages.xlsx_generation' in language resources for {language}")
+                return False
+                
+            system_message = lang_resources["system_messages"]["xlsx_generation"]
+        except Exception as e:
+            logging.error(f"Failed to load system message from language resources: {e}")
+            return False
         
         # Create prompt for spreadsheet content
         prompt = self.create_prompt(description, industry, language, role, "Excel spreadsheet")
