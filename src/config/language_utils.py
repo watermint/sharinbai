@@ -159,7 +159,7 @@ def get_normalized_language_key(language: str) -> str:
         Normalized language code
     """
     if not language:
-        return get_default_language()
+        return ""
     
     # Replace underscores with hyphens which is standard separator
     lang_input = language.replace('_', '-')

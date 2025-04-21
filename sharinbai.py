@@ -12,7 +12,8 @@ from src.config.language_utils import (
     get_default_language,
     get_normalized_language_key,
     get_supported_languages,
-    is_language_supported
+    is_language_supported,
+    get_available_language_files
 )
 from src.structure.folder_generator import FolderGenerator
 from src.content.file_manager import FileManager
@@ -54,10 +55,6 @@ def main():
     
     # Initialize settings from args with default language
     settings = Settings().from_args(vars(args))
-    
-    # If language not provided, set default language
-    if not settings.language:
-        settings.language = get_default_language()
     
     # Set up logging early to capture any issues
     setup_logging(settings.log_level, settings.output_path)
@@ -101,20 +98,28 @@ def main():
             role = input("Please enter a specific role within the industry (optional, press Enter to skip): ")
             if role.strip():
                 settings.role = role
-        
-        # Ask for language if not provided
-        if not settings.language:
-            supported = get_supported_languages()
-            if supported:
-                print("Supported languages:")
-                for i, lang in enumerate(sorted(supported), 1):
-                    print(f"{i}. {lang}")
-                
-            language = input(f"Please enter the language for the folder structure (default: {get_default_language()}): ")
-            if language.strip():
-                settings.language = language
+    
+    # Ask for language if not provided for any command
+    if not settings.language:
+        supported = get_supported_languages()
+        if supported:
+            print("Supported languages:")
+            for i, lang in enumerate(sorted(supported), 1):
+                print(f"{i}. {lang}")
+            
+        language = input("Please select a language (enter language code or number from the list): ")
+        if language.strip():
+            # Convert numeric input to language code
+            if language.isdigit() and int(language) > 0 and int(language) <= len(supported):
+                selected_lang = sorted(supported)[int(language)-1]
+                logging.info(f"Selected language [{selected_lang}] by number {language}")
+                settings.language = selected_lang
             else:
-                settings.language = get_default_language()
+                logging.info(f"Entered language: {language}")
+                settings.language = language
+        else:
+            logging.error("Language is required but not provided")
+            sys.exit(1)
     
     # Ensure we have industry for all commands
     if not settings.industry:
@@ -125,6 +130,24 @@ def main():
     settings.language = get_normalized_language_key(settings.language)
     if args.language and settings.language != args.language:
         logging.info(f"Normalized language from {args.language} to {settings.language}")
+    
+    # Echo back language selection
+    logging.info(f"Using language: {settings.language}")
+    
+    # Show which resource files are being used
+    language_files = get_available_language_files()
+    if settings.language in language_files:
+        logging.info(f"Using resource file: {language_files[settings.language]}")
+    else:
+        base_lang = settings.language.split('-')[0] if '-' in settings.language else settings.language
+        if base_lang in language_files:
+            logging.info(f"Using resource file for base language: {language_files[base_lang]}")
+        else:
+            fallback_lang = "en"
+            if fallback_lang in language_files:
+                logging.info(f"Language not found, using fallback resource file: {language_files[fallback_lang]}")
+            else:
+                logging.warning("No matching language resource file found.")
     
     if not is_language_supported(settings.language):
         logging.warning(f"Language '{settings.language}' is not directly supported. Using best available match.")

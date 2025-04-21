@@ -18,7 +18,7 @@ class Settings:
         self.output_path = os.path.abspath("./out")
         
         # Default language
-        self.language = "en"
+        self.language = None
         
         # Default log level
         self.log_level = "INFO"
