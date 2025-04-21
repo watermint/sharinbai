@@ -10,6 +10,7 @@ sys.path.insert(0, project_root)
 
 import logging
 import argparse
+import yaml
 from pathlib import Path
 from src.config.settings import Settings
 from src.config.logging_config import setup_logging
@@ -210,6 +211,110 @@ def key_exists(obj, key_path):
     
     return True
 
+def process_batch_file(batch_file_path, log_level):
+    """
+    Process a batch YAML file containing multiple tasks.
+    
+    Args:
+        batch_file_path: Path to the batch YAML file
+        log_level: Logging level to use for all tasks
+        
+    Returns:
+        True if all tasks completed successfully, False otherwise
+    """
+    try:
+        with open(batch_file_path, 'r') as file:
+            batch_data = yaml.safe_load(file)
+    except Exception as e:
+        logging.critical(f"Failed to load batch file: {e}")
+        return False
+        
+    if not batch_data:
+        logging.error("Batch file is empty or invalid")
+        return False
+        
+    # Extract common settings if present
+    common_model = batch_data.get('model', 'llama3')
+    common_ollama_url = batch_data.get('ollama_url', None)
+    
+    tasks = batch_data.get('tasks', [])
+    if not tasks:
+        logging.error("No tasks defined in batch file")
+        return False
+        
+    logging.info(f"Processing {len(tasks)} tasks from batch file")
+    
+    # Track overall success
+    all_successful = True
+    
+    for i, task in enumerate(tasks):
+        logging.info(f"Processing task {i+1}/{len(tasks)}")
+        
+        # Extract task parameters with defaults
+        mode = task.get('mode', 'all')
+        if mode not in ['all', 'structure', 'file']:
+            logging.error(f"Invalid mode '{mode}' in task {i+1}, skipping")
+            all_successful = False
+            continue
+            
+        # Create args dictionary for this task
+        task_args = {
+            'command': mode,
+            'industry': task.get('industry'),
+            'path': task.get('path', './out'),
+            'language': task.get('language'),
+            'role': task.get('role'),
+            'model': task.get('model', common_model),
+            'ollama_url': task.get('ollama_url', common_ollama_url),
+            'short': task.get('short', False),
+            'log_level': log_level
+        }
+        
+        # Initialize settings from task args
+        settings = Settings().from_args(task_args)
+        
+        # Process this task
+        try:
+            folder_generator = FolderGenerator(settings.model, settings.ollama_url)
+            
+            success = False
+            if mode == 'all':
+                success = folder_generator.generate_all(
+                    settings.output_path, 
+                    settings.industry,
+                    settings.language,
+                    settings.role,
+                    task_args['short']
+                )
+            elif mode == 'file':
+                success = folder_generator.generate_files_only(
+                    settings.output_path,
+                    settings.industry,
+                    settings.language,
+                    settings.role,
+                    task_args['short']
+                )
+            elif mode == 'structure':
+                success = folder_generator.generate_structure_only(
+                    settings.output_path,
+                    settings.industry,
+                    settings.language,
+                    settings.role,
+                    task_args['short']
+                )
+                
+            if success:
+                logging.info(f"Task {i+1} completed successfully")
+            else:
+                logging.error(f"Task {i+1} completed with errors")
+                all_successful = False
+                
+        except Exception as e:
+            logging.error(f"Error in task {i+1}: {e}")
+            all_successful = False
+    
+    return all_successful
+
 def main():
     parser = argparse.ArgumentParser(description='Generate industry-specific folder structures with placeholder files')
     subparsers = parser.add_subparsers(dest='command', help='Command to execute')
@@ -227,6 +332,11 @@ def main():
     add_common_args(file_parser)
     structure_parser = subparsers.add_parser('structure', help='Create only folder structure without generating files')
     add_common_args(structure_parser)
+    
+    # Add the batch command
+    batch_parser = subparsers.add_parser('batch', help='Execute multiple tasks from a YAML file')
+    batch_parser.add_argument('--file', '-f', type=str, required=True, help='Path to the batch YAML file')
+    
     subparsers.add_parser('list-languages', help='List supported languages')
     subparsers.add_parser('test-languages', help='Test all language resources for missing keys')
     parser.add_argument('--log-level', type=str, default='INFO', 
@@ -248,6 +358,17 @@ def main():
     elif args.command == 'test-languages':
         success = test_languages()
         sys.exit(0 if success else 1)
+    elif args.command == 'batch':
+        # Handle batch command
+        setup_logging(args.log_level, 'batch_execution')
+        logging.info(f"Processing batch file: {args.file}")
+        success = process_batch_file(args.file, args.log_level)
+        if success:
+            logging.info("All batch tasks completed successfully")
+            sys.exit(0)
+        else:
+            logging.error("Some batch tasks failed")
+            sys.exit(1)
     
     # Initialize settings from args with default language
     settings = Settings().from_args(vars(args))

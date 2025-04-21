@@ -249,6 +249,68 @@ For advanced users, additional parameters can be specified:
 python sharinbai.py all --model gemma3:4b --path ./custom_output --log-level DEBUG
 ```
 
+### Batch Processing
+
+Sharinbai supports batch processing of multiple tasks using a YAML configuration file:
+
+```
+python sharinbai.py batch --file batch_tasks.yaml
+```
+
+The YAML file should contain a list of tasks to execute sequentially, along with optional common settings:
+
+```yaml
+# Common settings applied to all tasks (unless overridden)
+model: gemma3:12b
+ollama_url: http://localhost:11434
+
+# List of tasks to execute sequentially
+tasks:
+  # Task 1: Create structure for a restaurant
+  - mode: structure
+    path: ./out/restaurant
+    industry: Restaurant
+    role: Head Chef
+    language: en
+    short: true
+  
+  # Task 2: Create files for the restaurant structure
+  - mode: file
+    path: ./out/restaurant
+    language: en
+  
+  # Task 3: Create complete structure and files for a tech company
+  - mode: all
+    path: ./out/tech_company
+    industry: Software Development
+    role: Project Manager
+    language: es
+    model: mistral  # Override the common model for this task
+```
+
+#### Batch Configuration Options
+
+Each task in the batch file supports the following parameters:
+
+| Parameter | Description | Required |
+|-----------|-------------|----------|
+| `mode` | Execution mode: `all`, `structure`, or `file` | Yes |
+| `path` | Output directory path | No (defaults to `./out`) |
+| `industry` | Target industry | Yes (for `all` and `structure` modes) |
+| `role` | Specific role within the industry | No |
+| `language` | Language code | Yes |
+| `model` | Model to use for this task | No (uses common setting) |
+| `short` | Enable short mode (max 5 items) | No (defaults to `false`) |
+
+Common settings that apply to all tasks include:
+
+| Setting | Description |
+|---------|-------------|
+| `model` | Default model to use for all tasks |
+| `ollama_url` | URL for the Ollama API server |
+
+The batch process will execute each task sequentially and report on the success or failure of each operation.
+
 ## Troubleshooting
 
 ### Common Issues with Ollama
