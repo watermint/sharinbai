@@ -1,0 +1,67 @@
+
+tasks:
+  - mode: all
+    path: ./output/construction/de
+    industry: Baugewerbe
+    role: Projektmanager
+    language: de
+
+  - mode: all
+    path: ./output/construction/en
+    industry: Construction
+    role: Project Manager
+    language: en
+
+  - mode: all
+    path: ./output/construction/es
+    industry: Construcción
+    role: Gerente de Proyectos
+    language: es
+
+  - mode: all
+    path: ./output/construction/fr
+    industry: Construction
+    role: Gérant de Projets
+    language: fr
+
+  - mode: all
+    path: ./output/construction/it
+    industry: Costruzione
+    role: Responsabile Progetto
+    language: it
+
+  - mode: all
+    path: ./output/construction/ja
+    industry: 建設業
+    role: プロジェクトマネージャー
+    language: ja
+
+  - mode: all
+    path: ./output/construction/ko
+    industry: 건축업
+    role: 프로젝트 관리자
+    language: ko
+
+  - mode: all
+    path: ./output/construction/pt
+    industry: Construção
+    role: Gerente de Projetos
+    language: pt
+
+  - mode: all
+    path: ./output/construction/vi
+    industry: Công nghiệp xây dựng
+    role: Quản lý dự án
+    language: vi
+
+  - mode: all
+    path: ./output/construction/zh
+    industry: 建筑业
+    role: 项目经理
+    language: zh
+
+  - mode: all
+    path: ./output/construction/zh-TW
+    industry: 建築業
+    role: 專案經理
+    language: zh-TW

@@ -1,0 +1,185 @@
+
+tasks:
+  # German
+  - mode: structure
+    path: ./output/media/de
+    industry: Filmproduktion
+    role: Direktor
+    language: de
+
+  - mode: file
+    path: ./output/media/de
+    industry: Filmproduktion
+    role: Storyboard-Künstler
+    language: de
+
+  - mode: file
+    path: ./output/media/de
+    industry: Filmproduktion
+    role: Produktionskoordinator
+    language: de
+
+  # English
+  - mode: structure
+    path: ./output/media/en
+    industry: Film Production
+    role: Director
+    language: en
+
+  - mode: file
+    path: ./output/media/en
+    industry: Film Production
+    role: Storyboard Artist
+    language: en
+
+  - mode: file
+    path: ./output/media/en
+    industry: Film Production
+    role: Production Coordinator
+    language: en
+
+  # Spanish 
+  - mode: structure
+    path: ./output/media/es
+    industry: Producción de Cine
+    role: Director
+    language: es
+
+  - mode: file
+    path: ./output/media/es
+    industry: Producción de Cine
+    role: Guionista gráfico
+    language: es
+
+  - mode: file
+    path: ./output/media/es
+    industry: Producción de Cine
+    role: Coordinador de producción
+    language: es
+
+  # French
+  - mode: structure
+    path: ./output/media/fr
+    industry: Production de Cinéma
+    role: Réalisateur
+    language: fr
+
+  - mode: file
+    path: ./output/media/fr
+    industry: Production de Cinéma
+    role: Scénariste
+    language: fr
+
+  - mode: file
+    path: ./output/media/fr
+    industry: Production de Cinéma
+    role: Producteur
+    language: fr
+
+  # Italian
+  - mode: structure
+    path: ./output/media/it
+    industry: Produzione Cinematografica
+    role: Regista
+    language: it
+
+  - mode: file
+    path: ./output/media/it
+    industry: Produzione Cinematografica
+    role: Sceneggiatore
+    language: it
+
+  - mode: file
+    path: ./output/media/it
+    industry: Produzione Cinematografica
+    role: Produttore
+    language: it
+
+  # Japanese
+  - mode: structure
+    path: ./output/media/ja
+    industry: 映画プロダクション
+    role: 監督
+    language: ja
+
+  - mode: file
+    path: ./output/media/ja
+    industry: 映画プロダクション
+    role: ストーリーボードアーティスト
+    language: ja
+
+  - mode: file
+    path: ./output/media/ja
+    industry: 映画プロダクション
+    role: プロデューサー
+    language: ja
+
+  # Korean
+  - mode: structure
+    path: ./output/media/ko
+    industry: 영화 제작
+    role: 감독
+    language: ko
+
+  - mode: file 
+    path: ./output/media/ko
+    industry: 영화 제작
+    role: 스토리보드 아티스트
+    language: ko
+
+  - mode: file
+    path: ./output/media/ko
+    industry: 영화 제작
+    role: 프로덕션 코디네이터
+    language: ko
+
+  # Portuguese
+  - mode: structure
+    path: ./output/media/pt
+    industry: Produção Cinematográfica
+    role: Diretor
+    language: pt
+
+  - mode: file
+    path: ./output/media/pt
+    industry: Produção Cinematográfica
+    role: Scenarista
+    language: pt
+
+  # Chinese
+  - mode: structure
+    path: ./output/media/zh
+    industry: 电影制作
+    role: 导演
+    language: zh
+
+  - mode: file
+    path: ./output/media/zh
+    industry: 电影制作
+    role: 编剧
+    language: zh
+
+  - mode: file
+    path: ./output/media/zh
+    industry: 电影制作
+    role: 制片人
+    language: zh
+
+  # Chinese (Traditional)
+  - mode: structure
+    path: ./output/media/zh-TW
+    industry: 電影製作
+    role: 導演
+    language: zh-TW
+
+  - mode: file
+    path: ./output/media/zh-TW
+    industry: 電影製作
+    role: 編劇
+    language: zh-TW
+
+  - mode: file
+    path: ./output/media/zh-TW
+    industry: 電影製作
+    role: 製片人
+    language: zh-TW
