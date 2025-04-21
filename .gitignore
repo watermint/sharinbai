@@ -16,6 +16,7 @@ ENV/
 
 # Output and generated files
 output/
+test_output/
 
 # Logs
 debug.log

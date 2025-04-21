@@ -69,7 +69,8 @@
             "force": "Force overwrite existing folder",
             "scan": "Scan existing structure before generation",
             "max_depth": "Maximum folder depth (default: 3)",
-            "model": "Ollama model to use (default: gemma3:4b)"
+            "model": "Ollama model to use (default: gemma3:4b)",
+            "structure": "Create only folder structure without generating any files"
         }
     },
     

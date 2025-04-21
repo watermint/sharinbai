@@ -72,19 +72,20 @@
             "folder_structure_not_found": "語言範本中找不到資料夾結構範本。將使用基礎提示。"
         },
         "cli_args": {
-            "description": "根據產業和角色產生目錄結構。",
-            "industry": "要產生資料夾結構的產業",
-            "role": "資料夾結構的目標業務角色",
-            "output": "輸出目錄（預設：產業名稱）",
-            "language": "產生內容的語言（預設：系統語言）",
+            "description": "根據行業和角色生成目錄結構。",
+            "industry": "資料夾結構的行業",
+            "role": "資料夾結構的業務角色",
+            "output": "輸出目錄（預設：行業名稱）",
+            "language": "生成內容的語言（預設：系統語言）",
             "date_range": "日期範圍，格式為YYYY-MM-DD:YYYY-MM-DD",
-            "scenario": "產生業務情境",
+            "scenario": "生成業務情境",
             "min_files": "每個資料夾的最小檔案數（預設：3）",
-            "file": "僅產生特定檔案（逗號分隔路徑）",
-            "force": "覆蓋既有資料夾",
-            "scan": "產生前掃描現有結構",
-            "max_depth": "最大資料夾層級深度（預設：3）",
-            "model": "使用的Ollama模型（預設：gemma3:4b）"
+            "file": "僅生成特定檔案，以逗號分隔的路徑",
+            "force": "強制覆蓋現有資料夾",
+            "scan": "生成前掃描現有結構",
+            "max_depth": "最大資料夾深度（預設：3）",
+            "model": "使用的Ollama模型（預設：gemma3:4b）",
+            "structure": "僅建立資料夾結構，不生成任何檔案"
         }
     }
 } 

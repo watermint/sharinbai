@@ -39,6 +39,14 @@ To create a complete folder structure with files for a specific industry and rol
 python sharinbai.py all --industry "healthcare" --role "doctor" --language "en"
 ```
 
+### Generate Structure Only
+
+To create only the folder structure without generating any files:
+
+```
+python sharinbai.py structure --industry "healthcare" --role "doctor" --language "en"
+```
+
 ### Generate Files Only
 
 To generate or update files in an existing folder structure:
@@ -85,6 +93,12 @@ python sharinbai.py all --industry legal --language ja
 
 ```
 python sharinbai.py file --industry education --role professor
+```
+
+### Create Only Folder Structure for Retail Industry
+
+```
+python sharinbai.py structure --industry retail
 ```
 
 ## Testing

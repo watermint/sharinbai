@@ -6,7 +6,8 @@ import logging
 import os
 from pathlib import Path
 import re
-from typing import Optional
+import json
+from typing import Optional, Dict, Any
 
 class FileManager:
     """Handles file operations for the project"""
@@ -74,6 +75,31 @@ class FileManager:
         except Exception as e:
             logging.error(f"Failed to write file {file_path}: {e}")
             return False
+    
+    @staticmethod
+    def write_json_file(file_path: str, data: Dict[str, Any]) -> bool:
+        """
+        Write data to a JSON file.
+        
+        Args:
+            file_path: Path to the file
+            data: Data to write as JSON
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Ensure parent directory exists
+            directory = os.path.dirname(file_path)
+            if directory and not os.path.exists(directory):
+                os.makedirs(directory, exist_ok=True)
+                
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            return True
+        except Exception as e:
+            logging.error(f"Failed to write JSON file {file_path}: {e}")
+            return False
             
     @staticmethod
     def read_text_file(file_path: str) -> Optional[str]:
@@ -121,4 +147,22 @@ class FileManager:
         # Sanitize each part
         sanitized_parts = [FileManager.sanitize_path(part) for part in parts if part]
         # Join with base directory
-        return os.path.join(base_dir, *sanitized_parts) 
+        return os.path.join(base_dir, *sanitized_parts)
+    
+    @staticmethod
+    def read_json_file(file_path: str) -> Optional[Dict[str, Any]]:
+        """
+        Read data from a JSON file.
+        
+        Args:
+            file_path: Path to the file
+            
+        Returns:
+            Data from JSON file if successful, None otherwise
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            logging.error(f"Failed to read JSON file {file_path}: {e}")
+            return None 

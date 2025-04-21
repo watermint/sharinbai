@@ -31,7 +31,7 @@
       "industry": "Industry for folder structure",
       "role": "Business role for folder structure",
       "output": "Output directory (default: industry name)",
-      "language": "Language (default: system language)",
+      "language": "Language for generated content (default: system language)",
       "date_range": "Date range in format YYYY-MM-DD:YYYY-MM-DD",
       "scenario": "Generate business scenario",
       "min_files": "Minimum number of files per folder (default: 3)",
@@ -39,7 +39,8 @@
       "force": "Force overwrite existing folder",
       "scan": "Scan existing structure before generation",
       "max_depth": "Maximum folder depth (default: 3)",
-      "model": "Ollama model to use (default: from environment)"
+      "model": "Ollama model to use (default: gemma3:4b)",
+      "structure": "Create only folder structure without generating any files"
     },
     "error_messages": {
       "invalid_date_format": "Invalid date format: {error}. Date must be in YYYY-MM-DD format.",

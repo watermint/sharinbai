@@ -73,18 +73,19 @@
         },
         "cli_args": {
             "description": "根据行业和角色生成目录结构。",
-            "industry": "要生成文件夹结构的行业",
-            "role": "文件夹结构的目标业务角色",
-            "output": "输出目录（默认：行业名）",
+            "industry": "文件夹结构的行业",
+            "role": "文件夹结构的业务角色",
+            "output": "输出目录（默认：行业名称）",
             "language": "生成内容的语言（默认：系统语言）",
             "date_range": "日期范围，格式为YYYY-MM-DD:YYYY-MM-DD",
             "scenario": "生成业务场景",
             "min_files": "每个文件夹的最小文件数（默认：3）",
-            "file": "仅生成特定文件（逗号分隔路径）",
-            "force": "覆盖已有文件夹",
+            "file": "仅生成特定文件，以逗号分隔的路径",
+            "force": "强制覆盖现有文件夹",
             "scan": "生成前扫描现有结构",
-            "max_depth": "最大文件夹层级深度（默认：3）",
-            "model": "使用的Ollama模型（默认：gemma3:4b）"
+            "max_depth": "最大文件夹深度（默认：3）",
+            "model": "使用的Ollama模型（默认：gemma3:4b）",
+            "structure": "仅创建文件夹结构，不生成任何文件"
         }
     }
 } 
