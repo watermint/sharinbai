@@ -23,6 +23,104 @@ from src.config.language_utils import (
 from src.structure.folder_generator import FolderGenerator
 from src.content.file_manager import FileManager
 
+def test_languages():
+    """
+    Test all supported language resources and detect missing keys.
+    """
+    file_manager = FileManager()
+    language_files = get_available_language_files()
+    
+    if not language_files:
+        print("No language resource files found.")
+        return False
+    
+    print(f"Found {len(language_files)} language resource files.")
+    
+    # Load all language resources
+    resources = {}
+    
+    # First pass: load all resources
+    for lang_code, file_path in language_files.items():
+        data = file_manager.read_json_file(str(file_path))
+        if data:
+            resources[lang_code] = data
+    
+    # No resources loaded
+    if not resources:
+        print("Failed to load any language resources.")
+        return False
+    
+    # Get reference language (default to 'en' or first available)
+    reference_lang = 'en' if 'en' in resources else next(iter(resources.keys()))
+    print(f"Using {reference_lang} as reference language.")
+    
+    # Extract keys from reference language
+    reference_keys = set()
+    extract_keys(resources[reference_lang], "", reference_keys)
+    
+    # Second pass: check for missing keys
+    has_issues = False
+    for lang_code, resource in resources.items():
+        if lang_code == reference_lang:
+            continue
+            
+        print(f"\nChecking {lang_code}:")
+        missing_keys = []
+        
+        # Check for missing keys against reference language
+        for key in reference_keys:
+            if not key_exists(resource, key):
+                missing_keys.append(key)
+                has_issues = True
+        
+        if missing_keys:
+            print(f"  Missing {len(missing_keys)} key(s):")
+            for key in sorted(missing_keys):
+                print(f"    - {key}")
+        else:
+            print("  No missing keys found.")
+    
+    return not has_issues
+
+def extract_keys(obj, prefix, result_set):
+    """
+    Recursively extract all keys from a nested dictionary.
+    
+    Args:
+        obj: Dictionary to extract keys from
+        prefix: Current key prefix
+        result_set: Set to store extracted keys
+    """
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            new_key = f"{prefix}.{key}" if prefix else key
+            if isinstance(value, dict):
+                extract_keys(value, new_key, result_set)
+            else:
+                result_set.add(new_key)
+
+def key_exists(obj, key_path):
+    """
+    Check if a key path exists in a nested dictionary.
+    
+    Args:
+        obj: Dictionary to check
+        key_path: Dot-separated key path
+        
+    Returns:
+        True if key exists, False otherwise
+    """
+    parts = key_path.split(".")
+    current = obj
+    
+    for part in parts:
+        if isinstance(current, dict) and part in current:
+            current = current[part]
+        else:
+            return False
+    
+    return True
+
 def main():
     parser = argparse.ArgumentParser(description='Generate industry-specific folder structures with placeholder files')
     subparsers = parser.add_subparsers(dest='command', help='Command to execute')
@@ -41,6 +139,7 @@ def main():
     structure_parser = subparsers.add_parser('structure', help='Create only folder structure without generating files')
     add_common_args(structure_parser)
     subparsers.add_parser('list-languages', help='List supported languages')
+    subparsers.add_parser('test-languages', help='Test all language resources for missing keys')
     parser.add_argument('--log-level', type=str, default='INFO', 
                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], 
                        help='Logging level')
@@ -57,6 +156,9 @@ def main():
         else:
             print("No language resource files found.")
         sys.exit(0)
+    elif args.command == 'test-languages':
+        success = test_languages()
+        sys.exit(0 if success else 1)
     
     # Initialize settings from args with default language
     settings = Settings().from_args(vars(args))

@@ -22,7 +22,8 @@
     "json_error_message": "There was an error parsing your previous response. Please ensure you provide a syntactically valid JSON object with proper braces. All folder names must use British English spelling.",
     "structure_error_message": "The JSON MUST include these keys: {keys}. All folder names must use British English spelling.",
     "structure_error_format": "IMPORTANT: JSON must include the following keys: {keys}. All folder names must use British English spelling.",
-    "parsing_error_message": "IMPORTANT: There was an error parsing your previous response. Please provide a valid JSON object with correct braces. All folder names must use British English spelling."
+    "parsing_error_message": "IMPORTANT: There was an error parsing your previous response. Please provide a valid JSON object with correct braces. All folder names must use British English spelling.",
+    "level1_folders_prompt": "Create a structure of level 1 folders for the {industry} industry {role_text}. Include a clear description of the purpose and business function for each folder.\n\n{date_range}\n\nRespond with a JSON structure in the following format:\n\n{\n  \"industry\": \"{industry}\",\n  \"folders\": {\n    \"FolderName1\": {\n      \"description\": \"Clear description of the business purpose of the folder\"\n    },\n    \"FolderName2\": {\n      \"description\": \"Clear description of the business purpose of the folder\"\n    },\n    ...\n  }\n}\n\nCreate specific and appropriate folder names for the {industry} industry. Provide detailed descriptions explaining the business purpose of each folder.\n\nIMPORTANT: Return only the JSON object. Do not include any additional text, explanations, or comments before or after the JSON. Do not use phrases like \"Here is the JSON\" or \"I hope this helps\". Do not wrap the JSON in a code block."
   },
   
   "ui_strings": {
@@ -51,7 +52,28 @@
     "industry_label": "Industry:",
     "role_label": "Role:",
     "period_label": "Period:",
-    "context_header": "Business Context"
+    "context_header": "Business Context",
+    "content_header": "Content",
+    "date_footer": ", Date: {date}",
+    "description_label": "Description:",
+    "doc_sample_text": "This document was generated as a sample.",
+    "error_messages": {
+      "fallback_file_error": "Error creating fallback file: {error}",
+      "folder_structure_not_found": "No folder structure template found in language template. Using base prompt.",
+      "json_parsing_error": "JSON parsing error: {error}",
+      "language_mapping_not_found": "Language mapping file not found: {file}",
+      "template_file_not_found": "Template file {file} not found. Using default en-GB template."
+    },
+    "fallback_file_template": "# {file_name}\n\n{description}\n\nIndustry: {industry}\nRole: {role}\n",
+    "file_info_header": "File Information",
+    "file_list_header": "Files:",
+    "filename_label": "Filename:",
+    "footer_text": "This file was generated as a sample.",
+    "industry_footer": "Industry: {industry}",
+    "not_specified": "Not specified",
+    "pdf_sample_text": "This document was generated as a sample.",
+    "role_footer": ", Role: {role_text}",
+    "sheet_title": "Overview"
   },
   
   "date_formats": {
@@ -66,14 +88,26 @@
     "date_range_prompt": "The folder structure should accommodate documents from {start_date} to {end_date}.",
     "date_organization_prompt": "Include appropriate date-based organisation for documents spanning from {start_year} to {end_year}.",
     "existing_structure_prompt": "The existing partial structure is: {structure}",
-    "scenario_prompt": "The business scenario is: {scenario}"
+    "scenario_prompt": "The business scenario is: {scenario}",
+    "append_date_range": "\n\n{date_range_text}\n",
+    "date_range_text": "Time period covered: {start_date} to {end_date}",
+    "document_date_prompt": "\n\nThis document is dated {date}. Please include this date in the document header/title and ensure all content is appropriate for this date. Reference this date throughout the document where relevant.",
+    "example_prompt": "\n\nHere is an example of a similar {doc_type} for reference:\n\n{examples}\n\nPlease create content in a similar {style_type}, but with different {content_type} appropriate for the current context.",
+    "role_prompt": "\nYou are creating a folder structure for a {role} in this industry.",
+    "scenario_context_prompt": "Business scenario context:\n{scenario}",
+    "scenario_prompt": "\nPlease generate a folder structure based on the following business scenario:\n\n{scenario}",
+    "scenario_date_range_prompt": "The time period is from {start_date} to {end_date}.",
+    "scenario_role_prompt": "You are working as a {role}.",
+    "spreadsheet_date_prompt": "\n\nThis spreadsheet is dated {date}. Please include this date in the spreadsheet header and ensure all data is appropriate for this time period. If this is a reporting or tracking document, include data before {date} in the spreadsheet.",
+    "text_date_prompt": "\n\nThis text file is dated {date}. Please include this date in the file content and ensure all information is appropriate for this date."
   },
   
-  "system_messages": {
+  "content_generation": {
     "xlsx_generation": "Create contents for an Excel spreadsheet. Return a JSON object with the following structure:\n{\n  \"sheets\": [\n    {\n      \"name\": \"SheetName\",\n      \"headers\": [\"Header1\", \"Header2\", ...],\n      \"data\": [\n        [\"Row1Cell1\", \"Row1Cell2\", ...],\n        [\"Row2Cell1\", \"Row2Cell2\", ...]\n      ]\n    }\n  ]\n}"
   },
-  
-  "file_generation_prompts": {
-    "random_files_prompt": "Please generate {count} filenames appropriate for the \"{folder_name}\" folder in the {industry} industry. Provide a name, type, and description for each file. Use only the following file types: docx, xlsx, pdf, txt, png, jpg. Respond with a JSON object in the following format: {{\"files\": [{{\"name\": \"filename.extension\", \"type\": \"file extension (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"brief description of the file content\"}}]}}. For a level {folder_level} folder, the files should relate to {folder_name} and pertain to {keywords}. Do not use filenames containing placeholder text like \"template\", \"example\", \"sample\". Ensure filenames are specific, practical, and realistic. All names should be in British English."
+  "prompts": {
+    "content_generation": "Please generate content for {description} in the {industry} industry{role_context}. The content should be in {language}{file_type_context}. Keep it concise and professional.",
+    "role_context": " (for a {role})",
+    "file_type_context": ". The output should be in {file_type} format"
   }
 } 

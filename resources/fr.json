@@ -26,14 +26,16 @@
         "level1_folders_prompt": "Créez une structure de dossiers de Niveau 1 pour l'industrie {industry}{role_text}. Chaque dossier doit avoir une description claire de son objectif et de sa fonction commerciale.\n\n{date_range}\n\nVeuillez répondre avec une structure JSON dans le format suivant :\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"NomDossier1\": {{\n      \"description\": \"Description claire de l'objectif commercial du dossier\"\n    }},\n    \"NomDossier2\": {{\n      \"description\": \"Description claire de l'objectif commercial du dossier\"\n    }},\n    ...\n  }}\n}}\n\nCréez des noms de dossiers spécifiques et appropriés pour l'industrie {industry}. Chaque dossier doit avoir une description détaillée expliquant son objectif commercial.\n\nIMPORTANT : Tous les noms de dossiers doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues.\n\nIMPORTANT : Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'."
     },
     
-    "system_messages": {
-        "xlsx_generation": "Créez des contenus pour une feuille de calcul Excel. Retournez un objet JSON avec la structure suivante :\n{\n  \"sheets\": [\n    {\n      \"name\": \"NomFeuille\",\n      \"headers\": [\"Entête1\", \"Entête2\", ...],\n      \"data\": [\n        [\"Ligne1Cellule1\", \"Ligne1Cellule2\", ...],\n        [\"Ligne2Cellule1\", \"Ligne2Cellule2\", ...]\n      ]\n    }\n  ]\n}"
+    "prompts": {
+        "content_generation": "Générez du contenu pour {description} dans l'industrie {industry}{role_context}. Le contenu doit être en {language}{file_type_context}. Soyez concis et professionnel.",
+        "role_context": " en tant que {role}",
+        "file_type_context": " et au format {file_type}"
     },
     
-    "file_generation_prompts": {
-        "random_files_prompt": "Veuillez générer {count} noms de fichiers appropriés pour le dossier \"{folder_name}\" dans l'industrie {industry}. Fournissez pour chaque fichier un nom, un type et une description. Utilisez uniquement les types de fichiers suivants : docx, xlsx, pdf, txt, png, jpg. Répondez avec un objet JSON au format suivant : {{\"files\": [{{\"name\": \"nomfichier.extension\", \"type\": \"extension de fichier (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"brève description du contenu du fichier\"}}]}}. Pour un dossier de niveau {folder_level}, les fichiers doivent être liés à {folder_name} et se rapporter à {keywords}. N'utilisez pas de noms de fichiers contenant des textes génériques comme \"modèle\", \"exemple\", \"template\". Assurez-vous que les noms de fichiers sont spécifiques, pratiques et réalistes."
+    "content_generation": {
+        "xlsx_generation": "Générez du contenu pour une feuille Excel. Répondez avec un objet JSON ayant la structure suivante :\n{\n  \"sheets\": [\n    {\n      \"name\": \"NomFeuille\",\n      \"headers\": [\"Entête1\", \"Entête2\", ...],\n      \"data\": [\n        [\"Ligne1Cellule1\", \"Ligne1Cellule2\", ...],\n        [\"Ligne2Cellule1\", \"Ligne2Cellule2\", ...]\n      ]\n    }\n  ]\n}"
     },
-    
+
     "ui_strings": {
         "sheet_title": "Aperçu",
         "industry_label": "Industrie :",

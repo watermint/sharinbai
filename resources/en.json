@@ -32,14 +32,10 @@
         "file_type_context": ". The output should be in {file_type} format"
     },
     
-    "system_messages": {
+    "content_generation": {
         "xlsx_generation": "Create contents for an Excel spreadsheet. Return a JSON object with the following structure:\n{\n  \"sheets\": [\n    {\n      \"name\": \"SheetName\",\n      \"headers\": [\"Header1\", \"Header2\", ...],\n      \"data\": [\n        [\"Row1Cell1\", \"Row1Cell2\", ...],\n        [\"Row2Cell1\", \"Row2Cell2\", ...]\n      ]\n    }\n  ]\n}"
     },
-    
-    "file_generation_prompts": {
-        "random_files_prompt": "Please generate {count} filenames appropriate for the \"{folder_name}\" folder in the {industry} industry. Provide a name, type, and description for each file. Use only the following file types: docx, xlsx, pdf, txt, png, jpg. Respond with a JSON object in the following format: {{\"files\": [{{\"name\": \"filename.extension\", \"type\": \"file extension (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"brief description of the file content\"}}]}}. For a level {folder_level} folder, the files should relate to {folder_name} and pertain to {keywords}. Do not use filenames containing placeholder text like \"template\", \"example\", \"sample\". Ensure filenames are specific, practical, and realistic."
-    },
-    
+
     "ui_strings": {
         "sheet_title": "Overview",
         "industry_label": "Industry:",

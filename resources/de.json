@@ -96,10 +96,7 @@
         "date_range_text": "Abgedeckter Zeitraum: {start_date} bis {end_date}",
         "append_date_range": "\n\n{date_range_text}\n"
     },
-    "file_generation_prompts": {
-        "random_files_prompt": "Bitte generieren Sie {count} Dateinamen, die für den Ordner \"{folder_name}\" in der {industry}-Branche geeignet sind. Geben Sie für jede Datei einen Namen, Typ und eine Beschreibung an. Verwenden Sie nur die folgenden Dateitypen: docx, xlsx, pdf, txt, png, jpg. Antworten Sie mit einem JSON-Objekt im folgenden Format: {{\"files\": [{{\"name\": \"Dateiname.Erweiterung\", \"type\": \"Dateierweiterung (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"Kurze Beschreibung des Dateiinhalts\"}}]}}. Für einen Ordner auf Ebene {folder_level} sollten die Dateien mit {folder_name} zusammenhängen und sich auf {keywords} beziehen. Verwenden Sie keine Dateinamen mit Platzhaltertext wie \"Vorlage\", \"Beispiel\", \"Muster\". Stellen Sie sicher, dass die Dateinamen spezifisch, praktisch und realistisch sind."
-    },
-    "system_messages": {
+    "content_generation": {
         "xlsx_generation": "Erstellen Sie Inhalte für eine Excel-Tabelle. Geben Sie ein JSON-Objekt mit der folgenden Struktur zurück:\n{\n  \"sheets\": [\n    {\n      \"name\": \"Tabellenname\",\n      \"headers\": [\"Überschrift1\", \"Überschrift2\", ...],\n      \"data\": [\n        [\"Zeile1Zelle1\", \"Zeile1Zelle2\", ...],\n        [\"Zeile2Zelle1\", \"Zeile2Zelle2\", ...]\n      ]\n    }\n  ]\n}"
     }
 } 

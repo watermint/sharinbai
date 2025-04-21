@@ -32,12 +32,8 @@
         "file_type_context": ". Đầu ra nên ở định dạng {file_type}"
     },
     
-    "system_messages": {
+    "content_generation": {
         "xlsx_generation": "Tạo nội dung cho một bảng tính Excel. Trả về một đối tượng JSON với cấu trúc sau:\n{\n  \"sheets\": [\n    {\n      \"name\": \"TênBảng\",\n      \"headers\": [\"TiêuĐề1\", \"TiêuĐề2\", ...],\n      \"data\": [\n        [\"DòngHàng1Ô1\", \"DòngHàng1Ô2\", ...],\n        [\"DòngHàng2Ô1\", \"DòngHàng2Ô2\", ...]\n      ]\n    }\n  ]\n}"
-    },
-    
-    "file_generation_prompts": {
-        "random_files_prompt": "Vui lòng tạo {count} tên tệp phù hợp cho thư mục \"{folder_name}\" trong ngành {industry}. Cung cấp tên, loại và mô tả cho mỗi tệp. Chỉ sử dụng các loại tệp sau: docx, xlsx, pdf, txt, png, jpg. Phản hồi với một đối tượng JSON theo định dạng sau: {{\"files\": [{{\"name\": \"tên_tệp.phần_mở_rộng\", \"type\": \"phần mở rộng tệp (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"mô tả ngắn gọn về nội dung tệp\"}}]}}. Đối với thư mục cấp {folder_level}, các tệp nên liên quan đến {folder_name} và thuộc về {keywords}. Không sử dụng tên tệp chứa văn bản giữ chỗ như \"mẫu\", \"ví dụ\", \"mẫu\". Đảm bảo tên tệp cụ thể, thực tế và thực tế."
     },
     
     "ui_strings": {

@@ -97,11 +97,7 @@
         "append_date_range": "\n\n{date_range_text}\n"
     },
     
-    "system_messages": {
+    "content_generation": {
         "xlsx_generation": "Genera contenido para una hoja de cálculo Excel. Responde con un objeto JSON con la siguiente estructura:\n{\n  \"sheets\": [\n    {\n      \"name\": \"NombreHoja\",\n      \"headers\": [\"Encabezado1\", \"Encabezado2\", ...],\n      \"data\": [\n        [\"Fila1Celda1\", \"Fila1Celda2\", ...],\n        [\"Fila2Celda1\", \"Fila2Celda2\", ...]\n      ]\n    }\n  ]\n}"
-    },
-    
-    "file_generation_prompts": {
-        "random_files_prompt": "Genera {count} nombres de archivos apropiados para la carpeta \"{folder_name}\" en la industria {industry}. Proporciona nombre, tipo y descripción para cada archivo. Utiliza únicamente los siguientes tipos de archivo: docx, xlsx, pdf, txt, png, jpg. Responde con un objeto JSON en el siguiente formato: {{\"files\": [{{\"name\": \"nombre_archivo.extensión\", \"type\": \"extensión del archivo (docx, xlsx, pdf, txt, png, jpg, jpeg, webp, gif)\", \"description\": \"breve descripción del contenido del archivo\"}}]}}. Para carpetas de nivel {folder_level}, los archivos deben estar relacionados con {folder_name} y hacer referencia a {keywords}. No uses nombres de archivos con textos de marcador de posición como \"plantilla\", \"ejemplo\" o \"muestra\". Asegúrate de que los nombres de los archivos sean específicos, prácticos y realistas. Todos los nombres deben estar en español."
     }
 } 

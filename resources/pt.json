@@ -26,6 +26,16 @@
         "level1_folders_prompt": "Crie uma estrutura de pastas de Nível 1 para a indústria {industry}{role_text}. Cada pasta deve ter uma descrição clara de seu propósito e função comercial.\n\n{date_range}\n\nPor favor, responda com uma estrutura JSON no seguinte formato:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"NomePasta1\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    \"NomePasta2\": {{\n      \"description\": \"Descrição clara do propósito comercial da pasta\"\n    }},\n    ...\n  }}\n}}\n\nCrie nomes de pastas específicos e apropriados para a indústria {industry}. Cada pasta deve ter uma descrição detalhada explicando seu propósito comercial.\n\nIMPORTANTE: Todos os nomes de pastas devem estar em português. Não use nomes de pastas em outros idiomas.\n\nIMPORTANTE: Retorne APENAS o objeto JSON sem texto adicional, notas ou explicações antes ou depois. Não envolva o JSON em blocos de código. Não inclua frases como 'Aqui está o JSON' ou 'Espero que isso ajude'."
     },
     
+    "prompts": {
+        "content_generation": "Gere conteúdo para {description} na indústria {industry}{role_context}. O conteúdo deve ser em {language}{file_type_context}. Seja conciso e profissional.",
+        "role_context": " como {role}",
+        "file_type_context": " e no formato {file_type}"
+    },
+    
+    "content_generation": {
+        "xlsx_generation": "Gere conteúdo para uma planilha Excel. Responda com um objeto JSON com a seguinte estrutura:\n{\n  \"sheets\": [\n    {\n      \"name\": \"NomeDaFolha\",\n      \"headers\": [\"Cabeçalho1\", \"Cabeçalho2\", ...],\n      \"data\": [\n        [\"Linha1Célula1\", \"Linha1Célula2\", ...],\n        [\"Linha2Célula1\", \"Linha2Célula2\", ...]\n      ]\n    }\n  ]\n}"
+    },
+    
     "ui_strings": {
         "sheet_title": "Visão Geral",
         "industry_label": "Indústria:",
@@ -89,13 +99,5 @@
         "scenario_context_prompt": "Contexto do Cenário Empresarial:\n{scenario}",
         "date_range_text": "Intervalo de Datas: {start_date} - {end_date}",
         "append_date_range": "\n\n{date_range_text}\n"
-    },
-    
-    "system_messages": {
-        "xlsx_generation": "Gere conteúdo para uma planilha Excel. Responda com um objeto JSON com a seguinte estrutura:\n{\n  \"sheets\": [\n    {\n      \"name\": \"NomeDaFolha\",\n      \"headers\": [\"Cabeçalho1\", \"Cabeçalho2\", ...],\n      \"data\": [\n        [\"Linha1Célula1\", \"Linha1Célula2\", ...],\n        [\"Linha2Célula1\", \"Linha2Célula2\", ...]\n      ]\n    }\n  ]\n}"
-    },
-    
-    "file_generation_prompts": {
-        "random_files_prompt": "Gere {count} nomes de arquivos apropriados para a pasta \"{folder_name}\" na indústria {industry}. Forneça nome, tipo e descrição para cada arquivo. Use apenas os seguintes tipos de arquivo: docx, xlsx, pdf, txt, png, jpg. Responda com um objeto JSON no seguinte formato: {{\"files\": [{{\"name\": \"nome_do_arquivo.extensão\", \"type\": \"extensão do arquivo (docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"breve descrição do conteúdo do arquivo\"}}]}}. Para pastas de nível {folder_level}, os arquivos devem estar relacionados a {folder_name} e fazer referência a {keywords}. Não use nomes de arquivos com textos de espaço reservado como \"modelo\", \"exemplo\" ou \"amostra\". Certifique-se de que os nomes dos arquivos sejam específicos, práticos e realistas. Todos os nomes devem estar em português."
     }
 } 

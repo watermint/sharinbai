@@ -7,7 +7,7 @@
         "json_error_message": "解析上次响应时发生错误。请提供包含正确括号的语法有效的JSON对象。所有文件夹名请用中文创建，不要使用英文名称。",
         "structure_error_message": "JSON必须包含以下键: {keys}。所有文件夹名和键名请用中文，不要用英文名称。",
         "structure_error_format": "重要: JSON必须包含以下键: {keys}。所有名称请用中文，不要用英文名称。",
-        "parsing_error_message": "重要: 解析上次响应时发生错误。请提供包含正确括号的有效JSON对象。所有文件夹名请用中文创建，不要用英文名称。",
+        "parsing_error_message": "重要: 解析上次响应时发生错误。请提供包含正确括号的有效JSON对象。所有文件夹名请用中文创建，不要使用英文名称。",
         "level1_folders_prompt": "请为{industry}行业{role_text}创建一级文件夹结构。每个文件夹需包含其用途和业务功能的明确说明。\n\n{date_range}\n\n请按以下JSON格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"文件夹名1\": {{\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    }},\n    \"文件夹名2\": {{\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    }},\n    ...\n  }}\n}}\n\n请为{industry}行业创建具体且合适的中文文件夹名，并为每个文件夹添加详细的业务目的说明。\n\n重要: 所有文件夹名请用中文创建，如用\"市场部\"而不是\"Marketing\"，\"人事部\"而不是\"HR\"，\"财务部\"而不是\"Finance\"。不要使用英文文件夹名。\n\n重要: 只返回JSON对象。不要在JSON前后添加额外文本、说明或注释。不要包含\"JSON如下\"或\"希望这对您有帮助\"等短语。不要用代码块包裹JSON。"
     },
     "json_fix_prompts": {
@@ -28,9 +28,6 @@
         "scenario_context_prompt": "业务场景上下文：\n{scenario}",
         "date_range_text": "适用期间: {start_date} 至 {end_date}",
         "append_date_range": "\n\n{date_range_text}\n"
-    },
-    "file_generation_prompts": {
-        "random_files_prompt": "为{industry}行业的\"{folder_name}\"文件夹生成{count}个适当的文件名。请提供每个文件的名称、类型和描述。只使用以下文件类型：docx, xlsx, pdf, txt, png, jpg。以下列JSON对象格式回应：{\"files\": [{\"name\": \"文件名.扩展名\", \"type\": \"文件扩展名(docx, xlsx, pdf, txt, png, jpg)\", \"description\": \"简要描述文件内容\"}]}。对于级别{folder_level}的文件夹，文件应与{folder_name}相关并引用{keywords}。请勿使用包含\"模板\"、\"示例\"或\"样本\"等占位符文本的文件名。确保文件名具体、实用且实际。所有名称必须为中文。"
     },
     "folder_structure": "请为以下行业建议项目文件夹结构，格式为JSON: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n请创建详细且实用的文件夹结构。\n\n重要: 所有文件夹名和文件名请用中文，不要用英文名称。\n\n只返回JSON对象，不要包含额外说明或文本。",
     "folder_structure_prompt": {
@@ -88,7 +85,12 @@
             "structure": "仅创建文件夹结构，不生成任何文件"
         }
     },
-    "system_messages": {
+    "content_generation": {
         "xlsx_generation": "为Excel电子表格生成内容。请以下列JSON对象结构回应：\n{\n  \"sheets\": [\n    {\n      \"name\": \"工作表名称\",\n      \"headers\": [\"标题1\", \"标题2\", ...],\n      \"data\": [\n        [\"行1单元格1\", \"行1单元格2\", ...],\n        [\"行2单元格1\", \"行2单元格2\", ...]\n      ]\n    }\n  ]\n}"
+    },
+    "prompts": {
+        "content_generation": "为{industry}行业的{description}{role_context}生成内容。内容应该使用{language}{file_type_context}。保持简洁专业。",
+        "role_context": "，作为{role}",
+        "file_type_context": "，格式为{file_type}"
     }
 } 
