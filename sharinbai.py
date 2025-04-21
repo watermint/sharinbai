@@ -86,7 +86,7 @@ def main():
             settings.role = role
     
     # Ensure we have industry for all commands
-    if not hasattr(settings, 'industry') or not settings.industry:
+    if not settings.industry:
         logging.error("Industry is required but not provided. Use --industry/-i option or ensure .metadata.json exists.")
         sys.exit(1)
     

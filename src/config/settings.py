@@ -26,6 +26,10 @@ class Settings:
         # Default Ollama API URL
         self.ollama_url = os.environ.get("OLLAMA_API_URL", "http://localhost:11434")
         
+        # Initialize industry and role with None
+        self.industry = None
+        self.role = None
+        
     def from_args(self, args: Dict[str, Any]) -> 'Settings':
         """
         Update settings from command line arguments.
