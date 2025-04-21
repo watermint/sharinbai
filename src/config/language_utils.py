@@ -82,13 +82,13 @@ def get_available_language_files() -> Dict[str, Path]:
     # Scan all resource paths
     for resource_path in resource_paths:
         if resource_path.exists() and resource_path.is_dir():
-            for file_path in resource_path.glob("*.json"):
+            for file_path in resource_path.glob("prompts-*.json"):
                 # Skip non-language files
                 if file_path.stem.lower() in ["language_mapping"]:
                     continue
                     
-                # Extract language code from filename (e.g., "en.json" -> "en")
-                lang_code = file_path.stem.lower()
+                # Extract language code from filename (e.g., "prompts-en.json" -> "en")
+                lang_code = file_path.stem.lower().replace("prompts-", "")
                 
                 # Only add if we haven't seen this language code yet
                 if lang_code not in language_files:
