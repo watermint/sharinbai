@@ -115,7 +115,19 @@ class OllamaClient:
         else:
             system_prompt = "Your response must be a valid JSON object. Do not include any explanations, markdown or text outside the JSON structure."
         
+        # Log the final prompt being sent
+        logging.debug(f"LLM Prompt: {prompt}")
+        if system_prompt:
+            logging.debug(f"LLM System Prompt: {system_prompt}")
+            
         raw_response = self._make_request(prompt, system_prompt, max_attempts)
+        
+        # Log the raw response received
+        if raw_response:
+            logging.debug(f"LLM Raw Response: {raw_response}")
+        else:
+            logging.debug("LLM Raw Response: None (Request failed)")
+            
         if not raw_response:
             return None
             

@@ -5,15 +5,22 @@ Folder structure generator
 import logging
 import os
 import json
+import sys
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Union, Tuple
 
-from src.foundation.llm_client import OllamaClient
-from src.content.file_manager import FileManager
-from src.content.content_generator import ContentGenerator
+from ..config.file_manager import FileManager
+from ..content.content_generator import ContentGenerator
+from ..foundation.llm_client import OllamaClient
+from ..config.language_utils import get_translation
 
 # Custom exception for short mode limit
 class ShortModeLimitReached(Exception):
+    pass
+
+# Custom exception for missing localized template
+class LocalizedTemplateNotFoundError(Exception):
+    """Raised when a localized template is not found for the selected language."""
     pass
 
 class FolderGenerator:
@@ -680,33 +687,29 @@ class FolderGenerator:
             
         Returns:
             Prompt string
+            
+        Raises:
+            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
-        role_context = f" for a {role}" if role else ""
+        # Use get_translation to get the localized prompt from resources
+        prompt_template = get_translation("folder_structure_prompt.level1", language, None)
         
-        return (
-            f"You are an expert in {industry} documentation{role_context}. "
-            f"Create a logical top-level folder structure for {industry} documentation{role_context}. "
-            f"Create between 3-7 top-level folders that would contain all necessary documentation. "
-            f"For each folder, provide a brief description of what it would contain. "
-            f"If a folder is meant to contain regular reports or logs that would be created on a daily, weekly, "
-            f"or monthly basis (like performance reports, sales logs, etc.), mark it with purpose 'timeseries'. "
-            f"Note that folders with purpose 'timeseries' will not contain subfolders, only regularly updated files. "
-            f"Limit the number of timeseries folders to ensure they are only used when truly appropriate. "
-            f"The folder names and descriptions should be in {language} language. "
-            f"Return the response as a JSON object with the following structure: "
-            "{\n"
-            '  "folders": {\n'
-            '    "folder1": {\n'
-            '      "description": "Description of folder1",\n'
-            '      "purpose": "general"\n'
-            '    },\n'
-            '    "timeseries_folder": {\n'
-            '      "description": "Regular daily reports",\n'
-            '      "purpose": "timeseries"\n'
-            '    },\n'
-            '    ...\n'
-            '  }\n'
-            "}"
+        # If no translated template found, raise an exception
+        if not prompt_template:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level1)"
+            logging.error(error_msg)
+            raise LocalizedTemplateNotFoundError(error_msg)
+        
+        # Role placeholder might be formatted differently in localized templates
+        # so we'll use the role_text format from the language templates
+        role_text = f" for a {role}" if role else ""
+        date_range = ""  # Additional parameter that might be used in templates
+        
+        # Replace placeholders in the template
+        return prompt_template.format(
+            industry=industry,
+            role_text=role_text,
+            date_range=date_range
         )
     
     def _get_level2_folders_prompt(self, industry: str, l1_folder_name: str, 
@@ -724,33 +727,28 @@ class FolderGenerator:
             
         Returns:
             Prompt string
+            
+        Raises:
+            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
-        role_context = f" for a {role}" if role else ""
+        # Use get_translation to get the localized prompt from resources
+        prompt_template = get_translation("folder_structure_prompt.level2", language, None)
         
-        return (
-            f"You are an expert in {industry} documentation{role_context}. "
-            f"Create a logical folder structure for the '{l1_folder_name}' folder, which contains: {l1_description}. "
-            f"Create between 2-5 subfolders that would contain all necessary documentation for this area. "
-            f"For each folder, provide a brief description of what it would contain. "
-            f"If a folder is meant to contain regular reports or logs that would be created on a daily, weekly, "
-            f"or monthly basis (like performance reports, sales logs, etc.), mark it with purpose 'timeseries'. "
-            f"Note that folders with purpose 'timeseries' will not contain subfolders, only regularly updated files. "
-            f"Limit the number of timeseries folders to ensure they are only used when truly appropriate. "
-            f"The folder names and descriptions should be in {language} language. "
-            f"Return the response as a JSON object with the following structure: "
-            "{\n"
-            '  "folders": {\n'
-            '    "folder1": {\n'
-            '      "description": "Description of folder1",\n'
-            '      "purpose": "general"\n'
-            '    },\n'
-            '    "timeseries_folder": {\n'
-            '      "description": "Regular weekly reports",\n'
-            '      "purpose": "timeseries"\n'
-            '    },\n'
-            '    ...\n'
-            '  }\n'
-            "}"
+        # If no translated template found, raise an exception
+        if not prompt_template:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level2)"
+            logging.error(error_msg)
+            raise LocalizedTemplateNotFoundError(error_msg)
+        
+        # Role placeholder might be formatted differently in localized templates
+        role_text = f" for a {role}" if role else ""
+        
+        # Replace placeholders in the template
+        return prompt_template.format(
+            industry=industry,
+            l1_folder_name=l1_folder_name,
+            l1_description=l1_description,
+            role_text=role_text
         )
     
     def _generate_level3_folders(self, industry: str, l2_folder_name: str, 
@@ -799,35 +797,32 @@ class FolderGenerator:
             
         Returns:
             Prompt string
+            
+        Raises:
+            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
-        role_context = f" for a {role}" if role else ""
         l2_description = l2_folder_data.get("description", "")
         
-        return (
-            f"You are an expert in {industry} documentation{role_context}. "
-            f"Create a logical folder structure for the '{l2_folder_name}' folder, which is within '{l1_folder_name}' "
-            f"({l1_description}) and contains: {l2_description}. "
-            f"Create between 0-3 subfolders that would contain specific documentation for this area. "
-            f"For each folder, provide a brief description of what it would contain. "
-            f"If a folder is meant to contain regular reports or logs that would be created on a daily, weekly, "
-            f"or monthly basis (like performance reports, sales logs, etc.), mark it with purpose 'timeseries'. "
-            f"Note that folders with purpose 'timeseries' will not contain subfolders, only regularly updated files. "
-            f"Limit the number of timeseries folders to ensure they are only used when truly appropriate. "
-            f"The folder names and descriptions should be in {language} language. "
-            f"Return the response as a JSON object with the following structure: "
-            "{\n"
-            '  "folders": {\n'
-            '    "folder1": {\n'
-            '      "description": "Description of folder1",\n'
-            '      "purpose": "general"\n'
-            '    },\n'
-            '    "timeseries_folder": {\n'
-            '      "description": "Regular monthly reports",\n'
-            '      "purpose": "timeseries"\n'
-            '    },\n'
-            '    ...\n'
-            '  }\n'
-            "}"
+        # Use get_translation to get the localized prompt from resources
+        prompt_template = get_translation("folder_structure_prompt.level3", language, None)
+        
+        # If no translated template found, raise an exception
+        if not prompt_template:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3)"
+            logging.error(error_msg)
+            raise LocalizedTemplateNotFoundError(error_msg)
+        
+        # Role placeholder might be formatted differently in localized templates
+        role_text = f" for a {role}" if role else ""
+        
+        # Replace placeholders in the template
+        return prompt_template.format(
+            industry=industry,
+            l1_folder_name=l1_folder_name,
+            l1_description=l1_description,
+            l2_folder_name=l2_folder_name,
+            l2_description=l2_description,
+            role_text=role_text
         )
     
     def _generate_level3_files(self, industry: str, l2_folder_name: str, 
@@ -876,18 +871,35 @@ class FolderGenerator:
             
         Returns:
             Formatted prompt
+            
+        Raises:
+            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
-        role_context = f" for a {role}" if role else ""
         l2_description = l2_folder_data.get("description", "")
         
-        return (
-            f"For a {industry} industry{role_context}, create a list of files for the '{l2_folder_name}' "
-            f"subfolder which is inside the '{l1_folder_name}' folder. "
-            f"The '{l1_folder_name}' folder is described as: '{l1_description}'. "
-            f"The '{l2_folder_name}' subfolder is described as: '{l2_description}'. "
-            f"Include a mix of document types (txt, docx, pdf, xlsx, images). "
-            f"The files should be in {language} language. "
-            f"For each file, provide a name and a brief description of its content."
+        # Use get_translation to get the localized prompt from resources
+        prompt_template = get_translation("folder_structure_prompt.level3_files_prompt", language, None)
+        
+        # If no translated template found, raise an exception
+        if not prompt_template:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt)"
+            logging.error(error_msg)
+            raise LocalizedTemplateNotFoundError(error_msg)
+        
+        # Role placeholder might be formatted differently in localized templates
+        role_text = f" for a {role}" if role else ""
+        # For the folder_structure parameter that might be in the template
+        folder_structure = "None" # This would need to be populated depending on context
+        
+        # Replace placeholders in the template
+        return prompt_template.format(
+            industry=industry,
+            l1_folder_name=l1_folder_name,
+            l1_description=l1_description,
+            l2_folder_name=l2_folder_name,
+            l2_description=l2_description,
+            role_text=role_text,
+            folder_structure=folder_structure
         )
     
     def _generate_timeseries_files(self, folder_path: Path, folder_name: str, folder_description: str,
@@ -905,25 +917,28 @@ class FolderGenerator:
             
         Returns:
             True if successful, False otherwise
+            
+        Raises:
+            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
-        prompt = f"""
-        Generate 5 example files that would typically be found in a timeseries folder named '{folder_name}' 
-        with the description '{folder_description}' for the {industry} industry.
+        # Get localized prompt template
+        prompt_template = get_translation("folder_structure_prompt.timeseries_files_prompt", language, None)
         
-        These files should represent regular reports or logs that would be created on a daily, weekly, 
-        or monthly basis.
-        
-        Return the response as a JSON object with the following structure:
-        {{
-            "files": [
-                {{
-                    "name": "example1.txt",
-                    "description": "Description of example1"
-                }},
-                ...
-            ]
-        }}
-        """
+        # If no translated template found, raise an exception
+        if not prompt_template:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.timeseries_files_prompt)"
+            logging.error(error_msg)
+            raise LocalizedTemplateNotFoundError(error_msg)
+            
+        # Replace placeholders in the template
+        role_text = f" for a {role}" if role else ""
+        prompt = prompt_template.format(
+            folder_name=folder_name,
+            folder_description=folder_description,
+            industry=industry,
+            language=language,
+            role_text=role_text
+        )
         
         file_structure = self.llm_client.get_json_completion(
             prompt=prompt,
