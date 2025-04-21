@@ -243,3 +243,7 @@ sharinbai/
 ## License
 
 Apache 2.0
+
+### Bundled Fonts
+
+This project bundles several Noto Fonts in the resources directory. These fonts are licensed under the SIL Open Font License, Version 1.1. See the NOTICE file for details and attributions.

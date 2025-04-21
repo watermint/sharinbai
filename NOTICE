@@ -1,0 +1,19 @@
+Sharinbai bundles the following Noto Fonts in the resources directory:
+
+- NotoSans-VariableFont_wdth,wght.ttf
+- NotoSansJP-VariableFont_wght.ttf
+- NotoSansSC-VariableFont_wght.ttf
+- NotoSansTC-VariableFont_wght.ttf
+- NotoSansKR-VariableFont_wght.ttf
+
+These fonts are licensed under the SIL Open Font License, Version 1.1.
+
+Copyright 2017-2023 Google LLC. All rights reserved.
+
+You may obtain a copy of the OFL License at:
+https://scripts.sil.org/OFL
+
+Font source and more information:
+https://github.com/notofonts
+
+The fonts may be used, studied, modified and redistributed freely as long as they are not sold by themselves. The OFL license terms apply. 
