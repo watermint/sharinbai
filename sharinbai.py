@@ -211,13 +211,14 @@ def key_exists(obj, key_path):
     
     return True
 
-def process_batch_file(batch_file_path, log_level):
+def process_batch_file(batch_file_path, log_level, log_path):
     """
     Process a batch YAML file containing multiple tasks.
     
     Args:
         batch_file_path: Path to the batch YAML file
         log_level: Logging level to use for all tasks
+        log_path: Path where to store log files
         
     Returns:
         True if all tasks completed successfully, False otherwise
@@ -267,7 +268,8 @@ def process_batch_file(batch_file_path, log_level):
             'model': task.get('model', common_model),
             'ollama_url': task.get('ollama_url', common_ollama_url),
             'short': task.get('short', False),
-            'log_level': log_level
+            'log_level': log_level,
+            'log_path': log_path
         }
         
         # Initialize settings from task args
@@ -279,6 +281,10 @@ def process_batch_file(batch_file_path, log_level):
             
             success = False
             if mode == 'all':
+                logging.info(f"Starting task {i+1}: generating complete folder structure for {settings.industry} industry "
+                             f"(language: {settings.language}, path: {settings.output_path}, "
+                             f"model: {settings.model}, short: {task_args['short']}"
+                             f"{', role: ' + settings.role if settings.role else ''})")
                 success = folder_generator.generate_all(
                     settings.output_path, 
                     settings.industry,
@@ -287,6 +293,10 @@ def process_batch_file(batch_file_path, log_level):
                     task_args['short']
                 )
             elif mode == 'file':
+                logging.info(f"Starting task {i+1}: generating files only for {settings.industry} industry "
+                             f"(language: {settings.language}, path: {settings.output_path}, "
+                             f"model: {settings.model}, short: {task_args['short']}"
+                             f"{', role: ' + settings.role if settings.role else ''})")
                 success = folder_generator.generate_files_only(
                     settings.output_path,
                     settings.industry,
@@ -295,6 +305,10 @@ def process_batch_file(batch_file_path, log_level):
                     task_args['short']
                 )
             elif mode == 'structure':
+                logging.info(f"Starting task {i+1}: creating folder structure only for {settings.industry} industry "
+                             f"(language: {settings.language}, path: {settings.output_path}, "
+                             f"model: {settings.model}, short: {task_args['short']}"
+                             f"{', role: ' + settings.role if settings.role else ''})")
                 success = folder_generator.generate_structure_only(
                     settings.output_path,
                     settings.industry,
@@ -326,6 +340,7 @@ def main():
         subparser.add_argument('--role', '-r', type=str, default=None, help='Specific role within the industry (if .metadata.json exists, this will temporarily override the stored value)')
         subparser.add_argument('--ollama-url', type=str, default=None, help='URL for the Ollama API server.')
         subparser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items)')
+        subparser.add_argument('--log-path', type=str, default='./logs', help='Path where to store log files')
     all_parser = subparsers.add_parser('all', help='Create folder structure and generate all files')
     add_common_args(all_parser)
     file_parser = subparsers.add_parser('file', help='Generate or update files in existing folder structure')
@@ -361,9 +376,9 @@ def main():
         sys.exit(0 if success else 1)
     elif args.command == 'batch':
         # Handle batch command
-        setup_logging(args.log_level, args.log_path)
+        setup_logging(args.log_level, "", args.log_path)
         logging.info(f"Processing batch file: {args.file}")
-        success = process_batch_file(args.file, args.log_level)
+        success = process_batch_file(args.file, args.log_level, args.log_path)
         if success:
             logging.info("All batch tasks completed successfully")
             sys.exit(0)
@@ -375,7 +390,7 @@ def main():
     settings = Settings().from_args(vars(args))
     
     # Set up logging early to capture any issues
-    setup_logging(settings.log_level, settings.output_path)
+    setup_logging(settings.log_level, settings.output_path, settings.log_path)
     
     # Store original command line arguments for industry and role
     cli_industry = args.industry
@@ -499,7 +514,10 @@ def main():
     try:
         success = False
         if args.command == 'all':
-            logging.info(f"Generating complete folder structure for {settings.industry} industry")
+            logging.info(f"Starting task: generating complete folder structure for {settings.industry} industry "
+                         f"(language: {settings.language}, path: {settings.output_path}, "
+                         f"model: {settings.model}, short: {args.short}"
+                         f"{', role: ' + settings.role if settings.role else ''})")
             success = folder_generator.generate_all(
                 settings.output_path, 
                 settings.industry,
@@ -508,7 +526,10 @@ def main():
                 args.short
             )
         elif args.command == 'file':
-            logging.info(f"Generating files only for {settings.industry} industry")
+            logging.info(f"Starting task: generating files only for {settings.industry} industry "
+                         f"(language: {settings.language}, path: {settings.output_path}, "
+                         f"model: {settings.model}, short: {args.short}"
+                         f"{', role: ' + settings.role if settings.role else ''})")
             success = folder_generator.generate_files_only(
                 settings.output_path,
                 settings.industry,
@@ -517,7 +538,10 @@ def main():
                 args.short
             )
         elif args.command == 'structure':
-            logging.info(f"Creating folder structure only for {settings.industry} industry")
+            logging.info(f"Starting task: creating folder structure only for {settings.industry} industry "
+                         f"(language: {settings.language}, path: {settings.output_path}, "
+                         f"model: {settings.model}, short: {args.short}"
+                         f"{', role: ' + settings.role if settings.role else ''})")
             success = folder_generator.generate_structure_only(
                 settings.output_path,
                 settings.industry,

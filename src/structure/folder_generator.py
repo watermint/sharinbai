@@ -99,13 +99,9 @@ class FolderGenerator:
         try:
             base_dir = Path(output_path)
             
-            # Create logs and target directories
-            logs_dir = base_dir / "logs"
+            # Create target directory directly under the base path
             target_dir = base_dir / "target"
             
-            if not self.file_manager.ensure_directory(str(logs_dir)):
-                return False
-                
             if not self.file_manager.ensure_directory(str(target_dir)):
                 return False
                 

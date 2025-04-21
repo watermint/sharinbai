@@ -17,6 +17,9 @@ class Settings:
         # Default output path
         self.output_path = os.path.abspath("./out")
         
+        # Default log path
+        self.log_path = os.path.abspath("./logs")
+        
         # Default language
         self.language = None
         
@@ -46,6 +49,9 @@ class Settings:
             
         if args.get('path'):
             self.output_path = os.path.abspath(args['path'])
+            
+        if args.get('log_path'):
+            self.log_path = os.path.abspath(args['log_path'])
             
         if args.get('language'):
             self.language = args['language']

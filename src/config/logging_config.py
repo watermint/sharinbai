@@ -9,13 +9,14 @@ from datetime import datetime
 from pathlib import Path
 
 
-def setup_logging(log_level: str = "INFO", output_path: str = ".") -> None:
+def setup_logging(log_level: str = "INFO", output_path: str = ".", log_path: str = "./logs") -> None:
     """
     Configure logging settings.
     
     Args:
         log_level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        output_path: Base path for log files
+        output_path: Base path for output files
+        log_path: Path for log files (default: ./logs)
     """
     # Logger configuration
     # Set root logger level to DEBUG to capture everything
@@ -49,11 +50,8 @@ def setup_logging(log_level: str = "INFO", output_path: str = ".") -> None:
     logger.addHandler(console_handler)
     
     try:
-        # Use the base directory for logs
-        base_dir = Path(output_path)
-        
-        # Create logs directory directly in the base path
-        logs_dir = base_dir / "logs"
+        # Use the designated logs directory
+        logs_dir = Path(log_path)
         logs_dir.mkdir(exist_ok=True, parents=True)
         
         # File handler for logging to a file
@@ -73,5 +71,5 @@ def setup_logging(log_level: str = "INFO", output_path: str = ".") -> None:
         logging.info(f"File log level: DEBUG") 
         logging.info(f"Log file: {log_file}")
     except Exception as e:
-        logging.error(f"Failed to set up log file in {output_path}: {e}")
+        logging.error(f"Failed to set up log file in {log_path}: {e}")
         logging.warning("Continuing with console logging only") 
