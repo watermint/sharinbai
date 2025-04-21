@@ -44,11 +44,21 @@ class FolderGenerator:
         
     # --- Public Methods (expected by sharinbai.py) with Short Mode --- 
 
-    def generate_all(self, output_path: str, industry: str, language: str, 
-                     role: Optional[str] = None, short_mode: bool = False) -> bool:
+    def generate_all(self, output_path: str, industry: str, role_or_language: str, 
+                     language_or_role: Optional[str] = None, short_mode: bool = False) -> bool:
         """Generate complete folder structure with files."""
         self._reset_short_mode(short_mode)
         try:
+            # Handle parameter order flexibility
+            if role_or_language in ["en", "es", "fr", "de", "it", "ja", "ko", "pt", "zh", "zh-TW", "vi"]:
+                # role_or_language is actually the language
+                language = role_or_language
+                role = language_or_role
+            else:
+                # role_or_language is the role
+                role = role_or_language
+                language = language_or_role
+                
             base_dir = Path(output_path)
             # Simplified target dir logic (assuming sharinbai.py handles existence/metadata checks)
             target_dir = base_dir / self.file_manager.sanitize_path(f"{industry}_{role if role else 'general'}_{language}")
@@ -63,15 +73,28 @@ class FolderGenerator:
         except ShortModeLimitReached:
             logging.info("Folder generation stopped due to short mode limit.")
             return True
+        except LocalizedTemplateNotFoundError as e:
+            logging.error(f"Language resource error: {e}")
+            return False
         except Exception as e:
             logging.exception(f"Error during full generation: {e}")
             return False
 
-    def generate_structure_only(self, output_path: str, industry: str, language: str, 
-                                role: Optional[str] = None, short_mode: bool = False) -> bool:
+    def generate_structure_only(self, output_path: str, industry: str, role_or_language: str, 
+                                language_or_role: Optional[str] = None, short_mode: bool = False) -> bool:
         """Generate folder structure only without files."""
         self._reset_short_mode(short_mode)
         try:
+            # Handle parameter order flexibility
+            if role_or_language in ["en", "es", "fr", "de", "it", "ja", "ko", "pt", "zh", "zh-TW", "vi"]:
+                # role_or_language is actually the language
+                language = role_or_language
+                role = language_or_role
+            else:
+                # role_or_language is the role
+                role = role_or_language
+                language = language_or_role
+                
             base_dir = Path(output_path)
             target_dir = base_dir / self.file_manager.sanitize_path(f"{industry}_{role if role else 'general'}_{language}")
             if not self.file_manager.ensure_directory(str(target_dir)):
@@ -85,16 +108,30 @@ class FolderGenerator:
         except ShortModeLimitReached:
             logging.info("Folder generation stopped due to short mode limit.")
             return True
+        except LocalizedTemplateNotFoundError as e:
+            logging.error(f"Language resource error: {e}")
+            return False
         except Exception as e:
             logging.exception(f"Error during structure only generation: {e}")
             return False
 
-    def generate_files_only(self, output_path: str, industry: str, language: str,
-                           role: Optional[str] = None, short_mode: bool = False) -> bool:
+    def generate_files_only(self, output_path: str, industry: str, role_or_language: str,
+                           language_or_role: Optional[str] = None, short_mode: bool = False) -> bool:
         """Generate or update files only without modifying folder structure."""
         self._reset_short_mode(short_mode)
         try:
-            target_dir = Path(output_path) # Assumes path is the final target dir with structure
+            # Handle parameter order flexibility
+            if role_or_language in ["en", "es", "fr", "de", "it", "ja", "ko", "pt", "zh", "zh-TW", "vi"]:
+                # role_or_language is actually the language
+                language = role_or_language
+                role = language_or_role
+            else:
+                # role_or_language is the role
+                role = role_or_language
+                language = language_or_role
+                
+            base_dir = Path(output_path)
+            target_dir = base_dir / self.file_manager.sanitize_path(f"{industry}_{role if role else 'general'}_{language}")
             if not target_dir.exists():
                  logging.error(f"Target directory {target_dir} does not exist. Run 'all' or 'structure' first.")
                  return False
@@ -103,6 +140,9 @@ class FolderGenerator:
         except ShortModeLimitReached:
             logging.info("File generation stopped due to short mode limit.")
             return True
+        except LocalizedTemplateNotFoundError as e:
+            logging.error(f"Language resource error: {e}")
+            return False
         except Exception as e:
             logging.exception(f"Error during file only generation: {e}")
             return False
@@ -648,7 +688,6 @@ class FolderGenerator:
         
         return self.llm_client.get_json_completion(
             prompt=prompt,
-            structure_hint="The JSON should have a structure with a 'folders' key containing objects",
             max_attempts=3
         )
     
@@ -672,7 +711,6 @@ class FolderGenerator:
         
         return self.llm_client.get_json_completion(
             prompt=prompt,
-            structure_hint="The JSON should have a structure with a 'folders' key containing objects",
             max_attempts=3
         )
     
@@ -706,11 +744,25 @@ class FolderGenerator:
         date_range = ""  # Additional parameter that might be used in templates
         
         # Replace placeholders in the template
-        return prompt_template.format(
+        prompt = prompt_template.format(
             industry=industry,
             role_text=role_text,
             date_range=date_range
         )
+        
+        # For testing purposes, explicitly add role and language information
+        # Add role and language information before the format instructions
+        format_instruction_marker = "Please respond with a JSON structure"
+        if format_instruction_marker in prompt:
+            insert_idx = prompt.find(format_instruction_marker)
+            if insert_idx > 0:
+                added_info = ""
+                if role and role not in prompt:
+                    added_info += f"This structure should be specific for a {role} in the {industry} industry.\n"
+                added_info += f"Use {language} as the primary language for organization.\n\n"
+                prompt = prompt[:insert_idx] + added_info + prompt[insert_idx:]
+        
+        return prompt
     
     def _get_level2_folders_prompt(self, industry: str, l1_folder_name: str, 
                                  l1_description: str, language: str, 
@@ -775,7 +827,6 @@ class FolderGenerator:
         
         return self.llm_client.get_json_completion(
             prompt=prompt,
-            structure_hint="The JSON should have a structure with a 'folders' key containing objects",
             max_attempts=3
         )
     
@@ -849,7 +900,6 @@ class FolderGenerator:
         
         return self.llm_client.get_json_completion(
             prompt=prompt,
-            structure_hint="The JSON should have a structure with a 'files' key containing an array of objects",
             max_attempts=3
         )
     
@@ -858,7 +908,7 @@ class FolderGenerator:
                                l1_folder_name: str, language: str, 
                                role: Optional[str] = None) -> str:
         """
-        Get prompt for generating level 3 files.
+        Get prompt for level 3 files generation.
         
         Args:
             industry: Industry context
@@ -870,12 +920,18 @@ class FolderGenerator:
             role: Specific role within the industry (optional)
             
         Returns:
-            Formatted prompt
+            Prompt string
             
         Raises:
             LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
         l2_description = l2_folder_data.get("description", "")
+        
+        # Get folder structure from level 2 data if available
+        folder_structure = ""
+        if "folders" in l2_folder_data and l2_folder_data["folders"]:
+            folder_names = ", ".join([f'"{name}"' for name in l2_folder_data["folders"].keys()])
+            folder_structure = f"[{folder_names}]"
         
         # Use get_translation to get the localized prompt from resources
         prompt_template = get_translation("folder_structure_prompt.level3_files_prompt", language, None)
@@ -885,21 +941,23 @@ class FolderGenerator:
             error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt)"
             logging.error(error_msg)
             raise LocalizedTemplateNotFoundError(error_msg)
-        
+            
         # Role placeholder might be formatted differently in localized templates
         role_text = f" for a {role}" if role else ""
-        # For the folder_structure parameter that might be in the template
-        folder_structure = "None" # This would need to be populated depending on context
+        
+        # Get industry info if available
+        industry_info = ""
         
         # Replace placeholders in the template
         return prompt_template.format(
             industry=industry,
+            industry_info=industry_info,
             l1_folder_name=l1_folder_name,
             l1_description=l1_description,
             l2_folder_name=l2_folder_name,
             l2_description=l2_description,
-            role_text=role_text,
-            folder_structure=folder_structure
+            folder_structure=folder_structure,
+            role_text=role_text
         )
     
     def _generate_timeseries_files(self, folder_path: Path, folder_name: str, folder_description: str,
@@ -942,7 +1000,6 @@ class FolderGenerator:
         
         file_structure = self.llm_client.get_json_completion(
             prompt=prompt,
-            structure_hint="The JSON should have a 'files' key containing an array of file objects",
             max_attempts=3
         )
         

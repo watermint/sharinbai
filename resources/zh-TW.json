@@ -31,15 +31,14 @@
         "fix_json": "以下JSON結構無效或無法正確解析。\n請修正結構並以有效的JSON格式返回。\n請確保所有鍵和值都用引號包裹，所有括號都成對出現。\n\n有問題的回應：\n{failed_response}\n\n只返回修正後的JSON結構，不要添加額外說明。\n\n重要: 所有資料夾名稱請用中文建立，不要改為英文。例如，不要將「行銷部」改為「Marketing」。不要使用英文名稱，必須使用中文名稱。"
     },
     "json_format_instructions": {
-        "json_array_instruction": "僅以JSON陣列返回{key}。只返回{key}資料。",
-        "json_error_message": "解析上次回應時發生錯誤。請提供包含正確括號的語法有效JSON物件。所有資料夾名稱請用中文建立，不要使用英文名稱。",
-        "json_format_instruction": "請將回答格式化為帶有適當括號和引號的有效JSON物件。所有資料夾名稱和鍵名請使用中文，不要使用英文名稱。",
-        "json_object_instruction": "僅以JSON物件返回{key}。只返回{key}資料。",
-        "json_structure_hint": "JSON中只包含'{key}'資料，並以陣列或物件返回。所有名稱請用中文，不要用英文名稱。",
-        "level1_folders_prompt": "請為{industry}產業{role_text}建立第一層資料夾結構。每個資料夾需包含其用途和業務功能的明確說明。\n\n{date_range}\n\n請依下列JSON格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    ...\n  }}\n}}\n\n請為{industry}產業建立具體且合適的中文資料夾名稱，並為每個資料夾添加詳細的業務目的說明。\n\n重要: 所有資料夾名稱請用中文建立，如用「行銷部」而不是「Marketing」、「人事部」而不是「HR」、「財務部」而不是「Finance」。不要使用英文資料夾名稱。\n\n重要: 只返回JSON物件。不要在JSON前後添加額外文字、說明或註解。不要包含「JSON如下」或「希望這對您有幫助」等語句。不要用程式碼區塊包裹JSON。",
-        "parsing_error_message": "重要: 解析上次回應時發生錯誤。請提供包含正確括號的有效JSON物件。所有資料夾名稱請用中文建立，不要用英文名稱。",
-        "structure_error_format": "重要: JSON必須包含以下鍵: {keys}。所有名稱請用中文，不要用英文名稱。",
-        "structure_error_message": "JSON必須包含以下鍵: {keys}。所有資料夾名稱和鍵名請用中文，不要用英文名稱。"
+        "json_array_instruction": "請只返回{key}作為JSON陣列。只返回{key}資料。",
+        "json_error_message": "解析您之前的回答時出現錯誤。請提供一個語法有效的JSON物件，且括號正確。",
+        "json_format_instruction": "請將您的回答格式化為有效的JSON物件，帶有正確的括號和引號。所有資料夾名稱應該用中文。",
+        "json_object_instruction": "請只返回{key}作為JSON物件。只返回{key}資料。",
+        "level1_folders_prompt": "為{industry}產業{role_text}創建一個1級資料夾結構。為每個資料夾包含清晰的目的和業務功能描述。\n\n{date_range}\n\n請以如下JSON結構格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"資料夾業務用途的清晰描述\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務用途的清晰描述\"\n    }},\n    ...\n  }}\n}}\n\n為{industry}產業創建具體和適當的資料夾名稱。提供詳細描述解釋每個資料夾的業務用途。\n\n重要：僅返回JSON物件。不要在JSON前後包含任何額外文本、解釋或註釋。不要使用\"這是JSON\"或\"希望這有所幫助\"等短語。不要將JSON包裝在代碼塊中。",
+        "parsing_error_message": "重要：解析您之前的回答時出現錯誤。請提供帶有正確括號的有效JSON物件。",
+        "structure_error_format": "重要：您的JSON必須包含以下鍵：{keys}。",
+        "structure_error_message": "JSON應包含以下鍵：{keys}。"
     },
     "prompts": {
         "content_generation": "請為{industry}產業的{description}生成內容{role_context}。內容需以{language}撰寫{file_type_context}。請保持簡潔且專業。",

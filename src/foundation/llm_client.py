@@ -92,7 +92,6 @@ class OllamaClient:
         return self._make_request(prompt, system, max_attempts)
     
     def get_json_completion(self, prompt: str, system: Optional[str] = None, 
-                           structure_hint: Optional[str] = None,
                            max_attempts: int = 3) -> Optional[Dict[str, Any]]:
         """
         Get a JSON formatted completion from the model.
@@ -100,15 +99,12 @@ class OllamaClient:
         Args:
             prompt: The prompt to send to the model
             system: Optional system message
-            structure_hint: Optional hint about expected JSON structure
             max_attempts: Maximum number of retry attempts
             
         Returns:
             Parsed JSON response or None if parsing failed
         """
         system_prompt = system or ""
-        if structure_hint:
-            system_prompt += f"\nYou must return a valid JSON. {structure_hint}"
             
         if system_prompt:
             system_prompt += "\nYour response must be a valid JSON object. Do not include any explanations, markdown or text outside the JSON structure."

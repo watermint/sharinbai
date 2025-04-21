@@ -31,15 +31,14 @@
         "fix_json": "以下JSON结构无效或无法正确解析。\n请修正结构并以有效的JSON格式返回。\n请确保所有键和值都用引号包裹，所有括号都成对出现。\n\n有问题的响应：\n{failed_response}\n\n只返回修正后的JSON结构，不要添加额外说明。\n\n重要: 所有文件夹名请用中文创建，不要改为英文。例如，不要将\"市场部\"改为\"Marketing\"。不要使用英文名称，必须使用中文名称。"
     },
     "json_format_instructions": {
-        "json_array_instruction": "仅以JSON数组返回{key}。只返回{key}数据。",
-        "json_error_message": "解析上次响应时发生错误。请提供包含正确括号的语法有效的JSON对象。所有文件夹名请用中文创建，不要使用英文名称。",
-        "json_format_instruction": "请将回答格式化为带有适当括号和引号的有效JSON对象。所有文件夹名和键名请使用中文，不要使用英文名称。",
-        "json_object_instruction": "仅以JSON对象返回{key}。只返回{key}数据。",
-        "json_structure_hint": "JSON中只包含'{key}'数据，并以数组或对象返回。所有名称请用中文，不要用英文名称。",
-        "level1_folders_prompt": "请为{industry}行业{role_text}创建一级文件夹结构。每个文件夹需包含其用途和业务功能的明确说明。\n\n{date_range}\n\n请按以下JSON格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"文件夹名1\": {{\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    }},\n    \"文件夹名2\": {{\n      \"description\": \"关于文件夹业务目的的明确说明\"\n    }},\n    ...\n  }}\n}}\n\n请为{industry}行业创建具体且合适的中文文件夹名，并为每个文件夹添加详细的业务目的说明。\n\n重要: 所有文件夹名请用中文创建，如用\"市场部\"而不是\"Marketing\"，\"人事部\"而不是\"HR\"，\"财务部\"而不是\"Finance\"。不要使用英文文件夹名。\n\n重要: 只返回JSON对象。不要在JSON前后添加额外文本、说明或注释。不要包含\"JSON如下\"或\"希望这对您有帮助\"等短语。不要用代码块包裹JSON。",
-        "parsing_error_message": "重要: 解析上次响应时发生错误。请提供包含正确括号的有效JSON对象。所有文件夹名请用中文创建，不要使用英文名称。",
-        "structure_error_format": "重要: JSON必须包含以下键: {keys}。所有名称请用中文，不要用英文名称。",
-        "structure_error_message": "JSON必须包含以下键: {keys}。所有文件夹名和键名请用中文，不要用英文名称。"
+        "json_array_instruction": "请仅返回{key}作为JSON数组。只返回{key}数据。",
+        "json_error_message": "解析您之前的回答时出现错误。请提供一个语法有效的JSON对象，且括号正确。",
+        "json_format_instruction": "请将您的回答格式化为有效的JSON对象，带有正确的括号和引号。所有文件夹名称应该用中文。",
+        "json_object_instruction": "请仅返回{key}作为JSON对象。只返回{key}数据。",
+        "level1_folders_prompt": "为{industry}行业{role_text}创建一个1级文件夹结构。为每个文件夹包含清晰的目的和业务功能描述。\n\n{date_range}\n\n请以如下JSON结构格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"文件夹名称1\": {{\n      \"description\": \"文件夹业务用途的清晰描述\"\n    }},\n    \"文件夹名称2\": {{\n      \"description\": \"文件夹业务用途的清晰描述\"\n    }},\n    ...\n  }}\n}}\n\n为{industry}行业创建具体和适当的文件夹名称。提供详细描述解释每个文件夹的业务用途。\n\n重要：仅返回JSON对象。不要在JSON前后包含任何额外文本、解释或注释。不要使用\"这是JSON\"或\"希望这有所帮助\"等短语。不要将JSON包装在代码块中。",
+        "parsing_error_message": "重要：解析您之前的回答时出现错误。请提供带有正确括号的有效JSON对象。",
+        "structure_error_format": "重要：您的JSON必须包含以下键：{keys}。",
+        "structure_error_message": "JSON应包含以下键：{keys}。"
     },
     "prompts": {
         "content_generation": "为{industry}行业的{description}{role_context}生成内容。内容应该使用{language}{file_type_context}。保持简洁专业。",

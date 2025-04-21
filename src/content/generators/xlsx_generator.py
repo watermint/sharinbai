@@ -15,6 +15,7 @@ except ImportError:
     XLSX_AVAILABLE = False
 
 from src.content.generators.base_generator import BaseGenerator
+from src.config.language_utils import get_translation
 
 class XlsxGenerator(BaseGenerator):
     """Generator for Excel spreadsheets (.xlsx)"""
@@ -43,27 +44,26 @@ class XlsxGenerator(BaseGenerator):
         
         # Load system message from language resources
         try:
-            # Get language resources
-            lang_resources = self.get_language_resources(language)
-            
             # Get system message for structured output
-            if "system_messages" not in lang_resources or "xlsx_generation" not in lang_resources["system_messages"]:
-                logging.error(f"Missing 'system_messages.xlsx_generation' in language resources for {language}")
+            system_message = get_translation("content_generation.xlsx_generation", language, None)
+            if not system_message:
+                logging.error(f"Missing 'content_generation.xlsx_generation' in language resources for {language}")
                 return False
                 
-            system_message = lang_resources["system_messages"]["xlsx_generation"]
         except Exception as e:
-            logging.error(f"Failed to load system message from language resources: {e}")
+            logging.error(f"Failed to load system message from language resources for '{language}': {e}")
             return False
         
         # Create prompt for spreadsheet content
         prompt = self.create_prompt(description, industry, language, role, "Excel spreadsheet")
+        if not prompt:
+            logging.error(f"Failed to create prompt for {filename} with language '{language}'")
+            return False
         
         # Generate structured content using LLM
         content = self.llm_client.get_json_completion(
             prompt=prompt,
-            system=system_message,
-            structure_hint="The response should contain sheets with name, headers, and data arrays."
+            system=system_message
         )
         
         if not content or "sheets" not in content:
