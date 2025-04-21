@@ -28,7 +28,7 @@ class FolderGenerator:
         self.content_generator = ContentGenerator(model, ollama_url)
         
     def generate_all(self, output_path: str, industry: str, role: Optional[str] = None,
-                    language: str = "en") -> bool:
+                    language: Optional[str] = None) -> bool:
         """
         Generate complete folder structure with files.
         
@@ -36,7 +36,7 @@ class FolderGenerator:
             output_path: Base output path
             industry: Industry context
             role: Specific role within the industry (optional)
-            language: Language to use
+            language: Language to use (optional)
             
         Returns:
             True if successful, False otherwise
@@ -46,7 +46,7 @@ class FolderGenerator:
         if self.file_manager.file_exists(str(base_dir / ".metadata.json")):
             metadata = self.file_manager.read_json_file(str(base_dir / ".metadata.json"))
             if metadata:
-                # Update industry/role from metadata if not explicitly provided
+                # Update industry/role/language from metadata if not explicitly provided
                 if not industry and "industry" in metadata:
                     industry = metadata["industry"]
                     logging.info(f"Using industry '{industry}' from metadata")
@@ -54,6 +54,10 @@ class FolderGenerator:
                 if role is None and "role" in metadata:
                     role = metadata["role"]
                     logging.info(f"Using role '{role}' from metadata")
+                
+                if language is None and "language" in metadata:
+                    language = metadata["language"]
+                    logging.info(f"Using language '{language}' from metadata")
                 
                 # Work directly in the current directory
                 target_dir = base_dir
@@ -71,6 +75,11 @@ class FolderGenerator:
         # Ensure we have industry information
         if not industry:
             logging.error("Industry information is required but was not found in metadata or arguments")
+            return False
+            
+        # Ensure we have language information
+        if language is None:
+            logging.error("Language information is required but was not found in metadata or arguments")
             return False
             
         # Create target directory if it doesn't exist
@@ -87,7 +96,7 @@ class FolderGenerator:
         return self._process_folder_structure(level1_structure, target_dir, industry, language, role)
     
     def generate_structure_only(self, output_path: str, industry: str, role: Optional[str] = None,
-                               language: str = "en") -> bool:
+                               language: Optional[str] = None) -> bool:
         """
         Generate folder structure only without files.
         
@@ -95,7 +104,7 @@ class FolderGenerator:
             output_path: Base output path
             industry: Industry context
             role: Specific role within the industry (optional)
-            language: Language to use
+            language: Language to use (optional)
             
         Returns:
             True if successful, False otherwise
@@ -105,7 +114,7 @@ class FolderGenerator:
         if self.file_manager.file_exists(str(base_dir / ".metadata.json")):
             metadata = self.file_manager.read_json_file(str(base_dir / ".metadata.json"))
             if metadata:
-                # Update industry/role from metadata if not explicitly provided
+                # Update industry/role/language from metadata if not explicitly provided
                 if not industry and "industry" in metadata:
                     industry = metadata["industry"]
                     logging.info(f"Using industry '{industry}' from metadata")
@@ -113,6 +122,10 @@ class FolderGenerator:
                 if role is None and "role" in metadata:
                     role = metadata["role"]
                     logging.info(f"Using role '{role}' from metadata")
+                
+                if language is None and "language" in metadata:
+                    language = metadata["language"]
+                    logging.info(f"Using language '{language}' from metadata")
                 
                 # Work directly in the current directory
                 target_dir = base_dir
@@ -130,6 +143,11 @@ class FolderGenerator:
         # Ensure we have industry information
         if not industry:
             logging.error("Industry information is required but was not found in metadata or arguments")
+            return False
+            
+        # Ensure we have language information
+        if language is None:
+            logging.error("Language information is required but was not found in metadata or arguments")
             return False
         
         # Create target directory if it doesn't exist
@@ -274,7 +292,7 @@ class FolderGenerator:
         return success
     
     def generate_files_only(self, output_path: str, industry: str, role: Optional[str] = None,
-                          language: str = "en") -> bool:
+                          language: Optional[str] = None) -> bool:
         """
         Generate or update files only without modifying folder structure.
         
@@ -282,7 +300,7 @@ class FolderGenerator:
             output_path: Base output path
             industry: Industry context (can be None if metadata exists)
             role: Specific role within the industry (optional)
-            language: Language to use
+            language: Language to use (optional)
             
         Returns:
             True if successful, False otherwise
@@ -294,7 +312,7 @@ class FolderGenerator:
         if self.file_manager.file_exists(str(base_dir / ".metadata.json")):
             metadata = self.file_manager.read_json_file(str(base_dir / ".metadata.json"))
             if metadata:
-                # Update industry/role from metadata if not explicitly provided
+                # Update industry/role/language from metadata if not explicitly provided
                 if not industry and "industry" in metadata:
                     industry = metadata["industry"]
                     logging.info(f"Using industry '{industry}' from metadata")
@@ -302,6 +320,10 @@ class FolderGenerator:
                 if role is None and "role" in metadata:
                     role = metadata["role"]
                     logging.info(f"Using role '{role}' from metadata")
+                
+                if language is None and "language" in metadata:
+                    language = metadata["language"]
+                    logging.info(f"Using language '{language}' from metadata")
                 
                 # Work directly in the current directory
                 target_dir = base_dir
@@ -319,6 +341,11 @@ class FolderGenerator:
         # Ensure we have industry information
         if not industry:
             logging.error("Industry information is required but was not found in metadata or arguments")
+            return False
+            
+        # Ensure we have language information
+        if language is None:
+            logging.error("Language information is required but was not found in metadata or arguments")
             return False
         
         # Check if target directory exists

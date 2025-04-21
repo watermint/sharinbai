@@ -23,7 +23,7 @@ def main():
     def add_common_args(subparser):
         subparser.add_argument('--industry', '-i', type=str, help='Industry for the folder structure (can be omitted if .metadata.json exists)')
         subparser.add_argument('--path', '-p', type=str, default='./out', help='Path where to create the folder structure')
-        subparser.add_argument('--language', '-l', type=str, default=get_default_language(), help='Language for the folder structure')
+        subparser.add_argument('--language', '-l', type=str, help='Language for the folder structure (can be omitted if .metadata.json exists)')
         subparser.add_argument('--model', '-m', type=str, default='llama3', help='Ollama model to use')
         subparser.add_argument('--role', '-r', type=str, default=None, help='Specific role within the industry (can be omitted if .metadata.json exists)')
         subparser.add_argument('--ollama-url', type=str, default=None, help='URL for the Ollama API server.')
@@ -51,14 +51,18 @@ def main():
             print("No language resource files found.")
         sys.exit(0)
     
-    # Initialize settings from args
+    # Initialize settings from args with default language
     settings = Settings().from_args(vars(args))
+    
+    # If language not provided, set default language
+    if not settings.language:
+        settings.language = get_default_language()
     
     # Set up logging early to capture any issues
     setup_logging(settings.log_level, settings.output_path)
     
-    # If working with existing structure, try to retrieve industry/role from metadata
-    if args.command in ['file'] and not args.industry:
+    # If working with existing structure, try to retrieve metadata
+    if args.command in ['file'] or (args.command in ['all', 'structure'] and Path(settings.output_path).exists()):
         target_dir = Path(settings.output_path)
         metadata_path = target_dir / ".metadata.json"
         
@@ -66,33 +70,61 @@ def main():
             file_manager = FileManager()
             metadata = file_manager.read_json_file(str(metadata_path))
             if metadata:
-                if 'industry' in metadata:
+                # Update industry from metadata if not provided by args
+                if not args.industry and 'industry' in metadata:
                     settings.industry = metadata['industry']
                     logging.info(f"Retrieved industry '{settings.industry}' from metadata")
-                if 'role' in metadata:
+                
+                # Update role from metadata if not provided by args
+                if not args.role and 'role' in metadata:
                     settings.role = metadata['role']
                     logging.info(f"Retrieved role '{settings.role}' from metadata")
+                
+                # Update language from metadata if not provided by args
+                if not args.language and 'language' in metadata:
+                    settings.language = metadata['language']
+                    logging.info(f"Retrieved language '{settings.language}' from metadata")
     
-    # Ask for industry/role if not provided and needed for new structure
-    if args.command in ['all', 'structure'] and not settings.industry:
-        industry = input("Please enter the industry for the folder structure: ")
-        if not industry.strip():
-            logging.error("Industry is required but not provided")
-            sys.exit(1)
-        settings.industry = industry
+    # Ask for industry/role/language if not provided and needed for new structure
+    if args.command in ['all', 'structure']:
+        # Ask for industry if not provided
+        if not settings.industry:
+            industry = input("Please enter the industry for the folder structure: ")
+            if not industry.strip():
+                logging.error("Industry is required but not provided")
+                sys.exit(1)
+            settings.industry = industry
         
-        role = input("Please enter a specific role within the industry (optional, press Enter to skip): ")
-        if role.strip():
-            settings.role = role
+        # Ask for role if not provided
+        if not hasattr(settings, 'role') or settings.role is None:
+            role = input("Please enter a specific role within the industry (optional, press Enter to skip): ")
+            if role.strip():
+                settings.role = role
+        
+        # Ask for language if not provided
+        if not settings.language:
+            supported = get_supported_languages()
+            if supported:
+                print("Supported languages:")
+                for i, lang in enumerate(sorted(supported), 1):
+                    print(f"{i}. {lang}")
+                
+            language = input(f"Please enter the language for the folder structure (default: {get_default_language()}): ")
+            if language.strip():
+                settings.language = language
+            else:
+                settings.language = get_default_language()
     
     # Ensure we have industry for all commands
     if not settings.industry:
         logging.error("Industry is required but not provided. Use --industry/-i option or ensure .metadata.json exists.")
         sys.exit(1)
     
+    # Normalize language
     settings.language = get_normalized_language_key(settings.language)
-    if settings.language != args.language:
+    if args.language and settings.language != args.language:
         logging.info(f"Normalized language from {args.language} to {settings.language}")
+    
     if not is_language_supported(settings.language):
         logging.warning(f"Language '{settings.language}' is not directly supported. Using best available match.")
     
