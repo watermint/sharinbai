@@ -47,21 +47,11 @@ class FolderGenerator:
         
     # --- Public Methods (expected by sharinbai.py) with Short Mode --- 
 
-    def generate_all(self, output_path: str, industry: str, role_or_language: str, 
-                     language_or_role: Optional[str] = None, short_mode: bool = False) -> bool:
+    def generate_all(self, output_path: str, industry: str, language: str, 
+                     role: Optional[str] = None, short_mode: bool = False) -> bool:
         """Generate complete folder structure with files."""
         self._reset_short_mode(short_mode)
         try:
-            # Handle parameter order flexibility
-            if role_or_language in ["en", "es", "fr", "de", "it", "ja", "ko", "pt", "zh", "zh-TW", "vi"]:
-                # role_or_language is actually the language
-                language = role_or_language
-                role = language_or_role
-            else:
-                # role_or_language is the role
-                role = role_or_language
-                language = language_or_role
-                
             base_dir = Path(output_path)
             
             # Create logs and target directories
@@ -102,21 +92,11 @@ class FolderGenerator:
             logging.exception(f"Error during full generation: {e}")
             return False
 
-    def generate_structure_only(self, output_path: str, industry: str, role_or_language: str, 
-                                language_or_role: Optional[str] = None, short_mode: bool = False) -> bool:
+    def generate_structure_only(self, output_path: str, industry: str, language: str, 
+                                role: Optional[str] = None, short_mode: bool = False) -> bool:
         """Generate folder structure only without files."""
         self._reset_short_mode(short_mode)
         try:
-            # Handle parameter order flexibility
-            if role_or_language in ["en", "es", "fr", "de", "it", "ja", "ko", "pt", "zh", "zh-TW", "vi"]:
-                # role_or_language is actually the language
-                language = role_or_language
-                role = language_or_role
-            else:
-                # role_or_language is the role
-                role = role_or_language
-                language = language_or_role
-                
             base_dir = Path(output_path)
             
             # Create logs and target directories
@@ -157,21 +137,11 @@ class FolderGenerator:
             logging.exception(f"Error during structure only generation: {e}")
             return False
 
-    def generate_files_only(self, output_path: str, industry: str, role_or_language: str,
-                           language_or_role: Optional[str] = None, short_mode: bool = False) -> bool:
+    def generate_files_only(self, output_path: str, industry: str, language: str,
+                           role: Optional[str] = None, short_mode: bool = False) -> bool:
         """Generate or update files only without modifying folder structure."""
         self._reset_short_mode(short_mode)
         try:
-            # Handle parameter order flexibility
-            if role_or_language in ["en", "es", "fr", "de", "it", "ja", "ko", "pt", "zh", "zh-TW", "vi"]:
-                # role_or_language is actually the language
-                language = role_or_language
-                role = language_or_role
-            else:
-                # role_or_language is the role
-                role = role_or_language
-                language = language_or_role
-                
             base_dir = Path(output_path)
             target_dir = base_dir / "target"
             
