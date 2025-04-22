@@ -228,7 +228,7 @@ def test_templates():
     """
     return run_template_tests()
 
-def process_batch_file(batch_file_path, log_level, log_path):
+def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, model_override=None):
     """
     Process a batch YAML file containing multiple tasks.
     
@@ -236,6 +236,8 @@ def process_batch_file(batch_file_path, log_level, log_path):
         batch_file_path: Path to the batch YAML file
         log_level: Logging level to use for all tasks
         log_path: Path where to store log files
+        short_mode: Whether to enable short mode (max 5 items) for all tasks
+        model_override: Model to use for all tasks (overrides batch file settings)
         
     Returns:
         True if all tasks completed successfully, False otherwise
@@ -354,9 +356,9 @@ def process_batch_file(batch_file_path, log_level, log_path):
             'path': task.get('path', './out'),
             'language': task.get('language'),
             'role': task.get('role'),
-            'model': task.get('model', common_model),
+            'model': model_override or task.get('model', common_model),  # Use command line model or task-specific setting
             'ollama_url': task.get('ollama_url', common_ollama_url),
-            'short': task.get('short', False),
+            'short': short_mode or task.get('short', False),  # Use command line short mode or task-specific setting
             'log_level': log_level,
             'log_path': log_path,
             'date_start': task_date_start,
@@ -484,6 +486,8 @@ def main():
     batch_parser = subparsers.add_parser('batch', help='Execute multiple tasks from a YAML file')
     batch_parser.add_argument('--file', '-f', type=str, required=True, help='Path to the batch YAML file')
     batch_parser.add_argument('--log-path', type=str, default='./logs', help='Path where to store log files')
+    batch_parser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items) for all tasks')
+    batch_parser.add_argument('--model', '-m', type=str, help='Ollama model to use for all tasks')
     
     subparsers.add_parser('list-languages', help='List supported languages')
     test_languages_parser = subparsers.add_parser('test-languages', 
@@ -522,7 +526,7 @@ def main():
         # Handle batch command
         setup_logging(args.log_level, "", args.log_path)
         logging.info(f"Processing batch file: {args.file}")
-        success = process_batch_file(args.file, args.log_level, args.log_path)
+        success = process_batch_file(args.file, args.log_level, args.log_path, args.short, args.model)
         if success:
             logging.info("All batch tasks completed successfully")
             sys.exit(0)
