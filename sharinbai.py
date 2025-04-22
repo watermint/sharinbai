@@ -228,7 +228,7 @@ def test_templates():
     """
     return run_template_tests()
 
-def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, model_override=None):
+def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, model_override=None, date_start_override=None, date_end_override=None):
     """
     Process a batch YAML file containing multiple tasks.
     
@@ -238,6 +238,8 @@ def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, m
         log_path: Path where to store log files
         short_mode: Whether to enable short mode (max 5 items) for all tasks
         model_override: Model to use for all tasks (overrides batch file settings)
+        date_start_override: Start date from command line to override batch file settings
+        date_end_override: End date from command line to override batch file settings
         
     Returns:
         True if all tasks completed successfully, False otherwise
@@ -278,6 +280,25 @@ def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, m
         logging.error("Batch file is empty or invalid")
         return False
         
+    # Parse command line override dates first
+    cli_date_start = None
+    if date_start_override:
+        try:
+            cli_date_start = datetime.strptime(date_start_override, "%Y-%m-%d")
+            logging.info(f"Using command line date_start override: {date_start_override}")
+        except ValueError:
+            logging.error(f"Invalid command line date_start format: {date_start_override}. Expected YYYY-MM-DD.")
+            return False # Exit if CLI override is invalid
+            
+    cli_date_end = None
+    if date_end_override:
+        try:
+            cli_date_end = datetime.strptime(date_end_override, "%Y-%m-%d")
+            logging.info(f"Using command line date_end override: {date_end_override}")
+        except ValueError:
+            logging.error(f"Invalid command line date_end format: {date_end_override}. Expected YYYY-MM-DD.")
+            return False # Exit if CLI override is invalid
+
     # Extract common settings if present
     common_model = batch_data.get('model', Settings.DEFAULT_MODEL)
     common_ollama_url = batch_data.get('ollama_url', None)
@@ -287,25 +308,25 @@ def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, m
     default_date_end = today.strftime("%Y-%m-%d")
     default_date_start = (today - timedelta(days=30)).strftime("%Y-%m-%d")
     
-    # Extract common date settings if present
-    common_date_start = None
-    common_date_end = None
-    if 'date_start' in batch_data:
+    # Extract common date settings if present, but prioritize CLI overrides
+    common_date_start = cli_date_start
+    if not common_date_start and 'date_start' in batch_data:
         try:
             common_date_start = datetime.strptime(batch_data['date_start'], "%Y-%m-%d")
         except ValueError:
-            logging.warning(f"Invalid common date_start format: {batch_data['date_start']}. Expected YYYY-MM-DD.")
+            logging.warning(f"Invalid common date_start format: {batch_data['date_start']}. Expected YYYY-MM-DD. Using default.")
             common_date_start = datetime.strptime(default_date_start, "%Y-%m-%d")
-    else:
+    elif not common_date_start:
         common_date_start = datetime.strptime(default_date_start, "%Y-%m-%d")
     
-    if 'date_end' in batch_data:
+    common_date_end = cli_date_end
+    if not common_date_end and 'date_end' in batch_data:
         try:
             common_date_end = datetime.strptime(batch_data['date_end'], "%Y-%m-%d")
         except ValueError:
-            logging.warning(f"Invalid common date_end format: {batch_data['date_end']}. Expected YYYY-MM-DD.")
+            logging.warning(f"Invalid common date_end format: {batch_data['date_end']}. Expected YYYY-MM-DD. Using default.")
             common_date_end = datetime.strptime(default_date_end, "%Y-%m-%d")
-    else:
+    elif not common_date_end:
         common_date_end = datetime.strptime(default_date_end, "%Y-%m-%d")
     
     tasks = batch_data.get('tasks', [])
@@ -328,27 +349,27 @@ def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, m
             all_successful = False
             continue
             
-        # Parse task-specific date range if provided
-        task_date_start = None
-        if 'date_start' in task:
+        # Determine final dates for the task, prioritizing CLI overrides
+        task_date_start = cli_date_start
+        if not task_date_start and 'date_start' in task:
             try:
                 task_date_start = datetime.strptime(task['date_start'], "%Y-%m-%d")
             except ValueError:
-                logging.warning(f"Invalid task date_start format: {task['date_start']}. Expected YYYY-MM-DD.")
+                logging.warning(f"Invalid task date_start format: {task['date_start']}. Using common start date.")
                 task_date_start = common_date_start
-        else:
-            task_date_start = common_date_start
+        elif not task_date_start:
+            task_date_start = common_date_start # Use common start date if no task-specific or CLI override
             
-        task_date_end = None
-        if 'date_end' in task:
+        task_date_end = cli_date_end
+        if not task_date_end and 'date_end' in task:
             try:
                 task_date_end = datetime.strptime(task['date_end'], "%Y-%m-%d")
             except ValueError:
-                logging.warning(f"Invalid task date_end format: {task['date_end']}. Expected YYYY-MM-DD.")
+                logging.warning(f"Invalid task date_end format: {task['date_end']}. Using common end date.")
                 task_date_end = common_date_end
-        else:
-            task_date_end = common_date_end
-            
+        elif not task_date_end:
+            task_date_end = common_date_end # Use common end date if no task-specific or CLI override
+
         # Create args dictionary for this task
         task_args = {
             'command': mode,
@@ -488,6 +509,10 @@ def main():
     batch_parser.add_argument('--log-path', type=str, default='./logs', help='Path where to store log files')
     batch_parser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items) for all tasks')
     batch_parser.add_argument('--model', '-m', type=str, help='Ollama model to use for all tasks')
+    batch_parser.add_argument('--date-start', '-ds', type=str, default=default_date_start,
+                              help='Start date to override for all tasks (format: YYYY-MM-DD).')
+    batch_parser.add_argument('--date-end', '-de', type=str, default=default_date_end,
+                              help='End date to override for all tasks (format: YYYY-MM-DD).')
     
     subparsers.add_parser('list-languages', help='List supported languages')
     test_languages_parser = subparsers.add_parser('test-languages', 
@@ -526,7 +551,15 @@ def main():
         # Handle batch command
         setup_logging(args.log_level, "", args.log_path)
         logging.info(f"Processing batch file: {args.file}")
-        success = process_batch_file(args.file, args.log_level, args.log_path, args.short, args.model)
+        success = process_batch_file(
+            args.file, 
+            args.log_level, 
+            args.log_path, 
+            args.short, 
+            args.model,
+            date_start_override=args.date_start, # Pass CLI date start
+            date_end_override=args.date_end     # Pass CLI date end
+        )
         if success:
             logging.info("All batch tasks completed successfully")
             sys.exit(0)
