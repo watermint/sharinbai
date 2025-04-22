@@ -41,7 +41,6 @@ Sharinbai requires Ollama to run AI models locally on your machine. Follow these
    ```
    You can also use other models like:
    ```
-   ollama pull llama3
    ollama pull gemma3:12b
    ```
    

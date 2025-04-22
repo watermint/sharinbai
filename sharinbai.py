@@ -235,7 +235,7 @@ def process_batch_file(batch_file_path, log_level, log_path):
         return False
         
     # Extract common settings if present
-    common_model = batch_data.get('model', 'llama3')
+    common_model = batch_data.get('model', Settings.DEFAULT_MODEL)
     common_ollama_url = batch_data.get('ollama_url', None)
     
     tasks = batch_data.get('tasks', [])
@@ -277,7 +277,7 @@ def process_batch_file(batch_file_path, log_level, log_path):
         
         # Process this task
         try:
-            folder_generator = FolderGenerator(settings.model, settings.ollama_url)
+            folder_generator = FolderGenerator(settings.model, settings.ollama_url, settings)
             
             success = False
             if mode == 'all':
@@ -336,7 +336,7 @@ def main():
         subparser.add_argument('--industry', '-i', type=str, help='Industry for the folder structure (if .metadata.json exists, this will temporarily override the stored value)')
         subparser.add_argument('--path', '-p', type=str, default='./out', help='Path where to create the folder structure')
         subparser.add_argument('--language', '-l', type=str, help='Language for the folder structure (can be omitted if .metadata.json exists)')
-        subparser.add_argument('--model', '-m', type=str, default='llama3', help='Ollama model to use')
+        subparser.add_argument('--model', '-m', type=str, default=Settings.DEFAULT_MODEL, help='Ollama model to use')
         subparser.add_argument('--role', '-r', type=str, default=None, help='Specific role within the industry (if .metadata.json exists, this will temporarily override the stored value)')
         subparser.add_argument('--ollama-url', type=str, default=None, help='URL for the Ollama API server.')
         subparser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items)')
@@ -398,7 +398,7 @@ def main():
     
     # If working with existing structure, try to retrieve metadata
     if args.command in ['file'] or (args.command in ['all', 'structure'] and Path(settings.output_path).exists()):
-        target_dir = Path(settings.output_path) / "target"
+        target_dir = Path(settings.output_path)
         metadata_path = target_dir / ".metadata.json"
         
         if metadata_path.exists():
@@ -510,7 +510,7 @@ def main():
     if not is_language_supported(settings.language):
         logging.warning(f"Language '{settings.language}' is not directly supported. Using best available match.")
     
-    folder_generator = FolderGenerator(settings.model, settings.ollama_url)
+    folder_generator = FolderGenerator(settings.model, settings.ollama_url, settings)
     try:
         success = False
         if args.command == 'all':

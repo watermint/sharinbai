@@ -10,10 +10,12 @@ import requests
 import time
 from typing import Dict, Any, Optional, List, Union
 
+from src.config.settings import Settings
+
 class OllamaClient:
     """Client for communicating with Ollama API"""
     
-    def __init__(self, model: str = "llama3", ollama_url: Optional[str] = None):
+    def __init__(self, model: str = Settings.DEFAULT_MODEL, ollama_url: Optional[str] = None):
         """
         Initialize the Ollama client.
         

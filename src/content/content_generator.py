@@ -17,6 +17,7 @@ from src.content.generators import (
     ImageGenerator
 )
 from src.foundation.llm_client import OllamaClient
+from src.config.settings import Settings
 
 
 class ContentGenerator:
@@ -25,7 +26,7 @@ class ContentGenerator:
     # Maximum number of timeseries folders allowed at each level
     MAX_TIMESERIES_FOLDERS = 5
     
-    def __init__(self, model: str = "llama3", ollama_url: Optional[str] = None):
+    def __init__(self, model: str = Settings.DEFAULT_MODEL, ollama_url: Optional[str] = None):
         """
         Initialize the content generator.
         

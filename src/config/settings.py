@@ -9,10 +9,13 @@ from typing import Optional, Dict, Any
 class Settings:
     """Application settings and configuration"""
     
+    # Default model name
+    DEFAULT_MODEL = "gemma3:4b"
+    
     def __init__(self):
         """Initialize default settings"""
         # Default model
-        self.model = "llama3"
+        self.model = self.DEFAULT_MODEL
         
         # Default output path
         self.output_path = os.path.abspath("./out")
