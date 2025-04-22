@@ -751,14 +751,12 @@ class FolderGenerator:
             if not self.file_manager.ensure_directory(str(l1_folder_path)):
                 success = False
                 continue
-                
-            # Check limit after successfully creating L1 folder
-            if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER): raise ShortModeLimitReached()
-                
+
             # If folder already exists, proceed with content generation
-            if l1_folder_path.exists():
+            if not l1_folder_path.exists():
                 logging.info(f"Folder '{l1_folder_name}' already exists, proceeding with content generation")
-                continue
+                # Check limit after successfully creating L1 folder
+                if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER): raise ShortModeLimitReached()
                 
             # Track folder creation
             self.statistics_tracker.add_folder(str(l1_folder_path))
