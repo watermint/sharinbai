@@ -35,12 +35,47 @@
     "response_format": "Return only the JSON, no additional explanation is needed."
   },
   "folder_structure_prompt": {
-    "level1": "Please create a first-level folder structure for the {industry} industry. Each folder should include a clear description of its purpose and business function.\n\n{date_range}\n\nPlease reply in the following JSON format:\n\n{\n  \"folders\": {\n    \"FolderName1\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    },\n    \"FolderName2\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    }\n  }\n}\n\nPlease create concrete folder names for the {industry} industry and add detailed descriptions for each folder. Important: Return only a JSON object.",
-    "level2": "Please create an appropriate second-level folder structure within the first-level folder \"{l1_folder_name}\" for the {industry} industry {role_text}.\n\nDescription of the first-level folder: {l1_description}\n\nPlease reply in the following JSON format:\n\n{\n  \"folders\": {\n    \"FolderName1\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    },\n    \"FolderName2\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    }\n  }\n}\n\nPlease create concrete folder names based on the purpose of the parent folder and the specifics of the {industry} industry and add detailed descriptions. Important: Return only a JSON object.",
-    "level3": "First-level folder for the {industry} industry {role_text}: {l1_folder_name} - {l1_description}\nSecond-level folder: {l2_folder_name} - {l2_description}\n\nPlease create concrete third-level folders within this second-level folder and provide clear explanations for their respective purposes.\n\nPlease reply in the following JSON format:\n\n{\n  \"folders\": {\n    \"FolderName1\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    },\n    \"FolderName2\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    }\n  }\n}\n\nPlease create concrete folder names based on the purpose of the parent folder and the specifics of the {industry} industry and add detailed descriptions. Important: Return only a JSON object.",
-    "level3_files_prompt": "First-level folder for the {industry} industry {role_text}: {l1_folder_name} - {l1_description}\nSecond-level folder: {l2_folder_name} - {l2_description}\n\nThis folder contains the following subfolders: {folder_structure}\n\nPlease create appropriate files directly for this second-level folder (not for the subfolders).\n\nPlease reply in the following JSON format:\n\n{\n  \"files\": [\n    {\n      \"name\": \"FileName1.docx\",\n      \"type\": \"docx\",\n      \"description\": \"A clear explanation of the purpose of the file\"\n    },\n    {\n      \"name\": \"FileName2.xlsx\",\n      \"type\": \"xlsx\",\n      \"description\": \"A clear explanation of the purpose of the file\"\n    }\n  ]\n}\n\nPlease create concrete file names based on the purpose of the parent folder and the specifics of the {industry} industry and add detailed descriptions. Important: Return only a JSON object.",
-    "level3_folders_prompt": "First-level folder for the {industry} industry {role_text}: {l1_folder_name} - {l1_description}\nSecond-level folder: {l2_folder_name} - {l2_description}\n\nPlease create concrete third-level folders within this second-level folder and provide clear explanations for their respective purposes.\n\nImportant: Return only folders, not files. Files will be created in a separate step.\n\nPlease reply in the following JSON format:\n\n{\n  \"folders\": {\n    \"FolderName1\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    },\n    \"FolderName2\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    }\n  }\n}\n\nPlease create concrete folder names based on the purpose of the parent folder and the specifics of the {industry} industry and add detailed descriptions. Important: Return only a JSON object.",
-    "system": "You are an AI assistant that creates folder structures for businesses. Return only valid JSON data, without additional text or explanations. Do not wrap the response with JSON or code blocks."
+    "level1": {
+      "instruction": "Create a Level 1 folder structure for {industry} industry. Each folder should have a clear description of its purpose and business function.",
+      "folder_naming": "Create specific and appropriate folder names for the {industry} industry. Each folder should have a detailed description explaining its business purpose.",
+      "important_language": "All folder names must be in English. Do not use folder names in other languages.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+    },
+    "level2": {
+      "instruction": "Create a Level 2 folder structure for the {industry} industry{role_text} within the Level 1 folder named \"{l1_folder_name}\".",
+      "context": "Level 1 folder description: {l1_description}",
+      "folder_instruction": "Please create specific and appropriate Level 2 folders that would logically belong inside this Level 1 folder. Include a clear description for each folder's purpose.",
+      "folder_naming": "Create specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.",
+      "important_language": "All folder names must be in English. Do not use folder names in other languages.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+    },
+    "level3": {
+      "instruction": "Create a Level 3 folder structure for the {industry} industry{role_text}.",
+      "context": "Level 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}",
+      "folder_instruction": "Please create specific and appropriate Level 3 folders that would logically belong inside this Level 2 folder. Include a clear description for each folder's purpose.",
+      "folder_naming": "Create specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.",
+      "important_language": "All folder names must be in English. Do not use folder names in other languages.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+    },
+    "level3_files_prompt": {
+      "instruction": "Create files for a Level 3 folder in the {industry} industry{role_text}.",
+      "context": "Level 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}",
+      "folder_context": "This folder contains the following sub-folders: {folder_structure}",
+      "file_instruction": "Please create appropriate files that would logically belong inside this Level 2 folder. These are files directly in the Level 2 folder, not inside its sub-folders.",
+      "file_naming": "Create specific file names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each file should have a detailed description explaining its business purpose.",
+      "important_language": "All file names must be in English. Do not use file names in other languages.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+    },
+    "level3_folders_prompt": {
+      "instruction": "Create a Level 3 folder structure for the {industry} industry{role_text}.",
+      "context": "Level 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}",
+      "folder_instruction": "Please create specific and appropriate Level 3 folders that would logically belong inside this Level 2 folder. Include a clear description for each folder's purpose.",
+      "important_note": "Return ONLY folders, not files. Files will be generated in a separate step.",
+      "folder_naming": "Create specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.",
+      "important_language": "All folder names must be in English. Do not use folder names in other languages.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+    },
+    "system": "You are an AI assistant specialised in creating well-organised folder structures for businesses. All folder names and file names must be in English. You must respond with ONLY valid JSON data without any other text before or after. Do not include any explanations, remarks, or messages surrounding the JSON. Do not wrap the JSON in code blocks or markdown formatting."
   },
   "json_fix_prompts": {
     "fix_json": "The following JSON structure is invalid or cannot be parsed correctly.\nPlease correct the structure and return it in a valid JSON format.\nEnsure all keys and values are in quotation marks and all brackets are paired.\n\nProblematic response:\n{failed_response}\n\nReturn only the corrected JSON structure, without additional explanations."
@@ -50,7 +85,12 @@
     "json_error_message": "An error occurred when parsing your previous response. Please provide a syntactically valid JSON object with correct brackets.",
     "json_format_instruction": "Please format your response as a valid JSON object with correct brackets and quotation marks.",
     "json_object_instruction": "Please return only {key} as a JSON object. Return only the {key} data.",
-    "level1_folders_prompt": "Create a first-level folder structure for the {industry} industry {role_text}. Include for each folder a clear description of its purpose and business function.\n\n{date_range}\n\nPlease reply in the following JSON format:\n\n{\n  \"folders\": {\n    \"FolderName1\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    },\n    \"FolderName2\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    },\n    ...\n  }\n}\n\nCreate concrete and appropriate folder names for the {industry} industry. Provide detailed descriptions that explain the business purpose of each folder.\n\nImportant: Return only the JSON object. Do not include any additional text, explanations or comments before or after the JSON. Do not use phrases like \"Here is the JSON\" or \"I hope this helps\". Do not wrap the JSON in a code block.",
+    "level1_folders_prompt": {
+      "instruction": "Create a structure of level 1 folders for the {industry} industry {role_text}. Include a clear description of the purpose and business function for each folder.",
+      "date_range_instruction": "{date_range}",
+      "folder_naming": "Create specific and appropriate folder names for the {industry} industry. Provide detailed descriptions explaining the business purpose of each folder.",
+      "important_format": "Return only the JSON object. Do not include any additional text, explanations, or comments before or after the JSON. Do not use phrases like \"Here is the JSON\" or \"I hope this helps\". Do not wrap the JSON in a code block."
+    },
     "parsing_error_message": "Important: An error occurred when parsing your previous response. Please provide a valid JSON object with correct brackets.",
     "structure_error_format": "Important: Your JSON must include the following keys: {keys}.",
     "structure_error_message": "JSON should include the following keys: {keys}."

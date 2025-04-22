@@ -84,7 +84,12 @@
     "json_error_message": "Đã xảy ra lỗi khi phân tích phản hồi trước đó của bạn. Vui lòng cung cấp một đối tượng JSON hợp lệ về mặt cú pháp với dấu ngoặc nhọn chính xác.",
     "json_format_instruction": "Vui lòng định dạng phản hồi của bạn như một đối tượng JSON hợp lệ với dấu ngoặc nhọn và dấu ngoặc kép chính xác. Tất cả tên thư mục nên dùng tiếng Anh.",
     "json_object_instruction": "Vui lòng chỉ trả về {key} dưới dạng đối tượng JSON. Chỉ trả về dữ liệu {key}.",
-    "level1_folders_prompt": "Tạo cấu trúc thư mục cấp 1 cho ngành {industry} {role_text}. Bao gồm mô tả rõ ràng về mục đích và chức năng kinh doanh cho mỗi thư mục.\n\n{date_range}\n\nTrả lời với cấu trúc JSON theo định dạng sau:\n\n{{\n  \"folders\": {{\n    \"TênThưMục1\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    \"TênThưMục2\": {{\n      \"description\": \"Mô tả rõ ràng về mục đích kinh doanh của thư mục\"\n    }},\n    ...\n  }}\n}}\n\nTạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Cung cấp mô tả chi tiết giải thích mục đích kinh doanh của mỗi thư mục.\n\nQUAN TRỌNG: Chỉ trả về đối tượng JSON. Không bao gồm bất kỳ văn bản bổ sung, giải thích hoặc bình luận nào trước hoặc sau JSON. Không sử dụng cụm từ như \"Đây là JSON\" hoặc \"Tôi hy vọng điều này giúp ích\". Không bọc JSON trong khối mã.",
+    "level1_folders_prompt": {
+      "instruction": "Tạo cấu trúc thư mục cấp 1 cho ngành {industry} {role_text}. Bao gồm mô tả rõ ràng về mục đích và chức năng kinh doanh cho mỗi thư mục.",
+      "date_range_instruction": "{date_range}",
+      "folder_naming": "Tạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Cung cấp mô tả chi tiết giải thích mục đích kinh doanh của mỗi thư mục.",
+      "important_format": "Chỉ trả về đối tượng JSON. Không bao gồm bất kỳ văn bản bổ sung, giải thích hoặc bình luận nào trước hoặc sau JSON. Không sử dụng cụm từ như \"Đây là JSON\" hoặc \"Tôi hy vọng điều này giúp ích\". Không bọc JSON trong khối mã."
+    },
     "parsing_error_message": "QUAN TRỌNG: Đã xảy ra lỗi khi phân tích phản hồi trước đó của bạn. Vui lòng cung cấp một đối tượng JSON hợp lệ với dấu ngoặc nhọn chính xác.",
     "structure_error_format": "QUAN TRỌNG: JSON của bạn phải chứa các khóa sau: {keys}.",
     "structure_error_message": "JSON nên chứa các khóa sau: {keys}."

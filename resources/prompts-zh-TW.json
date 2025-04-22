@@ -84,7 +84,12 @@
     "json_error_message": "解析您之前的回答時出現錯誤。請提供一個語法有效的JSON物件，且括號正確。",
     "json_format_instruction": "請將您的回答格式化為有效的JSON物件，帶有正確的括號和引號。所有資料夾名稱應該用中文。",
     "json_object_instruction": "請只返回{key}作為JSON物件。只返回{key}資料。",
-    "level1_folders_prompt": "為{industry}產業{role_text}創建一個1級資料夾結構。為每個資料夾包含清晰的目的和業務功能描述。\n\n{date_range}\n\n請以如下JSON結構格式回答：\n\n{{\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"資料夾業務用途的清晰描述\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務用途的清晰描述\"\n    }},\n    ...\n  }}\n}}\n\n為{industry}產業創建具體和適當的資料夾名稱。提供詳細描述解釋每個資料夾的業務用途。\n\n重要：僅返回JSON物件。不要在JSON前後包含任何額外文本、解釋或註釋。不要使用\"這是JSON\"或\"希望這有所幫助\"等短語。不要將JSON包裝在代碼塊中。",
+    "level1_folders_prompt": {
+      "instruction": "為{industry}產業{role_text}創建一級資料夾結構。為每個資料夾包含清晰的目的和業務功能描述。",
+      "date_range_instruction": "{date_range}",
+      "folder_naming": "為{industry}產業創建具體和適當的資料夾名稱。提供詳細描述解釋每個資料夾的業務用途。",
+      "important_format": "僅返回JSON物件。不要在JSON前後包含任何額外文本、解釋或註釋。不要使用\"這是JSON\"或\"希望這有所幫助\"等短語。不要將JSON包裝在程式碼區塊中。"
+    },
     "parsing_error_message": "重要：解析您之前的回答時出現錯誤。請提供帶有正確括號的有效JSON物件。",
     "structure_error_format": "重要：您的JSON必須包含以下鍵：{keys}。",
     "structure_error_message": "JSON應包含以下鍵：{keys}。"

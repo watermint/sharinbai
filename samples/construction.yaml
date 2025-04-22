@@ -2,6 +2,7 @@ model: gemma3:12b
 ollama_url: http://localhost:11434
 
 tasks:
+  # Project Manager
   - mode: all
     path: ./output/construction/de
     industry: Baugewerbe
@@ -67,3 +68,73 @@ tasks:
     industry: 建築業
     role: 專案經理
     language: zh-TW
+
+
+  # Architect
+
+  - mode: file
+    path: ./output/construction/de
+    industry: Baugewerbe
+    role: Architekt
+    language: de
+
+  - mode: file
+    path: ./output/construction/en
+    industry: Construction
+    role: Architect
+    language: en
+
+  - mode: file
+    path: ./output/construction/es
+    industry: Construcción
+    role: Arquitecto
+    language: es
+
+  - mode: file
+    path: ./output/construction/fr
+    industry: Construction
+    role: Architecte
+    language: fr
+
+  - mode: file
+    path: ./output/construction/it
+    industry: Costruzione
+    role: Progettista
+    language: it
+
+  - mode: file
+    path: ./output/construction/ja
+    industry: 建設業
+    role: 設計士
+    language: ja
+
+  - mode: file
+    path: ./output/construction/ko
+    industry: 건축업
+    role: 건축가
+    language: ko
+
+  - mode: file
+    path: ./output/construction/pt
+    industry: Construção
+    role: Arquiteto
+    language: pt
+
+  - mode: file
+    path: ./output/construction/vi
+    industry: Công nghiệp xây dựng
+    role: Kiến trúc sư
+    language: vi
+
+  - mode: file
+    path: ./output/construction/zh
+    industry: 建筑业
+    role: 建筑师
+    language: zh
+
+  - mode: file
+    path: ./output/construction/zh-TW
+    industry: 建築業
+    role: 建築師
+    language: zh-TW
+

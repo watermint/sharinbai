@@ -51,30 +51,70 @@
     "response_format": "Restituisci solo il JSON, non è necessaria alcuna spiegazione aggiuntiva."
   },
   "folder_structure_prompt": {
-    "level1": "Si prega di creare una struttura di cartelle di primo livello per il settore {industry}. Ogni cartella dovrebbe includere una chiara descrizione del suo scopo e funzione aziendale.\n\n{date_range}\n\nSi prega di rispondere nel seguente formato JSON:\n\n{\n  \"folders\": {\n    \"NomeCartella1\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    },\n    \"NomeCartella2\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    }\n  }\n}\n\nSi prega di creare nomi di cartelle concreti per il settore {industry} e aggiungere descrizioni dettagliate per ogni cartella. Importante: Restituire solo un oggetto JSON.",
-    "level2": "Si prega di creare una struttura di cartelle di secondo livello appropriata all'interno della cartella di primo livello \"{l1_folder_name}\" per il settore {industry} {role_text}.\n\nDescrizione della cartella di primo livello: {l1_description}\n\nSi prega di rispondere nel seguente formato JSON:\n\n{\n  \"folders\": {\n    \"NomeCartella1\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    },\n    \"NomeCartella2\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    }\n  }\n}\n\nSi prega di creare nomi di cartelle concreti basati sullo scopo della cartella principale e sulle specifiche del settore {industry} e aggiungere descrizioni dettagliate. Importante: Restituire solo un oggetto JSON.",
-    "level3": "Cartella di primo livello per il settore {industry} {role_text}: {l1_folder_name} - {l1_description}\nCartella di secondo livello: {l2_folder_name} - {l2_description}\n\nSi prega di creare cartelle concrete di terzo livello all'interno di questa cartella di secondo livello e fornire spiegazioni chiare dei rispettivi scopi.\n\nSi prega di rispondere nel seguente formato JSON:\n\n{\n  \"folders\": {\n    \"NomeCartella1\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    },\n    \"NomeCartella2\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    }\n  }\n}\n\nSi prega di creare nomi di cartelle concreti basati sullo scopo della cartella principale e sulle specifiche del settore {industry} e aggiungere descrizioni dettagliate. Importante: Restituire solo un oggetto JSON.",
-    "level3_files_prompt": "Cartella di primo livello per il settore {industry} {role_text}: {l1_folder_name} - {l1_description}\nCartella di secondo livello: {l2_folder_name} - {l2_description}\n\nQuesta cartella contiene le seguenti sottocartelle: {folder_structure}\n\nSi prega di creare file appropriati direttamente per questa cartella di secondo livello (non per le sottocartelle).\n\nSi prega di rispondere nel seguente formato JSON:\n\n{\n  \"files\": [\n    {\n      \"name\": \"NomeFile1.docx\",\n      \"type\": \"docx\",\n      \"description\": \"Una chiara spiegazione dello scopo del file\"\n    },\n    {\n      \"name\": \"NomeFile2.xlsx\",\n      \"type\": \"xlsx\",\n      \"description\": \"Una chiara spiegazione dello scopo del file\"\n    }\n  ]\n}\n\nSi prega di creare nomi di file concreti basati sullo scopo della cartella principale e sulle specifiche del settore {industry} e aggiungere descrizioni dettagliate. Importante: Restituire solo un oggetto JSON.",
-    "level3_folders_prompt": "Cartella di primo livello per il settore {industry} {role_text}: {l1_folder_name} - {l1_description}\nCartella di secondo livello: {l2_folder_name} - {l2_description}\n\nSi prega di creare cartelle concrete di terzo livello all'interno di questa cartella di secondo livello e fornire spiegazioni chiare dei rispettivi scopi.\n\nImportante: Restituire solo cartelle, non file. I file saranno creati in una fase separata.\n\nSi prega di rispondere nel seguente formato JSON:\n\n{\n  \"folders\": {\n    \"NomeCartella1\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    },\n    \"NomeCartella2\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    }\n  }\n}\n\nSi prega di creare nomi di cartelle concreti basati sullo scopo della cartella principale e sulle specifiche del settore {industry} e aggiungere descrizioni dettagliate. Importante: Restituire solo un oggetto JSON.",
+    "level1": {
+      "instruction": "Si prega di creare una struttura di cartelle di primo livello per il settore {industry}. Ogni cartella dovrebbe includere una chiara descrizione del suo scopo e funzione aziendale.",
+      "folder_naming": "Si prega di creare nomi di cartelle concreti per il settore {industry} e aggiungere descrizioni dettagliate per ogni cartella.",
+      "important_language": "Tutti i nomi e le descrizioni devono essere in italiano. Non utilizzare nomi di cartelle in altre lingue.",
+      "important_format": "Restituisci SOLO l'oggetto JSON senza testo aggiuntivo, note o spiegazioni prima o dopo. Non racchiudere il JSON in blocchi di codice. Non includere frasi come 'Ecco il JSON' o 'Spero che questo aiuti'."
+    },
+    "level2": {
+      "instruction": "Si prega di creare una struttura di cartelle di secondo livello per il settore {industry}{role_text} all'interno della cartella di primo livello \"{l1_folder_name}\".",
+      "context": "Descrizione della cartella di primo livello: {l1_description}",
+      "folder_instruction": "Si prega di creare cartelle di secondo livello specifiche e appropriate che logicamente apparterrebbero a questa cartella di primo livello. Includere una chiara descrizione dello scopo di ciascuna cartella.",
+      "folder_naming": "Crea nomi di cartelle specifici appropriati allo scopo della cartella principale e alle caratteristiche del settore {industry}. Ogni cartella dovrebbe avere una descrizione dettagliata che spieghi il suo scopo aziendale.",
+      "important_language": "Tutti i nomi delle cartelle devono essere in italiano. Non utilizzare nomi di cartelle in altre lingue.",
+      "important_format": "Restituisci SOLO l'oggetto JSON senza testo aggiuntivo, note o spiegazioni prima o dopo. Non racchiudere il JSON in blocchi di codice. Non includere frasi come 'Ecco il JSON' o 'Spero che questo aiuti'."
+    },
+    "level3": {
+      "instruction": "Si prega di creare una struttura di cartelle di terzo livello per il settore {industry}{role_text}.",
+      "context": "Cartella di primo livello: {l1_folder_name} - {l1_description}\nCartella di secondo livello: {l2_folder_name} - {l2_description}",
+      "folder_instruction": "Si prega di creare cartelle di terzo livello specifiche e appropriate che logicamente apparterrebbero a questa cartella di secondo livello. Includere una chiara descrizione dello scopo di ciascuna cartella.",
+      "folder_naming": "Crea nomi di cartelle specifici appropriati allo scopo della cartella principale e alle caratteristiche del settore {industry}. Ogni cartella dovrebbe avere una descrizione dettagliata che spieghi il suo scopo aziendale.",
+      "important_language": "Tutti i nomi delle cartelle devono essere in italiano. Non utilizzare nomi di cartelle in altre lingue.",
+      "important_format": "Restituisci SOLO l'oggetto JSON senza testo aggiuntivo, note o spiegazioni prima o dopo. Non racchiudere il JSON in blocchi di codice. Non includere frasi come 'Ecco il JSON' o 'Spero che questo aiuti'."
+    },
+    "level3_files_prompt": {
+      "instruction": "Si prega di creare file per una cartella di terzo livello nel settore {industry}{role_text}.",
+      "context": "Cartella di primo livello: {l1_folder_name} - {l1_description}\nCartella di secondo livello: {l2_folder_name} - {l2_description}",
+      "folder_context": "Questa cartella contiene le seguenti sottocartelle: {folder_structure}",
+      "file_instruction": "Si prega di creare file appropriati che logicamente apparterrebbero a questa cartella di secondo livello. Questi sono file direttamente nella cartella di secondo livello, non nelle sue sottocartelle.",
+      "file_naming": "Crea nomi di file specifici appropriati allo scopo della cartella principale e alle caratteristiche del settore {industry}. Ogni file dovrebbe avere una descrizione dettagliata che spieghi il suo scopo aziendale.",
+      "important_language": "Tutti i nomi dei file devono essere in italiano. Non utilizzare nomi di file in altre lingue.",
+      "important_format": "Restituisci SOLO l'oggetto JSON senza testo aggiuntivo, note o spiegazioni prima o dopo. Non racchiudere il JSON in blocchi di codice. Non includere frasi come 'Ecco il JSON' o 'Spero che questo aiuti'."
+    },
+    "level3_folders_prompt": {
+      "instruction": "Si prega di creare una struttura di cartelle di terzo livello per il settore {industry}{role_text}.",
+      "context": "Cartella di primo livello: {l1_folder_name} - {l1_description}\nCartella di secondo livello: {l2_folder_name} - {l2_description}",
+      "folder_instruction": "Si prega di creare cartelle di terzo livello specifiche e appropriate che logicamente apparterrebbero a questa cartella di secondo livello. Includere una chiara descrizione dello scopo di ciascuna cartella.",
+      "important_note": "Restituisci SOLO cartelle, non file. I file saranno generati in una fase separata.",
+      "folder_naming": "Crea nomi di cartelle specifici appropriati allo scopo della cartella principale e alle caratteristiche del settore {industry}. Ogni cartella dovrebbe avere una descrizione dettagliata che spieghi il suo scopo aziendale.",
+      "important_language": "Tutti i nomi delle cartelle devono essere in italiano. Non utilizzare nomi di cartelle in altre lingue.",
+      "important_format": "Restituisci SOLO l'oggetto JSON senza testo aggiuntivo, note o spiegazioni prima o dopo. Non racchiudere il JSON in blocchi di codice. Non includere frasi come 'Ecco il JSON' o 'Spero che questo aiuti'."
+    },
     "system": "Sei un assistente AI che crea strutture di cartelle per le aziende. Restituisci solo dati JSON validi, senza testo o spiegazioni aggiuntive. Non avvolgere la risposta con blocchi JSON o di codice."
   },
   "json_fix_prompts": {
-    "fix_json": "La seguente struttura JSON non è valida o non può essere analizzata correttamente.\nSi prega di correggere la struttura e restituirla in un formato JSON valido.\nAssicurarsi che tutte le chiavi e i valori siano tra virgolette e che tutte le parentesi siano accoppiate.\n\nRisposta problematica:\n{failed_response}\n\nRestituire solo la struttura JSON corretta, senza spiegazioni aggiuntive."
+    "fix_json": "La seguente struttura JSON non è valida o non può essere analizzata correttamente.\nSi prega di correggere la struttura e restituirla in un formato JSON valido.\nAssicurarsi che tutte le chiavi e i valori siano tra virgolette e che tutte le parentesi siano accoppiate.\n\nRisposta problematica:\n{failed_response}\n\nRestituire solo la struttura JSON corretta, senza spiegazioni aggiuntive.\n\nIMPORTANTE: Tutti i nomi delle cartelle devono essere in italiano. Non utilizzare nomi di cartelle in altre lingue."
   },
   "json_format_instructions": {
     "json_array_instruction": "Si prega di restituire solo {key} come array JSON. Restituire solo i dati {key}.",
     "json_error_message": "Si è verificato un errore durante l'analisi della risposta precedente. Si prega di fornire un oggetto JSON sintatticamente valido con parentesi corrette.",
-    "json_format_instruction": "Si prega di formattare la risposta come un oggetto JSON valido con parentesi e virgolette corrette.",
+    "json_format_instruction": "Si prega di formattare la risposta come un oggetto JSON valido con parentesi e virgolette corrette. Tutti i nomi delle cartelle dovrebbero essere in italiano.",
     "json_object_instruction": "Si prega di restituire solo {key} come oggetto JSON. Restituire solo i dati {key}.",
-    "level1_folders_prompt": "Crea una struttura di cartelle di primo livello per il settore {industry} {role_text}. Includi per ogni cartella una chiara descrizione del suo scopo e funzione aziendale.\n\n{date_range}\n\nSi prega di rispondere nel seguente formato JSON:\n\n{\n  \"folders\": {\n    \"NomeCartella1\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    },\n    \"NomeCartella2\": {\n      \"description\": \"Una chiara spiegazione dello scopo aziendale della cartella\"\n    },\n    ...\n  }\n}\n\nCrea nomi di cartelle concreti e appropriati per il settore {industry}. Fornisci descrizioni dettagliate che spiegano lo scopo aziendale di ogni cartella.\n\nImportante: Restituisci solo l'oggetto JSON. Non includere alcun testo aggiuntivo, spiegazioni o commenti prima o dopo il JSON. Non usare frasi come \"Ecco il JSON\" o \"Spero che questo aiuti\". Non avvolgere il JSON in un blocco di codice.",
-    "parsing_error_message": "Importante: Si è verificato un errore durante l'analisi della risposta precedente. Si prega di fornire un oggetto JSON valido con parentesi corrette.",
-    "structure_error_format": "Importante: Il tuo JSON deve includere le seguenti chiavi: {keys}.",
+    "level1_folders_prompt": {
+      "instruction": "Crea una struttura di cartelle di primo livello per il settore {industry} {role_text}. Includi per ogni cartella una chiara descrizione del suo scopo e funzione aziendale.",
+      "date_range_instruction": "{date_range}",
+      "folder_naming": "Crea nomi di cartelle concreti e appropriati per il settore {industry}. Fornisci descrizioni dettagliate che spiegano lo scopo aziendale di ogni cartella.",
+      "important_format": "Restituisci solo l'oggetto JSON. Non includere alcun testo aggiuntivo, spiegazioni o commenti prima o dopo il JSON. Non usare frasi come \"Ecco il JSON\" o \"Spero che questo aiuti\". Non avvolgere il JSON in un blocco di codice."
+    },
+    "parsing_error_message": "IMPORTANTE: Si è verificato un errore durante l'analisi della risposta precedente. Si prega di fornire un oggetto JSON valido con parentesi corrette.",
+    "structure_error_format": "IMPORTANTE: Il tuo JSON deve includere le seguenti chiavi: {keys}.",
     "structure_error_message": "Il JSON dovrebbe includere le seguenti chiavi: {keys}."
   },
   "prompts": {
     "content_generation": "Genera contenuti per {description} nel settore {industry}{role_context}. Il contenuto dovrebbe essere in {language}{file_type_context}. Mantienilo conciso e professionale.",
-    "file_type_context": " e in formato {file_type}",
-    "role_context": " come {role}"
+    "file_type_context": ". L'output dovrebbe essere in formato {file_type}",
+    "role_context": " (come {role})"
   },
   "date_range_format": "Supponi che cartelle e file siano stati creati nel seguente periodo di tempo: {start_date} - {end_date}",
   "description_templates": {

@@ -79,7 +79,12 @@
     "json_error_message": "解析您之前的回答时出现错误。请提供一个语法有效的JSON对象，且括号正确。",
     "json_format_instruction": "请将您的回答格式化为有效的JSON对象，带有正确的括号和引号。所有文件夹名称应该用中文。",
     "json_object_instruction": "请仅返回{key}作为JSON对象。只返回{key}数据。",
-    "level1_folders_prompt": "为{industry}行业{role_text}创建一个1级文件夹结构。为每个文件夹包含清晰的目的和业务功能描述。\n\n{date_range}\n\n请以如下JSON结构格式回答：\n\n{\n  \"folders\": {\n    \"文件夹名称1\": {\n      \"description\": \"文件夹业务用途的清晰描述\"\n    },\n    \"文件夹名称2\": {\n      \"description\": \"文件夹业务用途的清晰描述\"\n    },\n    ...\n  }\n}\n\n为{industry}行业创建具体和适当的文件夹名称。提供详细描述解释每个文件夹的业务用途。\n\n重要：仅返回JSON对象。不要在JSON前后包含任何额外文本、解释或注释。不要使用\"这是JSON\"或\"希望这有所帮助\"等短语。不要将JSON包装在代码块中。",
+    "level1_folders_prompt": {
+      "instruction": "为{industry}行业{role_text}创建一级文件夹结构。为每个文件夹包含清晰的目的和业务功能描述。",
+      "date_range_instruction": "{date_range}",
+      "folder_naming": "为{industry}行业创建具体和适当的文件夹名称。提供详细描述解释每个文件夹的业务用途。",
+      "important_format": "只返回JSON对象。不要在JSON前后包含任何额外文本、解释或注释。不要使用\"这是JSON\"或\"希望这有所帮助\"等短语。不要将JSON包装在代码块中。"
+    },
     "parsing_error_message": "重要：解析您之前的回答时出现错误。请提供带有正确括号的有效JSON对象。",
     "structure_error_format": "重要：您的JSON必须包含以下键：{keys}。",
     "structure_error_message": "JSON应包含以下键：{keys}。"
