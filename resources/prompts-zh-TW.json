@@ -1,48 +1,49 @@
 {
-    "content_generation": {
-        "xlsx_generation": "為Excel試算表生成內容。請以下列JSON物件結構回應：\n{\n  \"sheets\": [\n    {\n      \"name\": \"工作表名稱\",\n      \"headers\": [\"標題1\", \"標題2\", ...],\n      \"data\": [\n        [\"第1行第1格\", \"第1行第2格\", ...],\n        [\"第2行第1格\", \"第2行第2格\", ...]\n      ]\n    }\n  ]\n}"
-    },
-    "date_formats": {
-        "append_date_range": "\n\n{date_range_text}\n",
-        "date_organization_prompt": "\n請考慮將與時間相關的文件按不同年份（{start_year}～{end_year}）或每年內的季度／月份資料夾進行整理。",
-        "date_range_prompt": "\n請包含與{start_date}至{end_date}期間相關的日期型資料夾或檔案名稱。",
-        "date_range_text": "適用期間: {start_date} 至 {end_date}",
-        "document_date_prompt": "\n\n本文件日期為{date}。請將該日期包含在文件標題／標頭中，並確保所有內容均與該日期相符。如有相關，請於文件中引用該日期。",
-        "example_prompt": "\n\n參考如下同類{doc_type}範例：\n\n{examples}\n\n請用類似{style_type}風格，結合目前情境，產生不同的{content_type}內容。",
-        "existing_structure_prompt": "\n請根據以下既有資料夾結構或補充相容的新結構。請建立與該結構配合使用的新內容：\n{structure}",
-        "role_prompt": "\n您正在為該產業的{role}建立資料夾結構。",
-        "scenario_context_prompt": "業務情境內容：\n{scenario}",
-        "scenario_date_range_prompt": "期間為{start_date}至{end_date}。",
-        "scenario_prompt": "\n請根據以下業務情境產生資料夾結構：\n\n{scenario}",
-        "scenario_role_prompt": "您作為{role}工作。",
-        "spreadsheet_date_prompt": "\n\n本試算表日期為{date}。請於表頭包含該日期，並確保所有資料均與該期間相符。如為報告或追蹤文件，請於試算表中包含{date}之前的日期。",
-        "text_date_prompt": "\n\n本純文字檔案日期為{date}。請於內容中包含該日期，並確保所有資訊均與該日期相符。"
-    },
-    "folder_structure": "請為下列產業建議專案資料夾結構，格式為JSON: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n請建立詳細且實用的資料夾結構。\n\n重要: 所有資料夾名稱和檔案名稱請用中文，不要用英文名稱。\n\n只返回JSON物件，不要包含額外說明或文字。",
-    "folder_structure_prompt": {
-        "level1": "請為{industry}產業建立第一層資料夾結構。每個資料夾需包含其用途和業務功能的明確說明。\n\n{date_range}\n\n請依下列JSON格式回答：\n\n{\n  \"industry\": \"{industry}\",\n  \"folders\": {\n    \"資料夾名稱1\": {\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    },\n    ...\n  }\n}\n\n請為{industry}產業建立具體的中文資料夾名稱，並為每個資料夾添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-        "level2": "請為{industry}產業{role_text}的第一層資料夾「{l1_folder_name}」內建立合適的第二層資料夾結構。\n\n第一層資料夾說明: {l1_description}\n\n請依下列JSON格式回答：\n\n{\n  \"folders\": {\n    \"資料夾名稱1\": {\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    },\n    ...\n  }\n}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-        "level3": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n請於該第二層資料夾下建立具體的第三層資料夾，並明確說明各自用途。\n\n請依下列JSON格式回答：\n\n{\n  \"folders\": {\n    \"資料夾名稱1\": {\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    },\n    ...\n  }\n}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-        "level3_files_prompt": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n該資料夾包含以下子資料夾: {folder_structure}\n\n請為該第二層資料夾（非子資料夾）直接建立合適的檔案。\n\n{industry_info}\n\n請依下列JSON格式回答：\n\n{\n  \"files\": [\n    {\n      \"name\": \"檔案名稱.副檔名\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"關於檔案用途的明確說明\"\n    },\n    ...\n  ]\n}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文檔案名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-        "level3_folders_prompt": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n請於該第二層資料夾下建立具體的第三層資料夾，並明確說明各自用途。\n\n請依下列JSON格式回答：\n\n{\n  \"folders\": {\n    \"資料夾名稱1\": {\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    },\n    ...\n  }\n}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-        "system": "您是為企業建立資料夾結構的AI助理。所有資料夾名稱和檔案名稱請用中文。只返回有效JSON資料，不要包含額外文字或說明。不要用JSON或程式碼區塊包裹。"
-    },
-    "json_fix_prompts": {
-        "fix_json": "以下JSON結構無效或無法正確解析。\n請修正結構並以有效的JSON格式返回。\n請確保所有鍵和值都用引號包裹，所有括號都成對出現。\n\n有問題的回應：\n{failed_response}\n\n只返回修正後的JSON結構，不要添加額外說明。\n\n重要: 所有資料夾名稱請用中文建立，不要改為英文。例如，不要將「行銷部」改為「Marketing」。不要使用英文名稱，必須使用中文名稱。"
-    },
-    "json_format_instructions": {
-        "json_array_instruction": "請只返回{key}作為JSON陣列。只返回{key}資料。",
-        "json_error_message": "解析您之前的回答時出現錯誤。請提供一個語法有效的JSON物件，且括號正確。",
-        "json_format_instruction": "請將您的回答格式化為有效的JSON物件，帶有正確的括號和引號。所有資料夾名稱應該用中文。",
-        "json_object_instruction": "請只返回{key}作為JSON物件。只返回{key}資料。",
-        "level1_folders_prompt": "為{industry}產業{role_text}創建一個1級資料夾結構。為每個資料夾包含清晰的目的和業務功能描述。\n\n{date_range}\n\n請以如下JSON結構格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"資料夾業務用途的清晰描述\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務用途的清晰描述\"\n    }},\n    ...\n  }}\n}}\n\n為{industry}產業創建具體和適當的資料夾名稱。提供詳細描述解釋每個資料夾的業務用途。\n\n重要：僅返回JSON物件。不要在JSON前後包含任何額外文本、解釋或註釋。不要使用\"這是JSON\"或\"希望這有所幫助\"等短語。不要將JSON包裝在代碼塊中。",
-        "parsing_error_message": "重要：解析您之前的回答時出現錯誤。請提供帶有正確括號的有效JSON物件。",
-        "structure_error_format": "重要：您的JSON必須包含以下鍵：{keys}。",
-        "structure_error_message": "JSON應包含以下鍵：{keys}。"
-    },
-    "prompts": {
-        "content_generation": "請為{industry}產業的{description}生成內容{role_context}。內容需以{language}撰寫{file_type_context}。請保持簡潔且專業。",
-        "file_type_context": "。輸出需為{file_type}格式",
-        "role_context": "（適用於{role}）"
-    }
+  "content_generation": {
+    "xlsx_generation": "為Excel試算表生成內容。請以下列JSON物件結構回應：\n{\n  \"sheets\": [\n    {\n      \"name\": \"工作表名稱\",\n      \"headers\": [\"標題1\", \"標題2\", ...],\n      \"data\": [\n        [\"第1行第1格\", \"第1行第2格\", ...],\n        [\"第2行第1格\", \"第2行第2格\", ...]\n      ]\n    }\n  ]\n}"
+  },
+  "date_formats": {
+    "append_date_range": "\n\n{date_range_text}\n",
+    "date_organization_prompt": "\n請考慮將與時間相關的文件按不同年份（{start_year}～{end_year}）或每年內的季度／月份資料夾進行整理。",
+    "date_range_prompt": "\n請包含與{start_date}至{end_date}期間相關的日期型資料夾或檔案名稱。",
+    "date_range_text": "適用期間: {start_date} 至 {end_date}",
+    "document_date_prompt": "\n\n本文件日期為{date}。請將該日期包含在文件標題／標頭中，並確保所有內容均與該日期相符。如有相關，請於文件中引用該日期。",
+    "example_prompt": "\n\n參考如下同類{doc_type}範例：\n\n{examples}\n\n請用類似{style_type}風格，結合目前情境，產生不同的{content_type}內容。",
+    "existing_structure_prompt": "\n請根據以下既有資料夾結構或補充相容的新結構。請建立與該結構配合使用的新內容：\n{structure}",
+    "role_prompt": "\n您正在為該產業的{role}建立資料夾結構。",
+    "scenario_context_prompt": "業務情境內容：\n{scenario}",
+    "scenario_date_range_prompt": "期間為{start_date}至{end_date}。",
+    "scenario_prompt": "\n請根據以下業務情境產生資料夾結構：\n\n{scenario}",
+    "scenario_role_prompt": "您作為{role}工作。",
+    "spreadsheet_date_prompt": "\n\n本試算表日期為{date}。請於表頭包含該日期，並確保所有資料均與該期間相符。如為報告或追蹤文件，請於試算表中包含{date}之前的日期。",
+    "text_date_prompt": "\n\n本純文字檔案日期為{date}。請於內容中包含該日期，並確保所有資訊均與該日期相符。"
+  },
+  "folder_structure": "請為下列產業建議專案資料夾結構，格式為JSON: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n請建立詳細且實用的資料夾結構。\n\n重要: 所有資料夾名稱和檔案名稱請用中文，不要用英文名稱。\n\n只返回JSON物件，不要包含額外說明或文字。",
+  "folder_structure_prompt": {
+    "level1": "請為{industry}產業建立第一層資料夾結構。每個資料夾需包含其用途和業務功能的明確說明。\n\n{date_range}\n\n請依下列JSON格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務目的的明確說明\"\n    }}\n  }}\n}}\n\n請為{industry}產業建立具體的中文資料夾名稱，並為每個資料夾添加詳細說明。重要: 全部用中文。只返回JSON物件。",
+    "level2": "請為{industry}產業{role_text}的第一層資料夾「{l1_folder_name}」內建立合適的第二層資料夾結構。\n\n第一層資料夾說明: {l1_description}\n\n請依下列JSON格式回答：\n\n{{\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務目的的明確說明\"\n    }}\n  }}\n}}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
+    "level3": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n請於該第二層資料夾下建立具體的第三層資料夾，並明確說明各自用途。\n\n請依下列JSON格式回答：\n\n{{\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務目的的明確說明\"\n    }}\n  }}\n}}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
+    "level3_files_prompt": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n該資料夾包含以下子資料夾: {folder_structure}\n\n請為該第二層資料夾（非子資料夾）直接建立合適的檔案。\n\n{industry_info}\n\n請依下列JSON格式回答：\n\n{{\n  \"files\": [\n    {{\n      \"name\": \"檔案名稱1.docx\",\n      \"type\": \"docx\",\n      \"description\": \"關於檔案用途的明確說明\"\n    }},\n    {{\n      \"name\": \"檔案名稱2.xlsx\",\n      \"type\": \"xlsx\",\n      \"description\": \"關於檔案用途的明確說明\"\n    }}\n  ]\n}}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文檔案名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
+    "level3_folders_prompt": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n請於該第二層資料夾下建立具體的第三層資料夾，並明確說明各自用途。\n\n請依下列JSON格式回答：\n\n{{\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務目的的明確說明\"\n    }}\n  }}\n}}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
+    "system": "您是為企業建立資料夾結構的AI助理。所有資料夾名稱和檔案名稱請用中文。只返回有效JSON資料，不要包含額外文字或說明。不要用JSON或程式碼區塊包裹。"
+  },
+  "json_fix_prompts": {
+    "fix_json": "以下JSON結構無效或無法正確解析。\n請修正結構並以有效的JSON格式返回。\n請確保所有鍵和值都用引號包裹，所有括號都成對出現。\n\n有問題的回應：\n{failed_response}\n\n只返回修正後的JSON結構，不要添加額外說明。\n\n重要: 所有資料夾名稱請用中文建立，不要改為英文。例如，不要將「行銷部」改為「Marketing」。不要使用英文名稱，必須使用中文名稱。"
+  },
+  "json_format_instructions": {
+    "json_array_instruction": "請只返回{key}作為JSON陣列。只返回{key}資料。",
+    "json_error_message": "解析您之前的回答時出現錯誤。請提供一個語法有效的JSON物件，且括號正確。",
+    "json_format_instruction": "請將您的回答格式化為有效的JSON物件，帶有正確的括號和引號。所有資料夾名稱應該用中文。",
+    "json_object_instruction": "請只返回{key}作為JSON物件。只返回{key}資料。",
+    "level1_folders_prompt": "為{industry}產業{role_text}創建一個1級資料夾結構。為每個資料夾包含清晰的目的和業務功能描述。\n\n{date_range}\n\n請以如下JSON結構格式回答：\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"資料夾業務用途的清晰描述\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務用途的清晰描述\"\n    }},\n    ...\n  }}\n}}\n\n為{industry}產業創建具體和適當的資料夾名稱。提供詳細描述解釋每個資料夾的業務用途。\n\n重要：僅返回JSON物件。不要在JSON前後包含任何額外文本、解釋或註釋。不要使用\"這是JSON\"或\"希望這有所幫助\"等短語。不要將JSON包裝在代碼塊中。",
+    "parsing_error_message": "重要：解析您之前的回答時出現錯誤。請提供帶有正確括號的有效JSON物件。",
+    "structure_error_format": "重要：您的JSON必須包含以下鍵：{keys}。",
+    "structure_error_message": "JSON應包含以下鍵：{keys}。"
+  },
+  "prompts": {
+    "content_generation": "請為{industry}產業的{description}生成內容{role_context}。內容需以{language}撰寫{file_type_context}。請保持簡潔且專業。",
+    "file_type_context": "。輸出需為{file_type}格式",
+    "role_context": "（適用於{role}）"
+  },
+  "date_range_format": "假設資料夾和檔案是在以下時間段內建立的: {start_date} - {end_date}"
 }

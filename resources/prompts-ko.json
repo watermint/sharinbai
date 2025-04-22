@@ -1,48 +1,49 @@
 {
-    "content_generation": {
-        "xlsx_generation": "Excel 스프레드시트에 대한 콘텐츠를 생성합니다. 다음 구조의 JSON 객체로 응답하세요:\n{\n  \"sheets\": [\n    {\n      \"name\": \"시트이름\",\n      \"headers\": [\"헤더1\", \"헤더2\", ...],\n      \"data\": [\n        [\"행1셀1\", \"행1셀2\", ...],\n        [\"행2셀1\", \"행2셀2\", ...]\n      ]\n    }\n  ]\n}"
-    },
-    "date_formats": {
-        "append_date_range": "\n\n{date_range_text}\n",
-        "date_organization_prompt": "\n시간과 관련된 문서는 서로 다른 연도({start_year}~{end_year}) 또는 가능하다면 각 연도 내 분기/월별 폴더로 정리하는 것을 고려하세요.",
-        "date_range_prompt": "\n{start_date}부터 {end_date}까지의 기간에 관련된 날짜 기반 폴더 또는 파일명을 포함하세요.",
-        "date_range_text": "대상 기간: {start_date} ~ {end_date}",
-        "document_date_prompt": "\n\n이 문서의 날짜는 {date}입니다. 이 날짜를 문서의 헤더/제목에 포함하고, 모든 내용이 이 날짜에 적합한지 확인하세요. 관련이 있다면 문서 전체에서 이 날짜를 참조하세요.",
-        "example_prompt": "\n\n참고로, 유사한 {doc_type} 예시는 다음과 같습니다:\n\n{examples}\n\n유사한 {style_type}으로, 현재 컨텍스트에 적합한 다른 {content_type} 콘텐츠를 생성하세요.",
-        "existing_structure_prompt": "\n다음 기존 폴더 구조를 기반으로 하거나 보완하는 구조를 생성하세요. 이 구조와 함께 의미를 이루는 호환 가능한 새 콘텐츠를 생성하세요:\n{structure}",
-        "role_prompt": "\n당신은 이 업계에서 일하는 {role}을(를) 위한 폴더 구조를 생성하고 있습니다.",
-        "scenario_context_prompt": "비즈니스 시나리오 컨텍스트:\n{scenario}",
-        "scenario_date_range_prompt": "기간은 {start_date}부터 {end_date}까지입니다.",
-        "scenario_prompt": "\n다음 비즈니스 시나리오를 기반으로 폴더 구조를 생성하세요:\n\n{scenario}",
-        "scenario_role_prompt": "당신은 {role}로 일하고 있습니다.",
-        "spreadsheet_date_prompt": "\n\n이 스프레드시트의 날짜는 {date}입니다. 스프레드시트 헤더에 이 날짜를 포함하고, 모든 데이터가 이 기간에 적합한지 확인하세요. 이것이 보고서 또는 추적 문서라면 {date} 이전 날짜를 스프레드시트에 포함하세요.",
-        "text_date_prompt": "\n\n이 텍스트 파일의 날짜는 {date}입니다. 파일 내용에 이 날짜를 포함하고, 모든 정보가 이 날짜에 적합한지 확인하세요."
-    },
-    "folder_structure": "다음 업계를 위한 프로젝트 폴더 구조를 JSON 형식으로 제안하세요: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n자세하고 실용적인 폴더 구조를 생성하세요.\n\n중요: 모든 폴더명과 파일명은 한국어로 작성하세요. 영어 이름은 사용하지 마세요.\n\n응답은 JSON 객체만으로, 추가 설명이나 텍스트를 포함하지 마세요.",
-    "folder_structure_prompt": {
-        "level1": "{industry} 업계의 1단계 폴더 구조를 생성하세요. 각 폴더에는 그 목적과 비즈니스 기능에 대한 명확한 설명을 포함하세요.\n\n{date_range}\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"industry\": \"{industry}\",\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n{industry} 업계에 적합한 구체적인 폴더명을 생성하고, 각 폴더에는 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
-        "level2": "{industry} 업계{role_text}의 1단계 폴더 \"{l1_folder_name}\" 내에 적합한 2단계 폴더 구조를 생성하세요.\n\n1단계 폴더 설명: {l1_description}\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 폴더명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
-        "level3": "{industry} 업계{role_text}의 1단계 폴더: {l1_folder_name} - {l1_description}\n2단계 폴더: {l2_folder_name} - {l2_description}\n\n이 2단계 폴더 내에 논리적으로 속하는 구체적인 3단계 폴더를 생성하고, 각각의 목적을 명확히 설명하세요.\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 폴더명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
-        "level3_files_prompt": "{industry} 업계{role_text}의 1단계 폴더: {l1_folder_name} - {l1_description}\n2단계 폴더: {l2_folder_name} - {l2_description}\n\n이 폴더에는 다음 하위 폴더가 포함됩니다: {folder_structure}\n\n이 2단계 폴더에 직접 속하는 적합한 파일을 생성하세요(하위 폴더 내가 아님).\n\n{industry_info}\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"files\": [\n    {\n      \"name\": \"파일명.확장자\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"파일 목적에 대한 명확한 설명\"\n    },\n    ...\n  ]\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 파일명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
-        "level3_folders_prompt": "{industry} 업계{role_text}의 1단계 폴더: {l1_folder_name} - {l1_description}\n2단계 폴더: {l2_folder_name} - {l2_description}\n\n이 2단계 폴더 내에 논리적으로 속하는 구체적인 3단계 폴더를 생성하고, 각각의 목적을 명확히 설명하세요.\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 폴더명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
-        "system": "당신은 기업용 폴더 구조를 생성하는 AI 어시스턴트입니다. 모든 폴더명과 파일명은 한국어로 작성하세요. 응답은 유효한 JSON 데이터만으로, 추가 텍스트나 설명을 포함하지 마세요. JSON이나 코드 블록으로 감싸지 마세요."
-    },
-    "json_fix_prompts": {
-        "fix_json": "다음 JSON 구조가 유효하지 않거나 올바르게 파싱되지 않았습니다.\n구조를 수정하여 유효한 JSON 형식으로 반환하세요.\n모든 키와 값이 적절히 따옴표로 감싸져 있고, 모든 괄호가 균형을 이루는지 확인하세요.\n\n문제가 있는 응답:\n{failed_response}\n\n추가 설명 없이, 수정된 JSON 구조만 반환하세요.\n\n중요: 모든 폴더명은 한국어로 작성하세요. 영어 폴더명으로 변경하지 마세요. 예를 들어, \"마케팅\"을 \"Marketing\"으로 변경하지 마세요. 영어 이름은 사용하지 말고 반드시 한국어 이름을 사용하세요."
-    },
-    "json_format_instructions": {
-        "json_array_instruction": "{key}만 JSON 배열로 반환하세요. {key} 데이터만 반환하세요.",
-        "json_error_message": "이전 응답 파싱 중 오류가 발생했습니다. 중괄호가 올바른 구문적으로 유효한 JSON 객체를 제공하세요.",
-        "json_format_instruction": "올바른 중괄호와 따옴표가 있는 유효한 JSON 객체로 응답을 포맷하세요. 모든 폴더 이름은 한국어로 작성하세요.",
-        "json_object_instruction": "{key}만 JSON 객체로 반환하세요. {key} 데이터만 반환하세요.",
-        "level1_folders_prompt": "{industry} 산업 {role_text}에 대한 1단계 폴더 구조를 만드세요. 각 폴더의 목적과 비즈니스 기능에 대한 명확한 설명을 포함하세요.\n\n{date_range}\n\n다음 형식의 JSON 구조로 응답하세요:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"폴더이름1\": {{\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    }},\n    \"폴더이름2\": {{\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    }},\n    ...\n  }}\n}}\n\n{industry} 산업에 적합한 특정 폴더 이름을 만드세요. 각 폴더의 비즈니스 목적을 설명하는 자세한 설명을 제공하세요.\n\n중요: JSON 객체만 반환하세요. JSON 앞뒤에 추가 텍스트, 설명 또는 주석을 포함하지 마세요. \"여기 JSON입니다\" 또는 \"도움이 되길 바랍니다\"와 같은 문구를 사용하지 마세요. JSON을 코드 블록으로 감싸지 마세요.",
-        "parsing_error_message": "중요: 이전 응답을 파싱하는 중 오류가 발생했습니다. 올바른 중괄호가 있는 유효한 JSON 객체를 제공하세요.",
-        "structure_error_format": "중요: JSON에는 다음 키가 포함되어야 합니다: {keys}.",
-        "structure_error_message": "JSON에는 다음 키가 포함되어야 합니다: {keys}."
-    },
-    "prompts": {
-        "content_generation": "{description}에 대한 콘텐츠를 {industry} 업계에서 생성해 주세요{role_context}. 콘텐츠는 {language}로 작성되어야 하며{file_type_context}. 간결하고 전문적으로 작성해 주세요.",
-        "file_type_context": ". 출력은 {file_type} 형식이어야 합니다.",
-        "role_context": " ({role}용)"
-    }
+  "content_generation": {
+    "xlsx_generation": "Excel 스프레드시트에 대한 콘텐츠를 생성합니다. 다음 구조의 JSON 객체로 응답하세요:\n{\n  \"sheets\": [\n    {\n      \"name\": \"시트이름\",\n      \"headers\": [\"헤더1\", \"헤더2\", ...],\n      \"data\": [\n        [\"행1셀1\", \"행1셀2\", ...],\n        [\"행2셀1\", \"행2셀2\", ...]\n      ]\n    }\n  ]\n}"
+  },
+  "date_formats": {
+    "append_date_range": "\n\n{date_range_text}\n",
+    "date_organization_prompt": "\n시간과 관련된 문서는 서로 다른 연도({start_year}~{end_year}) 또는 가능하다면 각 연도 내 분기/월별 폴더로 정리하는 것을 고려하세요.",
+    "date_range_prompt": "\n{start_date}부터 {end_date}까지의 기간에 관련된 날짜 기반 폴더 또는 파일명을 포함하세요.",
+    "date_range_text": "대상 기간: {start_date} ~ {end_date}",
+    "document_date_prompt": "\n\n이 문서의 날짜는 {date}입니다. 이 날짜를 문서의 헤더/제목에 포함하고, 모든 내용이 이 날짜에 적합한지 확인하세요. 관련이 있다면 문서 전체에서 이 날짜를 참조하세요.",
+    "example_prompt": "\n\n참고로, 유사한 {doc_type} 예시는 다음과 같습니다:\n\n{examples}\n\n유사한 {style_type}으로, 현재 컨텍스트에 적합한 다른 {content_type} 콘텐츠를 생성하세요.",
+    "existing_structure_prompt": "\n다음 기존 폴더 구조를 기반으로 하거나 보완하는 구조를 생성하세요. 이 구조와 함께 의미를 이루는 호환 가능한 새 콘텐츠를 생성하세요:\n{structure}",
+    "role_prompt": "\n당신은 이 업계에서 일하는 {role}을(를) 위한 폴더 구조를 생성하고 있습니다.",
+    "scenario_context_prompt": "비즈니스 시나리오 컨텍스트:\n{scenario}",
+    "scenario_date_range_prompt": "기간은 {start_date}부터 {end_date}까지입니다.",
+    "scenario_prompt": "\n다음 비즈니스 시나리오를 기반으로 폴더 구조를 생성하세요:\n\n{scenario}",
+    "scenario_role_prompt": "당신은 {role}로 일하고 있습니다.",
+    "spreadsheet_date_prompt": "\n\n이 스프레드시트의 날짜는 {date}입니다. 스프레드시트 헤더에 이 날짜를 포함하고, 모든 데이터가 이 기간에 적합한지 확인하세요. 이것이 보고서 또는 추적 문서라면 {date} 이전 날짜를 스프레드시트에 포함하세요.",
+    "text_date_prompt": "\n\n이 텍스트 파일의 날짜는 {date}입니다. 파일 내용에 이 날짜를 포함하고, 모든 정보가 이 날짜에 적합한지 확인하세요."
+  },
+  "folder_structure": "다음 업계를 위한 프로젝트 폴더 구조를 JSON 형식으로 제안하세요: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n자세하고 실용적인 폴더 구조를 생성하세요.\n\n중요: 모든 폴더명과 파일명은 한국어로 작성하세요. 영어 이름은 사용하지 마세요.\n\n응답은 JSON 객체만으로, 추가 설명이나 텍스트를 포함하지 마세요.",
+  "folder_structure_prompt": {
+    "level1": "{industry} 업계의 1단계 폴더 구조를 생성하세요. 각 폴더에는 그 목적과 비즈니스 기능에 대한 명확한 설명을 포함하세요.\n\n{date_range}\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"industry\": \"{industry}\",\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n{industry} 업계에 적합한 구체적인 폴더명을 생성하고, 각 폴더에는 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
+    "level2": "{industry} 업계{role_text}의 1단계 폴더 \"{l1_folder_name}\" 내에 적합한 2단계 폴더 구조를 생성하세요.\n\n1단계 폴더 설명: {l1_description}\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 폴더명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
+    "level3": "{industry} 업계{role_text}의 1단계 폴더: {l1_folder_name} - {l1_description}\n2단계 폴더: {l2_folder_name} - {l2_description}\n\n이 2단계 폴더 내에 논리적으로 속하는 구체적인 3단계 폴더를 생성하고, 각각의 목적을 명확히 설명하세요.\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 폴더명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
+    "level3_files_prompt": "{industry} 업계{role_text}의 1단계 폴더: {l1_folder_name} - {l1_description}\n2단계 폴더: {l2_folder_name} - {l2_description}\n\n이 폴더에는 다음 하위 폴더가 포함됩니다: {folder_structure}\n\n이 2단계 폴더에 직접 속하는 적합한 파일을 생성하세요(하위 폴더 내가 아님).\n\n{industry_info}\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"files\": [\n    {\n      \"name\": \"파일명.확장자\",\n      \"type\": \"docx|xlsx|pdf|txt\",\n      \"description\": \"파일 목적에 대한 명확한 설명\"\n    },\n    ...\n  ]\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 파일명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
+    "level3_folders_prompt": "{industry} 업계{role_text}의 1단계 폴더: {l1_folder_name} - {l1_description}\n2단계 폴더: {l2_folder_name} - {l2_description}\n\n이 2단계 폴더 내에 논리적으로 속하는 구체적인 3단계 폴더를 생성하고, 각각의 목적을 명확히 설명하세요.\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 폴더명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
+    "system": "당신은 기업용 폴더 구조를 생성하는 AI 어시스턴트입니다. 모든 폴더명과 파일명은 한국어로 작성하세요. 응답은 유효한 JSON 데이터만으로, 추가 텍스트나 설명을 포함하지 마세요. JSON이나 코드 블록으로 감싸지 마세요."
+  },
+  "json_fix_prompts": {
+    "fix_json": "다음 JSON 구조가 유효하지 않거나 올바르게 파싱되지 않았습니다.\n구조를 수정하여 유효한 JSON 형식으로 반환하세요.\n모든 키와 값이 적절히 따옴표로 감싸져 있고, 모든 괄호가 균형을 이루는지 확인하세요.\n\n문제가 있는 응답:\n{failed_response}\n\n추가 설명 없이, 수정된 JSON 구조만 반환하세요.\n\n중요: 모든 폴더명은 한국어로 작성하세요. 영어 폴더명으로 변경하지 마세요. 예를 들어, \"마케팅\"을 \"Marketing\"으로 변경하지 마세요. 영어 이름은 사용하지 말고 반드시 한국어 이름을 사용하세요."
+  },
+  "json_format_instructions": {
+    "json_array_instruction": "{key}만 JSON 배열로 반환하세요. {key} 데이터만 반환하세요.",
+    "json_error_message": "이전 응답 파싱 중 오류가 발생했습니다. 중괄호가 올바른 구문적으로 유효한 JSON 객체를 제공하세요.",
+    "json_format_instruction": "올바른 중괄호와 따옴표가 있는 유효한 JSON 객체로 응답을 포맷하세요. 모든 폴더 이름은 한국어로 작성하세요.",
+    "json_object_instruction": "{key}만 JSON 객체로 반환하세요. {key} 데이터만 반환하세요.",
+    "level1_folders_prompt": "{industry} 산업 {role_text}에 대한 1단계 폴더 구조를 만드세요. 각 폴더의 목적과 비즈니스 기능에 대한 명확한 설명을 포함하세요.\n\n{date_range}\n\n다음 형식의 JSON 구조로 응답하세요:\n\n{{\n  \"industry\": \"{industry}\",\n  \"folders\": {{\n    \"폴더이름1\": {{\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    }},\n    \"폴더이름2\": {{\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    }},\n    ...\n  }}\n}}\n\n{industry} 산업에 적합한 특정 폴더 이름을 만드세요. 각 폴더의 비즈니스 목적을 설명하는 자세한 설명을 제공하세요.\n\n중요: JSON 객체만 반환하세요. JSON 앞뒤에 추가 텍스트, 설명 또는 주석을 포함하지 마세요. \"여기 JSON입니다\" 또는 \"도움이 되길 바랍니다\"와 같은 문구를 사용하지 마세요. JSON을 코드 블록으로 감싸지 마세요.",
+    "parsing_error_message": "중요: 이전 응답을 파싱하는 중 오류가 발생했습니다. 올바른 중괄호가 있는 유효한 JSON 객체를 제공하세요.",
+    "structure_error_format": "중요: JSON에는 다음 키가 포함되어야 합니다: {keys}.",
+    "structure_error_message": "JSON에는 다음 키가 포함되어야 합니다: {keys}."
+  },
+  "prompts": {
+    "content_generation": "{description}에 대한 콘텐츠를 {industry} 업계에서 생성해 주세요{role_context}. 콘텐츠는 {language}로 작성되어야 하며{file_type_context}. 간결하고 전문적으로 작성해 주세요.",
+    "file_type_context": ". 출력은 {file_type} 형식이어야 합니다.",
+    "role_context": " ({role}용)"
+  },
+  "date_range_format": "다음 기간 동안 폴더와 파일이 생성되었다고 가정합니다: {start_date} - {end_date}"
 }

@@ -12,6 +12,7 @@ import logging
 import argparse
 import yaml
 from pathlib import Path
+from datetime import datetime, timedelta
 from src.config.settings import Settings
 from src.config.logging_config import setup_logging
 from src.config.ui_constants import ROLE_PROMPT_CLI
@@ -222,6 +223,31 @@ def process_batch_file(batch_file_path, log_level, log_path):
         
     Returns:
         True if all tasks completed successfully, False otherwise
+        
+    Example batch YAML format:
+    ```yaml
+    model: "llama3"  # Common model for all tasks
+    ollama_url: "http://localhost:11434"  # Common Ollama URL
+    date_start: "2023-05-01"  # Common date range start
+    date_end: "2023-05-31"  # Common date range end
+    
+    tasks:
+      - mode: "all"  # Generate structure and files
+        industry: "healthcare"
+        path: "./out/healthcare"
+        language: "en"
+        role: "hospital administrator"
+        # date_start and date_end override common settings
+        date_start: "2023-06-01"
+        date_end: "2023-06-30"
+        
+      - mode: "structure"  # Structure only
+        industry: "finance"
+        path: "./out/finance"
+        language: "en"
+        role: "financial analyst"
+        # Uses common date range
+    ```
     """
     try:
         with open(batch_file_path, 'r') as file:
@@ -237,6 +263,32 @@ def process_batch_file(batch_file_path, log_level, log_path):
     # Extract common settings if present
     common_model = batch_data.get('model', Settings.DEFAULT_MODEL)
     common_ollama_url = batch_data.get('ollama_url', None)
+    
+    # Calculate default date range values
+    today = datetime.now()
+    default_date_end = today.strftime("%Y-%m-%d")
+    default_date_start = (today - timedelta(days=30)).strftime("%Y-%m-%d")
+    
+    # Extract common date settings if present
+    common_date_start = None
+    common_date_end = None
+    if 'date_start' in batch_data:
+        try:
+            common_date_start = datetime.strptime(batch_data['date_start'], "%Y-%m-%d")
+        except ValueError:
+            logging.warning(f"Invalid common date_start format: {batch_data['date_start']}. Expected YYYY-MM-DD.")
+            common_date_start = datetime.strptime(default_date_start, "%Y-%m-%d")
+    else:
+        common_date_start = datetime.strptime(default_date_start, "%Y-%m-%d")
+    
+    if 'date_end' in batch_data:
+        try:
+            common_date_end = datetime.strptime(batch_data['date_end'], "%Y-%m-%d")
+        except ValueError:
+            logging.warning(f"Invalid common date_end format: {batch_data['date_end']}. Expected YYYY-MM-DD.")
+            common_date_end = datetime.strptime(default_date_end, "%Y-%m-%d")
+    else:
+        common_date_end = datetime.strptime(default_date_end, "%Y-%m-%d")
     
     tasks = batch_data.get('tasks', [])
     if not tasks:
@@ -258,6 +310,27 @@ def process_batch_file(batch_file_path, log_level, log_path):
             all_successful = False
             continue
             
+        # Parse task-specific date range if provided
+        task_date_start = None
+        if 'date_start' in task:
+            try:
+                task_date_start = datetime.strptime(task['date_start'], "%Y-%m-%d")
+            except ValueError:
+                logging.warning(f"Invalid task date_start format: {task['date_start']}. Expected YYYY-MM-DD.")
+                task_date_start = common_date_start
+        else:
+            task_date_start = common_date_start
+            
+        task_date_end = None
+        if 'date_end' in task:
+            try:
+                task_date_end = datetime.strptime(task['date_end'], "%Y-%m-%d")
+            except ValueError:
+                logging.warning(f"Invalid task date_end format: {task['date_end']}. Expected YYYY-MM-DD.")
+                task_date_end = common_date_end
+        else:
+            task_date_end = common_date_end
+            
         # Create args dictionary for this task
         task_args = {
             'command': mode,
@@ -269,7 +342,9 @@ def process_batch_file(batch_file_path, log_level, log_path):
             'ollama_url': task.get('ollama_url', common_ollama_url),
             'short': task.get('short', False),
             'log_level': log_level,
-            'log_path': log_path
+            'log_path': log_path,
+            'date_start': task_date_start,
+            'date_end': task_date_end
         }
         
         # Initialize settings from task args
@@ -277,44 +352,71 @@ def process_batch_file(batch_file_path, log_level, log_path):
         
         # Process this task
         try:
-            folder_generator = FolderGenerator(settings.model, settings.ollama_url, settings)
+            folder_generator = FolderGenerator(
+                settings.model, 
+                settings.ollama_url, 
+                settings,
+                date_start=task_date_start,
+                date_end=task_date_end
+            )
             
             success = False
             if mode == 'all':
+                date_range_info = ""
+                if task_date_start and task_date_end:
+                    date_range_info = f", date range: {task_date_start.strftime('%Y-%m-%d')} to {task_date_end.strftime('%Y-%m-%d')}"
+                
                 logging.info(f"Starting task {i+1}: generating complete folder structure for {settings.industry} industry "
                              f"(language: {settings.language}, path: {settings.output_path}, "
                              f"model: {settings.model}, short: {task_args['short']}"
-                             f"{', role: ' + settings.role if settings.role else ''})")
+                             f"{', role: ' + settings.role if settings.role else ''}"
+                             f"{date_range_info})")
                 success = folder_generator.generate_all(
                     settings.output_path, 
                     settings.industry,
                     settings.language,
                     settings.role,
-                    task_args['short']
+                    task_args['short'],
+                    date_start=task_date_start,
+                    date_end=task_date_end
                 )
             elif mode == 'file':
+                date_range_info = ""
+                if task_date_start and task_date_end:
+                    date_range_info = f", date range: {task_date_start.strftime('%Y-%m-%d')} to {task_date_end.strftime('%Y-%m-%d')}"
+                
                 logging.info(f"Starting task {i+1}: generating files only for {settings.industry} industry "
                              f"(language: {settings.language}, path: {settings.output_path}, "
                              f"model: {settings.model}, short: {task_args['short']}"
-                             f"{', role: ' + settings.role if settings.role else ''})")
+                             f"{', role: ' + settings.role if settings.role else ''}"
+                             f"{date_range_info})")
                 success = folder_generator.generate_files_only(
                     settings.output_path,
                     settings.industry,
                     settings.language,
                     settings.role,
-                    task_args['short']
+                    task_args['short'],
+                    date_start=task_date_start,
+                    date_end=task_date_end
                 )
             elif mode == 'structure':
+                date_range_info = ""
+                if task_date_start and task_date_end:
+                    date_range_info = f", date range: {task_date_start.strftime('%Y-%m-%d')} to {task_date_end.strftime('%Y-%m-%d')}"
+                
                 logging.info(f"Starting task {i+1}: creating folder structure only for {settings.industry} industry "
                              f"(language: {settings.language}, path: {settings.output_path}, "
                              f"model: {settings.model}, short: {task_args['short']}"
-                             f"{', role: ' + settings.role if settings.role else ''})")
+                             f"{', role: ' + settings.role if settings.role else ''}"
+                             f"{date_range_info})")
                 success = folder_generator.generate_structure_only(
                     settings.output_path,
                     settings.industry,
                     settings.language,
                     settings.role,
-                    task_args['short']
+                    task_args['short'],
+                    date_start=task_date_start,
+                    date_end=task_date_end
                 )
                 
             if success:
@@ -332,6 +434,12 @@ def process_batch_file(batch_file_path, log_level, log_path):
 def main():
     parser = argparse.ArgumentParser(description='Generate industry-specific folder structures with placeholder files')
     subparsers = parser.add_subparsers(dest='command', help='Command to execute')
+    
+    # Calculate default date range values (30 days ago to today)
+    today = datetime.now()
+    default_date_end = today.strftime("%Y-%m-%d")
+    default_date_start = (today - timedelta(days=30)).strftime("%Y-%m-%d")
+    
     def add_common_args(subparser):
         subparser.add_argument('--industry', '-i', type=str, help='Industry for the folder structure (if .metadata.json exists, this will temporarily override the stored value)')
         subparser.add_argument('--path', '-p', type=str, default='./out', help='Path where to create the folder structure')
@@ -341,6 +449,14 @@ def main():
         subparser.add_argument('--ollama-url', type=str, default=None, help='URL for the Ollama API server.')
         subparser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items)')
         subparser.add_argument('--log-path', type=str, default='./logs', help='Path where to store log files')
+        subparser.add_argument('--date-start', '-ds', type=str, default=default_date_start,
+                              help=f'Start date for time-based content (format: YYYY-MM-DD). '
+                                   f'This will be used to generate appropriate file names, folder names, '
+                                   f'and content for time-based data. Defaults to {default_date_start}.')
+        subparser.add_argument('--date-end', '-de', type=str, default=default_date_end,
+                              help=f'End date for time-based content (format: YYYY-MM-DD). '
+                                   f'Used with --date-start to define a date range for generating realistic '
+                                   f'time-based content and file names. Defaults to {default_date_end}.')
     all_parser = subparsers.add_parser('all', help='Create folder structure and generate all files')
     add_common_args(all_parser)
     file_parser = subparsers.add_parser('file', help='Generate or update files in existing folder structure')
@@ -389,6 +505,26 @@ def main():
     # Initialize settings from args with default language
     settings = Settings().from_args(vars(args))
     
+    # Parse date range parameters (they now always have values from defaults)
+    date_start = None
+    date_end = None
+    
+    if hasattr(args, 'date_start'):
+        try:
+            date_start = datetime.strptime(args.date_start, "%Y-%m-%d")
+            logging.info(f"Using start date: {args.date_start}")
+        except ValueError:
+            logging.error(f"Invalid date_start format: {args.date_start}. Expected YYYY-MM-DD.")
+            sys.exit(1)
+            
+    if hasattr(args, 'date_end'):
+        try:
+            date_end = datetime.strptime(args.date_end, "%Y-%m-%d")
+            logging.info(f"Using end date: {args.date_end}")
+        except ValueError:
+            logging.error(f"Invalid date_end format: {args.date_end}. Expected YYYY-MM-DD.")
+            sys.exit(1)
+    
     # Set up logging early to capture any issues
     setup_logging(settings.log_level, settings.output_path, settings.log_path)
     
@@ -427,6 +563,21 @@ def main():
                 if not args.language and metadata_language:
                     settings.language = metadata_language
                     logging.info(f"Retrieved language '{settings.language}' from metadata")
+                
+                # Update dates from metadata if not provided via CLI
+                if not date_start and 'date_start' in metadata:
+                    try:
+                        date_start = datetime.strptime(metadata['date_start'], "%Y-%m-%d")
+                        logging.info(f"Retrieved start date '{metadata['date_start']}' from metadata")
+                    except ValueError:
+                        logging.warning(f"Invalid date_start in metadata: {metadata['date_start']}")
+                
+                if not date_end and 'date_end' in metadata:
+                    try:
+                        date_end = datetime.strptime(metadata['date_end'], "%Y-%m-%d")
+                        logging.info(f"Retrieved end date '{metadata['date_end']}' from metadata")
+                    except ValueError:
+                        logging.warning(f"Invalid date_end in metadata: {metadata['date_end']}")
     
     # Priority override: CLI arguments take precedence over metadata
     if cli_industry:
@@ -510,44 +661,71 @@ def main():
     if not is_language_supported(settings.language):
         logging.warning(f"Language '{settings.language}' is not directly supported. Using best available match.")
     
-    folder_generator = FolderGenerator(settings.model, settings.ollama_url, settings)
+    folder_generator = FolderGenerator(
+        settings.model, 
+        settings.ollama_url, 
+        settings,
+        date_start=date_start,
+        date_end=date_end
+    )
     try:
         success = False
         if args.command == 'all':
+            date_range_info = ""
+            if date_start and date_end:
+                date_range_info = f", date range: {date_start.strftime('%Y-%m-%d')} to {date_end.strftime('%Y-%m-%d')}"
+            
             logging.info(f"Starting task: generating complete folder structure for {settings.industry} industry "
                          f"(language: {settings.language}, path: {settings.output_path}, "
                          f"model: {settings.model}, short: {args.short}"
-                         f"{', role: ' + settings.role if settings.role else ''})")
+                         f"{', role: ' + settings.role if settings.role else ''}"
+                         f"{date_range_info})")
             success = folder_generator.generate_all(
                 settings.output_path, 
                 settings.industry,
                 settings.language,
                 settings.role,
-                args.short
+                args.short,
+                date_start=date_start,
+                date_end=date_end
             )
         elif args.command == 'file':
+            date_range_info = ""
+            if date_start and date_end:
+                date_range_info = f", date range: {date_start.strftime('%Y-%m-%d')} to {date_end.strftime('%Y-%m-%d')}"
+            
             logging.info(f"Starting task: generating files only for {settings.industry} industry "
                          f"(language: {settings.language}, path: {settings.output_path}, "
                          f"model: {settings.model}, short: {args.short}"
-                         f"{', role: ' + settings.role if settings.role else ''})")
+                         f"{', role: ' + settings.role if settings.role else ''}"
+                         f"{date_range_info})")
             success = folder_generator.generate_files_only(
                 settings.output_path,
                 settings.industry,
                 settings.language,
                 settings.role,
-                args.short
+                args.short,
+                date_start=date_start,
+                date_end=date_end
             )
         elif args.command == 'structure':
+            date_range_info = ""
+            if date_start and date_end:
+                date_range_info = f", date range: {date_start.strftime('%Y-%m-%d')} to {date_end.strftime('%Y-%m-%d')}"
+            
             logging.info(f"Starting task: creating folder structure only for {settings.industry} industry "
                          f"(language: {settings.language}, path: {settings.output_path}, "
                          f"model: {settings.model}, short: {args.short}"
-                         f"{', role: ' + settings.role if settings.role else ''})")
+                         f"{', role: ' + settings.role if settings.role else ''}"
+                         f"{date_range_info})")
             success = folder_generator.generate_structure_only(
                 settings.output_path,
                 settings.industry,
                 settings.language,
                 settings.role,
-                args.short
+                args.short,
+                date_start=date_start,
+                date_end=date_end
             )
         else:
             logging.error(f"Unknown command: {args.command}")

@@ -8,6 +8,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Union, Tuple
+from datetime import datetime, timedelta
 
 from ..config.language_utils import get_translation
 from ..content.content_generator import ContentGenerator
@@ -27,7 +28,21 @@ class LocalizedTemplateNotFoundError(Exception):
     pass
 
 class FolderGenerator:
-    """Generates folder structures and instructs content creation"""
+    """
+    Generates folder structures and instructs content creation
+    
+    This class handles the generation of folder structures and files based on industry,
+    language, and role specifications. It can create a complete hierarchy with:
+    - Level 1 folders (root level)
+    - Level 2 folders (within level 1)
+    - Level 3 folders (within level 2)
+    - Files with appropriate content
+    
+    Date range functionality:
+    - Default date range is the last 30 days
+    - Date range is used to generate hints for time-based folder and file names
+    - Can be customized by providing start and end dates
+    """
     
     # Item type constants
     ITEM_TYPE_FOLDER = "folder"
@@ -41,7 +56,9 @@ class FolderGenerator:
         ITEM_TYPE_IMAGE: 0     # No limit for images by default
     }
 
-    def __init__(self, model: str = Settings.DEFAULT_MODEL, ollama_url: Optional[str] = None, settings: Optional[Settings] = None):
+    def __init__(self, model: str = Settings.DEFAULT_MODEL, ollama_url: Optional[str] = None, 
+                 settings: Optional[Settings] = None, date_start: Optional[datetime] = None, 
+                 date_end: Optional[datetime] = None):
         """
         Initialize the folder generator.
         
@@ -49,6 +66,12 @@ class FolderGenerator:
             model: Model name to use for generation
             ollama_url: URL for the Ollama API server
             settings: Application settings
+            date_start: Optional start date for date range hints (defaults to 30 days ago)
+            date_end: Optional end date for date range hints (defaults to today)
+            
+        Raises:
+            LocalizedTemplateNotFoundError: If required translations are missing
+            ValueError: If language is not set in settings
         """
         self.llm_client = OllamaClient(model, ollama_url)
         self.file_manager = FileManager()
@@ -58,11 +81,82 @@ class FolderGenerator:
         self.statistics_tracker = StatisticsTracker() # Initialize statistics tracker
         self.settings = settings or Settings() # Store settings or create default instance
         
+        # Initialize date range parameters
+        today = datetime.now()
+        self.date_start = date_start or (today - timedelta(days=30))
+        self.date_end = date_end or today
+        
+        # Validate language is set
+        language = getattr(self.settings, 'language', None)
+        if not language:
+            error_msg = "Language is not set in settings"
+            logging.error(error_msg)
+            raise ValueError(error_msg)
+            
+        # Validate translation for date_range_format exists
+        date_format_template = get_translation("date_range_format", language, None)
+        if date_format_template == "date_range_format":
+            error_msg = f"No localized template found for '{language}' language (date_range_format)"
+            logging.error(error_msg)
+            raise LocalizedTemplateNotFoundError(error_msg)
+            
+        # Format the date range string
+        self.date_range_str = self._format_date_range(self.date_start, self.date_end)
+        
+    def _format_date_range(self, start_date: datetime, end_date: datetime) -> str:
+        """
+        Format date range as a string for use in prompts.
+        
+        Args:
+            start_date: Start date
+            end_date: End date
+            
+        Returns:
+            Formatted date range string
+            
+        Raises:
+            LocalizedTemplateNotFoundError: If no localized template is found for the date range format
+            ValueError: If language is not set in settings
+        """
+        # Get language from settings without a default
+        language = getattr(self.settings, 'language', None)
+        
+        # Raise exception if language is not set
+        if not language:
+            error_msg = "Language is not set in settings"
+            logging.error(error_msg)
+            raise ValueError(error_msg)
+            
+        # Format dates individually to avoid locale-specific issues
+        start_date_str = start_date.strftime('%Y-%m-%d')
+        end_date_str = end_date.strftime('%Y-%m-%d')
+            
+        # Use translation resource for date range format
+        date_format_template = get_translation("date_range_format", language, None)
+        
+        # Check if we got back the key itself (which means translation wasn't found)
+        # get_translation returns the key itself if default is None and translation isn't found
+        if date_format_template == "date_range_format":
+            error_msg = f"No localized template found for '{language}' language (date_range_format)"
+            logging.error(error_msg)
+            raise LocalizedTemplateNotFoundError(error_msg)
+        
+        # Use the translated template with formatted dates
+        return date_format_template.format(start_date=start_date_str, end_date=end_date_str)
+        
     # --- Public Methods (expected by sharinbai.py) with Short Mode --- 
 
     def generate_all(self, output_path: str, industry: str, language: str, 
-                     role: Optional[str] = None, short_mode: bool = False) -> bool:
+                     role: Optional[str] = None, short_mode: bool = False,
+                     date_start: Optional[datetime] = None, 
+                     date_end: Optional[datetime] = None) -> bool:
         """Generate complete folder structure with files."""
+        # Update date range if provided
+        if date_start or date_end:
+            self.date_start = date_start or self.date_start
+            self.date_end = date_end or self.date_end
+            self.date_range_str = self._format_date_range(self.date_start, self.date_end)
+            
         self._reset_short_mode(short_mode, mode="all")
         try:
             base_dir = Path(output_path)
@@ -106,8 +200,16 @@ class FolderGenerator:
             return False
 
     def generate_structure_only(self, output_path: str, industry: str, language: str, 
-                                role: Optional[str] = None, short_mode: bool = False) -> bool:
+                                role: Optional[str] = None, short_mode: bool = False,
+                                date_start: Optional[datetime] = None, 
+                                date_end: Optional[datetime] = None) -> bool:
         """Generate folder structure only without files."""
+        # Update date range if provided
+        if date_start or date_end:
+            self.date_start = date_start or self.date_start
+            self.date_end = date_end or self.date_end
+            self.date_range_str = self._format_date_range(self.date_start, self.date_end)
+            
         self._reset_short_mode(short_mode, mode="structure")
         try:
             base_dir = Path(output_path)
@@ -147,8 +249,16 @@ class FolderGenerator:
             return False
 
     def generate_files_only(self, output_path: str, industry: str, language: str,
-                           role: Optional[str] = None, short_mode: bool = False) -> bool:
+                            role: Optional[str] = None, short_mode: bool = False,
+                            date_start: Optional[datetime] = None, 
+                            date_end: Optional[datetime] = None) -> bool:
         """Generate or update files only without modifying folder structure."""
+        # Update date range if provided
+        if date_start or date_end:
+            self.date_start = date_start or self.date_start
+            self.date_end = date_end or self.date_end
+            self.date_range_str = self._format_date_range(self.date_start, self.date_end)
+            
         self._reset_short_mode(short_mode, mode="file")
         try:
             base_dir = Path(output_path)
@@ -202,6 +312,9 @@ class FolderGenerator:
             "industry": industry,
             "language": language,
             "role": role,
+            "date_range": self.date_range_str,
+            "date_start": self.date_start.strftime("%Y-%m-%d"),
+            "date_end": self.date_end.strftime("%Y-%m-%d"),
             "folders": level1_structure["folders"]
         }
         self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
@@ -421,6 +534,9 @@ class FolderGenerator:
             "industry": industry,
             "language": language,
             "role": role,
+            "date_range": self.date_range_str,
+            "date_start": self.date_start.strftime("%Y-%m-%d"),
+            "date_end": self.date_end.strftime("%Y-%m-%d"),
             "folders": level1_structure["folders"]
         }
         self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
@@ -706,6 +822,20 @@ class FolderGenerator:
                     language = root_metadata["language"]
                 if "role" in root_metadata:
                     role = root_metadata["role"]
+                
+                # Update date range information if present in metadata
+                if "date_range" in root_metadata:
+                    logging.info(f"Using date range from metadata: {root_metadata['date_range']}")
+                    self.date_range_str = root_metadata["date_range"]
+                    
+                    # Try to parse date range from metadata if available
+                    if "date_start" in root_metadata and "date_end" in root_metadata:
+                        try:
+                            self.date_start = datetime.strptime(root_metadata["date_start"], "%Y-%m-%d")
+                            self.date_end = datetime.strptime(root_metadata["date_end"], "%Y-%m-%d")
+                            logging.info(f"Parsed date range: {self.date_start.strftime('%Y-%m-%d')} to {self.date_end.strftime('%Y-%m-%d')}")
+                        except ValueError:
+                            logging.warning("Could not parse dates from metadata, using default date range")
         else:
             logging.warning("Root metadata file not found, using provided parameters")
             
@@ -1081,7 +1211,9 @@ class FolderGenerator:
         # Role placeholder might be formatted differently in localized templates
         # so we'll use the role_text format from the language templates
         role_text = f" for a {role}" if role else ""
-        date_range = ""  # Additional parameter that might be used in templates
+        
+        # Format date range for the prompt
+        date_range = self.date_range_str
         
         # Replace placeholders in the template
         prompt = prompt_template.format(
@@ -1089,18 +1221,6 @@ class FolderGenerator:
             role_text=role_text,
             date_range=date_range
         )
-        
-        # For testing purposes, explicitly add role and language information
-        # Add role and language information before the format instructions
-        format_instruction_marker = "Please respond with a JSON structure"
-        if format_instruction_marker in prompt:
-            insert_idx = prompt.find(format_instruction_marker)
-            if insert_idx > 0:
-                added_info = ""
-                if role and role not in prompt:
-                    added_info += f"This structure should be specific for a {role} in the {industry} industry.\n"
-                added_info += f"Use {language} as the primary language for organization.\n\n"
-                prompt = prompt[:insert_idx] + added_info + prompt[insert_idx:]
         
         return prompt
     
@@ -1136,12 +1256,15 @@ class FolderGenerator:
         role_text = f" for a {role}" if role else ""
         
         # Replace placeholders in the template
-        return prompt_template.format(
+        prompt = prompt_template.format(
             industry=industry,
             l1_folder_name=l1_folder_name,
             l1_description=l1_description,
-            role_text=role_text
+            role_text=role_text,
+            date_range=self.date_range_str
         )
+        
+        return prompt
     
     def _generate_level3_folders(self, industry: str, l2_folder_name: str, 
                                l2_folder_data: Dict[str, Any], l1_description: str,
@@ -1207,14 +1330,17 @@ class FolderGenerator:
         role_text = f" for a {role}" if role else ""
         
         # Replace placeholders in the template
-        return prompt_template.format(
+        prompt = prompt_template.format(
             industry=industry,
             l1_folder_name=l1_folder_name,
             l1_description=l1_description,
             l2_folder_name=l2_folder_name,
             l2_description=l2_description,
-            role_text=role_text
+            role_text=role_text,
+            date_range=self.date_range_str
         )
+        
+        return prompt
     
     def _generate_level3_files(self, industry: str, l2_folder_name: str, 
                              l2_folder_data: Dict[str, Any], l1_description: str,
@@ -1289,7 +1415,7 @@ class FolderGenerator:
         industry_info = ""
         
         # Replace placeholders in the template
-        return prompt_template.format(
+        prompt = prompt_template.format(
             industry=industry,
             industry_info=industry_info,
             l1_folder_name=l1_folder_name,
@@ -1297,9 +1423,12 @@ class FolderGenerator:
             l2_folder_name=l2_folder_name,
             l2_description=l2_description,
             folder_structure=folder_structure,
-            role_text=role_text
+            role_text=role_text,
+            date_range=self.date_range_str
         )
-    
+        
+        return prompt
+        
     def _generate_timeseries_files(self, folder_path: Path, folder_name: str, folder_description: str,
                                  industry: str, language: str, role: Optional[str] = None) -> bool:
         """
@@ -1335,7 +1464,8 @@ class FolderGenerator:
             folder_description=folder_description,
             industry=industry,
             language=language,
-            role_text=role_text
+            role_text=role_text,
+            date_range=self.date_range_str
         )
         
         file_structure = self.llm_client.get_json_completion(
@@ -1439,3 +1569,6 @@ class FolderGenerator:
         # Add debug logging for current limits
         for item_type, limit in self.SHORT_MODE_LIMITS.items():
             logging.debug(f"Short mode limit for {item_type}: {limit}")
+            
+        # Log current date range information
+        logging.info(f"Using date range: {self.date_range_str} for content generation")
