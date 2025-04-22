@@ -55,7 +55,8 @@ class XlsxGenerator(BaseGenerator):
         return sanitized
     
     def generate(self, directory: str, filename: str, description: str,
-                industry: str, language: str, role: Optional[str] = None) -> bool:
+                industry: str, language: str, role: Optional[str] = None,
+                date_range_str: Optional[str] = None) -> bool:
         """
         Generate Excel spreadsheet content.
         
@@ -66,6 +67,7 @@ class XlsxGenerator(BaseGenerator):
             industry: Industry context
             language: Language to use
             role: Specific role within the industry (optional)
+            date_range_str: Date range information (optional)
             
         Returns:
             True if file was successfully created, False otherwise
@@ -89,7 +91,7 @@ class XlsxGenerator(BaseGenerator):
             return False
         
         # Create prompt for spreadsheet content
-        prompt = self.create_prompt(description, industry, language, role, "Excel spreadsheet")
+        prompt = self.create_prompt(description, industry, language, role, "Excel spreadsheet", date_range_str)
         if not prompt:
             logging.error(f"Failed to create prompt for {filename} with language '{language}'")
             return False

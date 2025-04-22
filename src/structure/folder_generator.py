@@ -75,16 +75,24 @@ class FolderGenerator:
         """
         self.llm_client = OllamaClient(model, ollama_url)
         self.file_manager = FileManager()
-        self.content_generator = ContentGenerator(model, ollama_url)
-        self._item_counts = {item_type: 0 for item_type in self.SHORT_MODE_LIMITS.keys()}  # Initialize counters for all item types
-        self._short_mode_enabled = False # Flag to store if short mode is active for the current run
-        self.statistics_tracker = StatisticsTracker() # Initialize statistics tracker
-        self.settings = settings or Settings() # Store settings or create default instance
         
         # Initialize date range parameters
         today = datetime.now()
         self.date_start = date_start or (today - timedelta(days=30))
         self.date_end = date_end or today
+        
+        # Initialize content generator with date range
+        self.content_generator = ContentGenerator(
+            model, 
+            ollama_url,
+            date_start=self.date_start,
+            date_end=self.date_end
+        )
+        
+        self._item_counts = {item_type: 0 for item_type in self.SHORT_MODE_LIMITS.keys()}  # Initialize counters for all item types
+        self._short_mode_enabled = False # Flag to store if short mode is active for the current run
+        self.statistics_tracker = StatisticsTracker() # Initialize statistics tracker
+        self.settings = settings or Settings() # Store settings or create default instance
         
         # Validate language is set
         language = getattr(self.settings, 'language', None)
@@ -157,6 +165,13 @@ class FolderGenerator:
             self.date_end = date_end or self.date_end
             self.date_range_str = self._format_date_range(self.date_start, self.date_end)
             
+            # Update ContentGenerator's date range
+            self.content_generator.update_date_range(
+                self.date_start, 
+                self.date_end,
+                language
+            )
+            
         self._reset_short_mode(short_mode, mode="all")
         try:
             base_dir = Path(output_path)
@@ -210,6 +225,13 @@ class FolderGenerator:
             self.date_end = date_end or self.date_end
             self.date_range_str = self._format_date_range(self.date_start, self.date_end)
             
+            # Update ContentGenerator's date range
+            self.content_generator.update_date_range(
+                self.date_start, 
+                self.date_end,
+                language
+            )
+            
         self._reset_short_mode(short_mode, mode="structure")
         try:
             base_dir = Path(output_path)
@@ -258,6 +280,13 @@ class FolderGenerator:
             self.date_start = date_start or self.date_start
             self.date_end = date_end or self.date_end
             self.date_range_str = self._format_date_range(self.date_start, self.date_end)
+            
+            # Update ContentGenerator's date range
+            self.content_generator.update_date_range(
+                self.date_start, 
+                self.date_end,
+                language
+            )
             
         self._reset_short_mode(short_mode, mode="file")
         try:

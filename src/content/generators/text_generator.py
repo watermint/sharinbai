@@ -12,7 +12,8 @@ class TextGenerator(BaseGenerator):
     """Generator for text files"""
     
     def generate(self, directory: str, filename: str, description: str,
-                industry: str, language: str, role: Optional[str] = None) -> bool:
+                industry: str, language: str, role: Optional[str] = None,
+                date_range_str: Optional[str] = None) -> bool:
         """
         Generate text file content.
         
@@ -23,6 +24,7 @@ class TextGenerator(BaseGenerator):
             industry: Industry context
             language: Language to use
             role: Specific role within the industry (optional)
+            date_range_str: Date range information (optional)
             
         Returns:
             True if file was successfully created, False otherwise
@@ -30,7 +32,7 @@ class TextGenerator(BaseGenerator):
         file_path = self.get_file_path(directory, filename)
         
         # Create prompt for text content
-        prompt = self.create_prompt(description, industry, language, role, "text")
+        prompt = self.create_prompt(description, industry, language, role, "text", date_range_str)
         
         # Generate content using LLM
         content = self.llm_client.get_completion(prompt)

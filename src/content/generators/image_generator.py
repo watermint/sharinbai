@@ -19,7 +19,8 @@ class ImageGenerator(BaseGenerator):
     """Generator for image files"""
     
     def generate(self, directory: str, filename: str, description: str,
-                industry: str, language: str, role: Optional[str] = None) -> bool:
+                industry: str, language: str, role: Optional[str] = None,
+                date_range_str: Optional[str] = None) -> bool:
         """
         Generate placeholder image content.
         
@@ -30,6 +31,7 @@ class ImageGenerator(BaseGenerator):
             industry: Industry context
             language: Language to use
             role: Specific role within the industry (optional)
+            date_range_str: Date range information (optional)
             
         Returns:
             True if file was successfully created, False otherwise
@@ -73,6 +75,9 @@ class ImageGenerator(BaseGenerator):
             ]
             if role:
                 info_text.append(f"Role: {role}")
+                
+            if date_range_str:
+                info_text.append(f"Date Range: {date_range_str}")
                 
             # Draw each line of text
             for i, text in enumerate(info_text):

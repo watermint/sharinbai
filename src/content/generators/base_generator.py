@@ -27,7 +27,8 @@ class BaseGenerator(ABC):
     
     @abstractmethod
     def generate(self, directory: str, filename: str, description: str,
-                industry: str, language: str, role: Optional[str] = None) -> bool:
+                industry: str, language: str, role: Optional[str] = None,
+                date_range_str: Optional[str] = None) -> bool:
         """
         Generate file content.
         
@@ -38,6 +39,7 @@ class BaseGenerator(ABC):
             industry: Industry context
             language: Language to use
             role: Specific role within the industry (optional)
+            date_range_str: Date range information (optional)
             
         Returns:
             True if file was successfully created, False otherwise
@@ -58,7 +60,8 @@ class BaseGenerator(ABC):
         return os.path.join(directory, self.file_manager.sanitize_path(filename))
     
     def create_prompt(self, description: str, industry: str, language: str, 
-                     role: Optional[str] = None, file_type: Optional[str] = None) -> str:
+                     role: Optional[str] = None, file_type: Optional[str] = None,
+                     date_range_str: Optional[str] = None) -> str:
         """
         Create a prompt for the LLM based on the parameters.
         
@@ -68,6 +71,7 @@ class BaseGenerator(ABC):
             language: Language to use
             role: Specific role within the industry (optional)
             file_type: Type of file (optional)
+            date_range_str: Date range information (optional)
             
         Returns:
             Formatted prompt for the LLM
@@ -97,11 +101,17 @@ class BaseGenerator(ABC):
         role_context = role_template.format(role=role) if role else ""
         file_type_context = file_type_template.format(file_type=file_type) if file_type else ""
         
-        # Return the complete formatted prompt
-        return prompt_template.format(
+        # Create the base prompt
+        prompt = prompt_template.format(
             description=description,
             industry=industry,
             role_context=role_context,
             language=language,
             file_type_context=file_type_context
-        ) 
+        )
+        
+        # Append date range information if provided
+        if date_range_str:
+            prompt = f"{prompt}\n\n{date_range_str}"
+            
+        return prompt 

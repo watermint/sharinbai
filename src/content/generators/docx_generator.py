@@ -19,7 +19,8 @@ class DocxGenerator(BaseGenerator):
     """Generator for Word documents (.docx)"""
     
     def generate(self, directory: str, filename: str, description: str,
-                industry: str, language: str, role: Optional[str] = None) -> bool:
+                industry: str, language: str, role: Optional[str] = None,
+                date_range_str: Optional[str] = None) -> bool:
         """
         Generate Word document content.
         
@@ -30,6 +31,7 @@ class DocxGenerator(BaseGenerator):
             industry: Industry context
             language: Language to use
             role: Specific role within the industry (optional)
+            date_range_str: Date range information (optional)
             
         Returns:
             True if file was successfully created, False otherwise
@@ -41,7 +43,7 @@ class DocxGenerator(BaseGenerator):
         file_path = self.get_file_path(directory, filename)
         
         # Create prompt for document content
-        prompt = self.create_prompt(description, industry, language, role, "Word document")
+        prompt = self.create_prompt(description, industry, language, role, "Word document", date_range_str)
         
         # Generate content using LLM
         content = self.llm_client.get_completion(prompt)

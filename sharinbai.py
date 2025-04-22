@@ -24,6 +24,7 @@ from src.config.language_utils import (
 )
 from src.structure.folder_generator import FolderGenerator
 from src.content.file_manager import FileManager
+from tests.test_templates import test_templates as run_template_tests
 
 def extract_placeholders(text: str) -> set:
     """
@@ -77,7 +78,8 @@ def get_value_at_key_path(obj, key_path):
 
 def test_languages():
     """
-    Test all supported language resources and detect missing keys and placeholders.
+    Test all supported language resources and detect missing keys, placeholders, 
+    and test templates with placeholder compilation.
     """
     file_manager = FileManager()
     language_files = get_available_language_files()
@@ -87,6 +89,9 @@ def test_languages():
         return False
     
     print(f"Found {len(language_files)} language resource files.")
+    
+    # PART 1: Testing for Missing Keys and Placeholders
+    print("\n=== TESTING FOR MISSING KEYS AND PLACEHOLDERS ===\n")
     
     # Load all language resources
     resources = {}
@@ -127,7 +132,7 @@ def test_languages():
     print(f"Identified {len(all_valid_placeholders)} distinct placeholders in reference language.")
     
     # Second pass: check for missing keys and placeholders
-    has_issues = False
+    has_key_issues = False
     
     for lang_code, resource in resources.items():
         if lang_code == reference_lang:
@@ -141,7 +146,7 @@ def test_languages():
         for key in reference_keys:
             if not key_exists(resource, key):
                 missing_keys.append(key)
-                has_issues = True
+                has_key_issues = True
             elif key in reference_placeholders:
                 # Check for missing placeholders in this key
                 target_value = get_value_at_key_path(resource, key)
@@ -155,7 +160,7 @@ def test_languages():
                     missing = reference_placeholders[key] - target_placeholders
                     if missing:
                         missing_placeholders[key] = missing
-                        has_issues = True
+                        has_key_issues = True
         
         if missing_keys:
             print(f"  Missing {len(missing_keys)} key(s):")
@@ -171,7 +176,12 @@ def test_languages():
         else:
             print("  No missing placeholders found.")
     
-    return not has_issues
+    # PART 2: Testing Templates with Placeholder Substitution
+    print("\n=== TESTING TEMPLATES WITH PLACEHOLDER SUBSTITUTION ===\n")
+    has_template_issues = not run_template_tests()
+    
+    # Return overall success status
+    return not (has_key_issues or has_template_issues)
 
 def extract_keys(obj, prefix, result_set):
     """
@@ -211,6 +221,12 @@ def key_exists(obj, key_path):
             return False
     
     return True
+
+def test_templates():
+    """
+    Test all templates by filling placeholders with dummy values and checking for compilation errors.
+    """
+    return run_template_tests()
 
 def process_batch_file(batch_file_path, log_level, log_path):
     """
@@ -470,7 +486,11 @@ def main():
     batch_parser.add_argument('--log-path', type=str, default='./logs', help='Path where to store log files')
     
     subparsers.add_parser('list-languages', help='List supported languages')
-    subparsers.add_parser('test-languages', help='Test all language resources for missing keys')
+    test_languages_parser = subparsers.add_parser('test-languages', 
+                                               help='Test all language resources for missing keys, placeholders, and template compilation')
+    
+    # Keep the test-templates command for backward compatibility
+    subparsers.add_parser('test-templates', help='Test all templates with dummy placeholder values')
     parser.add_argument('--log-level', type=str, default='INFO', 
                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], 
                        help='Logging level')
@@ -488,7 +508,15 @@ def main():
             print("No language resource files found.")
         sys.exit(0)
     elif args.command == 'test-languages':
+        print("Starting comprehensive language and template testing...")
         success = test_languages()
+        if success:
+            print("\nAll language and template tests passed successfully!")
+        else:
+            print("\nSome language or template tests failed. See details above.")
+        sys.exit(0 if success else 1)
+    elif args.command == 'test-templates':
+        success = test_templates()
         sys.exit(0 if success else 1)
     elif args.command == 'batch':
         # Handle batch command

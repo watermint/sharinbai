@@ -61,7 +61,8 @@ class PdfGenerator(BaseGenerator):
                     logging.warning(f"Failed to register {font_name} font: {e}")
     
     def generate(self, directory: str, filename: str, description: str,
-                industry: str, language: str, role: Optional[str] = None) -> bool:
+                industry: str, language: str, role: Optional[str] = None,
+                date_range_str: Optional[str] = None) -> bool:
         """
         Generate PDF document content.
         
@@ -72,6 +73,7 @@ class PdfGenerator(BaseGenerator):
             industry: Industry context
             language: Language to use
             role: Specific role within the industry (optional)
+            date_range_str: Date range information (optional)
             
         Returns:
             True if file was successfully created, False otherwise
@@ -83,7 +85,7 @@ class PdfGenerator(BaseGenerator):
         file_path = self.get_file_path(directory, filename)
         
         # Create prompt for document content
-        prompt = self.create_prompt(description, industry, language, role, "PDF document")
+        prompt = self.create_prompt(description, industry, language, role, "PDF document", date_range_str)
         
         # Generate content using LLM
         content = self.llm_client.get_completion(prompt)

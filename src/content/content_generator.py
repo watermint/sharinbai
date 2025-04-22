@@ -18,6 +18,7 @@ from src.content.generators import (
 )
 from src.foundation.llm_client import OllamaClient
 from src.config.settings import Settings
+from src.config.language_utils import get_translation
 
 
 class ContentGenerator:
@@ -26,13 +27,17 @@ class ContentGenerator:
     # Maximum number of timeseries folders allowed at each level
     MAX_TIMESERIES_FOLDERS = 5
     
-    def __init__(self, model: str = Settings.DEFAULT_MODEL, ollama_url: Optional[str] = None):
+    def __init__(self, model: str = Settings.DEFAULT_MODEL, ollama_url: Optional[str] = None,
+                date_start: Optional[datetime.datetime] = None,
+                date_end: Optional[datetime.datetime] = None):
         """
         Initialize the content generator.
         
         Args:
             model: Model name to use for content generation
             ollama_url: URL for the Ollama API server
+            date_start: Optional start date for date range hints (defaults to 30 days ago)
+            date_end: Optional end date for date range hints (defaults to today)
         """
         self.llm_client = OllamaClient(model, ollama_url)
         self.file_manager = FileManager()
@@ -45,6 +50,44 @@ class ContentGenerator:
             "xlsx": XlsxGenerator(self.llm_client),
             "image": ImageGenerator(self.llm_client)
         }
+        
+        # Initialize date range parameters
+        today = datetime.datetime.now()
+        self.date_start = date_start or (today - datetime.timedelta(days=30))
+        self.date_end = date_end or today
+        self.date_range_str = None
+        
+    def _format_date_range(self, start_date: datetime.datetime, end_date: datetime.datetime, 
+                          language: str) -> str:
+        """
+        Format date range as a string for use in prompts.
+        
+        Args:
+            start_date: Start date
+            end_date: End date
+            language: Language code for translation
+            
+        Returns:
+            Formatted date range string
+            
+        Raises:
+            ValueError: If translation resource is not found
+        """
+        # Format dates individually
+        start_date_str = start_date.strftime('%Y-%m-%d')
+        end_date_str = end_date.strftime('%Y-%m-%d')
+            
+        # Use translation resource for date range format
+        date_format_template = get_translation("date_range_format", language, None)
+        
+        # Check if translation was not found
+        if date_format_template == "date_range_format":
+            error_msg = f"No localized template found for '{language}' language (date_range_format)"
+            logging.error(error_msg)
+            raise ValueError(error_msg)
+        
+        # Use the translated template with formatted dates
+        return date_format_template.format(start_date=start_date_str, end_date=end_date_str)
         
     def generate_file_content(self, file_path: str, file_type: str, description: str, 
                              industry: str, folder_path: str = "", language: str = "en", 
@@ -80,6 +123,10 @@ class ContentGenerator:
                 _, ext = os.path.splitext(filename)
                 ext = ext.lstrip(".").lower()
                 
+            # Format date range if not already done
+            if self.date_range_str is None and self.date_start and self.date_end:
+                self.date_range_str = self._format_date_range(self.date_start, self.date_end, language)
+                
             # Save file metadata separately
             file_metadata = {
                 "filename": filename,
@@ -91,6 +138,10 @@ class ContentGenerator:
                 "folder_path": folder_path
             }
             
+            # Add date range to metadata if available
+            if self.date_range_str:
+                file_metadata["date_range"] = self.date_range_str
+            
             metadata_dir = os.path.join(directory, ".metadata")
             self.file_manager.ensure_directory(metadata_dir)
             metadata_filename = f"{self.file_manager.sanitize_path(filename)}.json"
@@ -100,11 +151,13 @@ class ContentGenerator:
             # Use appropriate generator
             if ext in self.generators:
                 return self.generators[ext].generate(
-                    directory, filename, description, industry, language, role
+                    directory, filename, description, industry, language, role, 
+                    date_range_str=self.date_range_str
                 )
             elif ext in ["png", "jpg"]:
                 return self.generators["image"].generate(
-                    directory, filename, description, industry, language, role
+                    directory, filename, description, industry, language, role,
+                    date_range_str=self.date_range_str
                 )
             else:
                 # Ignore unknown extensions instead of creating text files
@@ -145,6 +198,10 @@ class ContentGenerator:
             # Use date-based naming convention for files in timeseries folders
             filename = self._format_timeseries_filename(filename, ext)
         
+        # Format date range if not already done
+        if self.date_range_str is None and self.date_start and self.date_end:
+            self.date_range_str = self._format_date_range(self.date_start, self.date_end, language)
+            
         # Save file metadata separately
         file_metadata = {
             "filename": filename,
@@ -156,6 +213,10 @@ class ContentGenerator:
             "purpose": purpose
         }
         
+        # Add date range to metadata if available
+        if self.date_range_str:
+            file_metadata["date_range"] = self.date_range_str
+        
         metadata_dir = os.path.join(directory, ".metadata")
         self.file_manager.ensure_directory(metadata_dir)
         metadata_filename = f"{self.file_manager.sanitize_path(filename)}.json"
@@ -165,11 +226,13 @@ class ContentGenerator:
         # Use appropriate generator
         if ext in self.generators:
             return self.generators[ext].generate(
-                directory, filename, description, industry, language, role
+                directory, filename, description, industry, language, role,
+                date_range_str=self.date_range_str
             )
         elif ext in ["png", "jpg"]:
             return self.generators["image"].generate(
-                directory, filename, description, industry, language, role
+                directory, filename, description, industry, language, role,
+                date_range_str=self.date_range_str
             )
         else:
             # Ignore unknown extensions instead of creating text files
@@ -249,6 +312,10 @@ class ContentGenerator:
             # Generate time-based files
             today = datetime.datetime.now()
             
+            # Format date range if not already done
+            if self.date_range_str is None and self.date_start and self.date_end:
+                self.date_range_str = self._format_date_range(self.date_start, self.date_end, language)
+                
             # Create several files with different dates
             for i in range(3):  # Create 3 files by default
                 # Use dates going backwards from today
@@ -274,4 +341,24 @@ class ContentGenerator:
             return created_files
         except Exception as e:
             logging.exception(f"Error generating timeseries files: {e}")
-            return created_files 
+            return created_files
+            
+    def update_date_range(self, date_start: Optional[datetime.datetime] = None, 
+                        date_end: Optional[datetime.datetime] = None, 
+                        language: str = "en") -> None:
+        """
+        Update the date range for content generation.
+        
+        Args:
+            date_start: Start date for the date range
+            date_end: End date for the date range
+            language: Language code for translation
+        """
+        if date_start:
+            self.date_start = date_start
+        if date_end:
+            self.date_end = date_end
+            
+        # Update the date range string
+        if self.date_start and self.date_end:
+            self.date_range_str = self._format_date_range(self.date_start, self.date_end, language) 
