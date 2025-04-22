@@ -319,6 +319,167 @@ class FolderGenerator:
             logging.exception(f"Error during file only generation: {e}")
             return False
 
+    def generate_specific_files(self, output_path: str, industry: str, language: str,
+                               role: Optional[str] = None, short_mode: bool = False,
+                               target_files: List[Path] = None,
+                               date_start: Optional[datetime] = None, 
+                               date_end: Optional[datetime] = None) -> bool:
+        """Generate or update specific files in the existing folder structure.
+        
+        Args:
+            output_path: Path to the root of the folder structure
+            industry: Industry context
+            language: Language to use
+            role: Specific role within the industry (optional)
+            short_mode: Whether to limit the number of items
+            target_files: List of Path objects representing specific files to regenerate
+            date_start: Optional start date for time-based content
+            date_end: Optional end date for time-based content
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        # Update date range if provided
+        if date_start or date_end:
+            self.date_start = date_start or self.date_start
+            self.date_end = date_end or self.date_end
+            self.date_range_str = self._format_date_range(self.date_start, self.date_end)
+            
+            # Update ContentGenerator's date range
+            self.content_generator.update_date_range(
+                self.date_start, 
+                self.date_end,
+                language
+            )
+            
+        self._reset_short_mode(short_mode, mode="file")
+        try:
+            base_dir = Path(output_path)
+            target_dir = base_dir
+            
+            if not target_dir.exists():
+                 logging.error(f"Target directory {target_dir} does not exist.")
+                 return False
+            
+            if not target_files or len(target_files) == 0:
+                logging.error("No target files provided.")
+                return False
+                
+            logging.info(f"Processing {len(target_files)} specific files for regeneration")
+            
+            # Collect existing metadata
+            root_metadata = None
+            if (target_dir / ".metadata.json").exists():
+                root_metadata = self.file_manager.read_json_file(str(target_dir / ".metadata.json"))
+                if root_metadata:
+                    logging.info("Found root metadata file")
+                    # We use the provided parameters instead of metadata values for 'edit' command
+            else:
+                logging.warning("Root metadata file not found, using provided parameters")
+                
+            success = True
+            files_processed = 0
+            
+            # Filter out .metadata files and other specific files we don't want to process
+            valid_target_files = []
+            for file_path in target_files:
+                # Skip .metadata directory files or .metadata.json files
+                if ".metadata" in str(file_path) or str(file_path).endswith(".metadata.json"):
+                    logging.info(f"Skipping metadata file: {file_path}")
+                    continue
+                valid_target_files.append(file_path)
+            
+            if not valid_target_files:
+                logging.warning("No valid files to process after filtering metadata files")
+                return False
+                
+            logging.info(f"Processing {len(valid_target_files)} valid files after filtering")
+            
+            # Process each target file
+            for file_path in valid_target_files:
+                try:
+                    # Get relative path from the root directory for logging
+                    try:
+                        rel_path = file_path.relative_to(target_dir)
+                        logging.info(f"Processing file: {rel_path}")
+                    except ValueError:
+                        logging.info(f"Processing file: {file_path}")
+                    
+                    # Ensure the file path is absolute
+                    if not file_path.is_absolute():
+                        file_path = target_dir / file_path
+                    
+                    # Get parent folder for context
+                    parent_folder = file_path.parent
+                    
+                    # Ensure parent directory exists
+                    if not parent_folder.exists():
+                        logging.info(f"Creating parent directory: {parent_folder}")
+                        os.makedirs(parent_folder, exist_ok=True)
+                    
+                    # Try to read parent folder metadata for better context
+                    parent_metadata = None
+                    parent_description = ""
+                    parent_metadata_path = parent_folder / ".metadata.json"
+                    
+                    if parent_metadata_path.exists():
+                        parent_metadata = self.file_manager.read_json_file(str(parent_metadata_path))
+                        if parent_metadata:
+                            parent_description = parent_metadata.get("description", "")
+                    
+                    # Get file type from extension
+                    file_type = ""
+                    if "." in file_path.name:
+                        file_type = file_path.name.split(".")[-1]
+                    
+                    logging.info(f"Generating content for {file_path.name} (type: {file_type})")
+                    
+                    # Get folder path for context
+                    try:
+                        folder_rel_path = parent_folder.relative_to(target_dir)
+                        folder_path_str = str(folder_rel_path)
+                    except ValueError:
+                        folder_path_str = parent_folder.name
+                    
+                    # Generate content for the file
+                    file_content = self.content_generator.generate_file_content(
+                        str(file_path),
+                        file_type,
+                        parent_description,
+                        industry,
+                        folder_path_str,
+                        language,
+                        role
+                    )
+                    
+                    if file_content:
+                        # Successfully generated content
+                        logging.info(f"Successfully regenerated content for {file_path.name}")
+                        files_processed += 1
+                        
+                        # Add to statistics
+                        self.statistics_tracker.add_file(str(file_path))
+                    else:
+                        logging.error(f"Failed to generate content for {file_path.name}")
+                        success = False
+                        
+                except Exception as e:
+                    logging.error(f"Error processing file {file_path}: {e}")
+                    success = False
+            
+            logging.info(f"Completed processing {files_processed} out of {len(valid_target_files)} files")
+            
+            # Print statistics at the end
+            self.statistics_tracker.print_statistics(language)
+            
+            return success
+        except LocalizedTemplateNotFoundError as e:
+            logging.error(f"Language resource error: {e}")
+            return False
+        except Exception as e:
+            logging.exception(f"Error during specific file generation: {e}")
+            return False
+
     # --- Internal Processing Methods --- 
     # (These remain, with short mode checks already integrated)
     def _process_structure_only(self, level1_structure: Dict[str, Any], target_dir: Path,

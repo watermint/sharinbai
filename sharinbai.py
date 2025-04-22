@@ -11,6 +11,7 @@ sys.path.insert(0, project_root)
 import logging
 import argparse
 import yaml
+import random
 from pathlib import Path
 from datetime import datetime, timedelta
 from src.config.settings import Settings
@@ -503,6 +504,11 @@ def main():
     structure_parser = subparsers.add_parser('structure', help='Create only folder structure without generating files')
     add_common_args(structure_parser)
     
+    # Add the edit command
+    edit_parser = subparsers.add_parser('edit', help='Recreate existing files using metadata with specified role and date range')
+    add_common_args(edit_parser)
+    edit_parser.add_argument('--max-files', type=int, default=10, help='Maximum number of files to edit (default: 10)')
+    
     # Add the batch command
     batch_parser = subparsers.add_parser('batch', help='Execute multiple tasks from a YAML file')
     batch_parser.add_argument('--file', '-f', type=str, required=True, help='Path to the batch YAML file')
@@ -598,7 +604,7 @@ def main():
     cli_role = args.role
     
     # If working with existing structure, try to retrieve metadata
-    if args.command in ['file'] or (args.command in ['all', 'structure'] and Path(settings.output_path).exists()):
+    if args.command in ['file', 'edit'] or (args.command in ['all', 'structure'] and Path(settings.output_path).exists()):
         target_dir = Path(settings.output_path)
         metadata_path = target_dir / ".metadata.json"
         
@@ -619,10 +625,12 @@ def main():
                         logging.info(f"Retrieved industry '{settings.industry}' from metadata")
                 
                 if metadata_role:
-                    # Only use metadata role if not explicitly provided via CLI
+                    # For 'edit' command, only use metadata role if not explicitly provided via CLI
                     if not cli_role:
-                        settings.role = metadata_role
-                        logging.info(f"Retrieved role '{settings.role}' from metadata")
+                        # For edit command, we need the role from the command line
+                        if args.command != 'edit':
+                            settings.role = metadata_role
+                            logging.info(f"Retrieved role '{settings.role}' from metadata")
                 
                 # Update language from metadata if not provided by args
                 if not args.language and metadata_language:
@@ -630,14 +638,15 @@ def main():
                     logging.info(f"Retrieved language '{settings.language}' from metadata")
                 
                 # Update dates from metadata if not provided via CLI
-                if not date_start and 'date_start' in metadata:
+                # For 'edit' command, we always prefer command-line date parameters
+                if not date_start and 'date_start' in metadata and args.command != 'edit':
                     try:
                         date_start = datetime.strptime(metadata['date_start'], "%Y-%m-%d")
                         logging.info(f"Retrieved start date '{metadata['date_start']}' from metadata")
                     except ValueError:
                         logging.warning(f"Invalid date_start in metadata: {metadata['date_start']}")
                 
-                if not date_end and 'date_end' in metadata:
+                if not date_end and 'date_end' in metadata and args.command != 'edit':
                     try:
                         date_end = datetime.strptime(metadata['date_end'], "%Y-%m-%d")
                         logging.info(f"Retrieved end date '{metadata['date_end']}' from metadata")
@@ -789,6 +798,89 @@ def main():
                 settings.language,
                 settings.role,
                 args.short,
+                date_start=date_start,
+                date_end=date_end
+            )
+        elif args.command == 'edit':
+            date_range_info = ""
+            if date_start and date_end:
+                date_range_info = f", date range: {date_start.strftime('%Y-%m-%d')} to {date_end.strftime('%Y-%m-%d')}"
+            
+            # For edit command, we require a role to be specified
+            if not settings.role:
+                logging.error("Role is required for the 'edit' command but not provided. Use --role/-r option.")
+                sys.exit(1)
+            
+            # Find all editable files in the directory structure
+            target_dir = Path(settings.output_path)
+            if not target_dir.exists():
+                logging.error(f"Target directory {target_dir} does not exist.")
+                sys.exit(1)
+                
+            all_files = []
+            for root, dirs, files in os.walk(str(target_dir)):
+                root_path = Path(root)
+                # Skip .metadata directories
+                if ".metadata" in root_path.parts:
+                    continue
+                    
+                # Exclude hidden files and metadata files
+                for file in files:
+                    if not file.startswith('.') and file != '.metadata.json':
+                        file_path = root_path / file
+                        # Only include regular files, not symlinks or other special files
+                        if file_path.is_file() and not file_path.is_symlink():
+                            all_files.append(file_path)
+            
+            if not all_files:
+                logging.error("No editable files found in the directory structure.")
+                sys.exit(1)
+                
+            # Select random files to edit, prioritizing files with extensions for better content generation
+            # First, group files by whether they have an extension
+            files_with_ext = [f for f in all_files if '.' in f.name and not f.name.endswith('.json')]
+            files_without_ext = [f for f in all_files if '.' not in f.name]
+            
+            logging.info(f"Found {len(files_with_ext)} files with extensions and {len(files_without_ext)} files without extensions")
+            
+            # Determine how many files to sample from each group
+            max_files = min(args.max_files, len(all_files))
+            files_to_edit = []
+            
+            # If we have enough files with extensions, prioritize those
+            if len(files_with_ext) >= max_files:
+                files_to_edit = random.sample(files_with_ext, max_files)
+            else:
+                # Take all files with extensions and sample the rest from files without extensions
+                files_to_edit.extend(files_with_ext)
+                remaining = max_files - len(files_with_ext)
+                if remaining > 0 and files_without_ext:
+                    sample_count = min(remaining, len(files_without_ext))
+                    files_to_edit.extend(random.sample(files_without_ext, sample_count))
+            
+            logging.info(f"Starting task: recreating {len(files_to_edit)} randomly selected files with new metadata "
+                         f"for {settings.industry} industry "
+                         f"(language: {settings.language}, path: {settings.output_path}, "
+                         f"model: {settings.model}, short: {args.short}, "
+                         f"role: {settings.role}"
+                         f"{date_range_info})")
+            
+            # Log the selected files for debugging
+            for i, file_path in enumerate(files_to_edit):
+                try:
+                    rel_path = file_path.relative_to(target_dir)
+                    logging.info(f"Selected file {i+1}: {rel_path}")
+                except ValueError:
+                    logging.info(f"Selected file {i+1}: {file_path}")
+            
+            # Regenerate selected files with new metadata
+            success = folder_generator.generate_specific_files(
+                settings.output_path,
+                settings.industry,
+                settings.language,
+                settings.role,
+                args.short,
+                files_to_edit,
                 date_start=date_start,
                 date_end=date_end
             )

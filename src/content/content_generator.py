@@ -112,8 +112,14 @@ class ContentGenerator:
             directory = os.path.dirname(file_path)
             filename = os.path.basename(file_path)
             
+            # Handle empty directory case
+            if not directory:
+                logging.error(f"Empty directory path for file: {filename}")
+                return False
+                
             # Ensure the directory exists
             if not self.file_manager.ensure_directory(directory):
+                logging.error(f"Failed to create directory for file: {filename}")
                 return False
                 
             # Get file extension from file_type if provided, or from filename
@@ -148,21 +154,27 @@ class ContentGenerator:
             metadata_path = os.path.join(metadata_dir, metadata_filename)
             self.file_manager.write_json_file(metadata_path, file_metadata)
             
+            # Generate the actual file content
+            logging.info(f"Generating content for file {filename} (type: {ext})")
+            
             # Use appropriate generator
             if ext in self.generators:
                 return self.generators[ext].generate(
                     directory, filename, description, industry, language, role, 
                     date_range_str=self.date_range_str
                 )
-            elif ext in ["png", "jpg"]:
+            elif ext in ["png", "jpg", "jpeg", "gif"]:
                 return self.generators["image"].generate(
                     directory, filename, description, industry, language, role,
                     date_range_str=self.date_range_str
                 )
             else:
-                # Ignore unknown extensions instead of creating text files
-                logging.warning(f"Ignoring unknown file extension '{ext}' for file: {filename}")
-                return True
+                # Default to text generator for unknown extensions
+                logging.info(f"Using text generator for unknown file extension '{ext}': {filename}")
+                return self.generators["txt"].generate(
+                    directory, filename, description, industry, language, role,
+                    date_range_str=self.date_range_str
+                )
         except Exception as e:
             logging.error(f"Error generating file content for {file_path}: {e}")
             return False

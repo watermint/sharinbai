@@ -129,6 +129,25 @@ To generate or update files in an existing folder structure:
 python sharinbai.py file
 ```
 
+### Edit Specific Files
+
+To selectively regenerate existing files with new role or date parameters:
+
+```
+python sharinbai.py edit --role "New Role" --max-files 10
+```
+
+This command:
+- Randomly selects up to 10 files from the existing structure (uses the default if `--max-files` is not specified)
+- Regenerates them with the new role and date range while preserving the folder structure
+- Prioritizes files with extensions for better content generation
+- Can be used to update specific files without regenerating the entire structure
+
+Example use cases:
+- Change the perspective of files (e.g., from manager to quality assurance)
+- Update files to reflect a different time period
+- Refresh content with consistent new context
+
 ### List Supported Languages
 
 To see all supported languages:
@@ -250,78 +269,31 @@ python sharinbai.py all --model gemma3:4b --path ./custom_output --log-level DEB
 
 ### Batch Processing
 
-Sharinbai supports batch processing of multiple tasks using a YAML configuration file:
+Sharinbai supports batch processing through a YAML configuration file:
 
 ```
-python sharinbai.py batch --file batch_tasks.yaml
+python sharinbai.py batch --file batch_config.yaml
 ```
 
-The YAML file should contain a list of tasks to execute sequentially, along with optional common settings:
+This allows you to define multiple tasks to be executed sequentially. See the example `batch_config.yaml` for details.
 
-```yaml
-# Common settings applied to all tasks (unless overridden)
-model: gemma3:12b
-ollama_url: http://localhost:11434
+### Edit Command Options
 
-# List of tasks to execute sequentially
-tasks:
-  # Task 1: Create structure for a restaurant
-  - mode: structure
-    path: ./out/restaurant
-    industry: Restaurant
-    role: Head Chef
-    language: en
-    short: true
-  
-  # Task 2: Create files for the restaurant structure
-  - mode: file
-    path: ./out/restaurant
-    language: en
-  
-  # Task 3: Create complete structure and files for a tech company
-  - mode: all
-    path: ./out/tech_company
-    industry: Software Development
-    role: Project Manager
-    language: es
-    model: mistral  # Override the common model for this task
+The `edit` command provides additional options for more control:
+
+```
+python sharinbai.py edit --path ./my_project --role "Quality Inspector" --max-files 15 --date-start 2023-10-01 --date-end 2023-10-31
 ```
 
-#### Batch Configuration Options
+Parameters:
+- `--path`: Target directory containing the structure to edit (default: ./out)
+- `--role`: New role perspective for the regenerated files (required)
+- `--max-files`: Maximum number of files to randomly select and edit (default: 10)
+- `--date-start` and `--date-end`: New date range for the regenerated files
+- `--model`: AI model to use for content generation
+- `--language`: Language override (if not using the language from metadata)
 
-Each task in the batch file supports the following parameters:
-
-| Parameter | Description | Required |
-|-----------|-------------|----------|
-| `mode` | Execution mode: `all`, `structure`, or `file` | Yes |
-| `path` | Output directory path | No (defaults to `./out`) |
-| `industry` | Target industry | Yes (for `all` and `structure` modes) |
-| `role` | Specific role within the industry | No |
-| `language` | Language code | Yes |
-| `model` | Model to use for this task | No (uses common setting) |
-| `short` | Enable short mode (max 5 items) | No (defaults to `false`) |
-
-Common settings that apply to all tasks include:
-
-| Setting | Description |
-|---------|-------------|
-| `model` | Default model to use for all tasks |
-| `ollama_url` | URL for the Ollama API server |
-
-The batch process will execute each task sequentially and report on the success or failure of each operation.
-
-## Troubleshooting
-
-### Common Issues with Ollama
-
-1. **Model not found error**: Make sure you've downloaded the model using `ollama pull [model_name]`
-2. **Connection refused error**: Ensure Ollama is running with `ollama serve`
-3. **Out of memory error**: Try using a smaller model like `gemma3:4b` instead of larger ones
-
-### Common Issues with Python
-
-1. **ModuleNotFoundError**: Make sure you've activated the virtual environment and installed requirements
-2. **Permission errors**: On Unix-like systems, you might need to use `sudo` or change file permissions
+The `edit` command always uses the explicitly provided role and date range parameters, ignoring those in the metadata files. This allows you to selectively refresh content with a new perspective while preserving the overall structure.
 
 ## Project Structure
 
