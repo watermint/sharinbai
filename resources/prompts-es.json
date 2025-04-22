@@ -18,56 +18,62 @@
     "spreadsheet_date_prompt": "\n\nEsta hoja de cálculo tiene fecha del {date}. Incluye esta fecha en el encabezado de la hoja de cálculo y asegúrate de que todos los datos sean apropiados para este período de tiempo. Si esto es un informe o documento de seguimiento, incluye fechas dentro de la hoja de cálculo que estén en o antes del {date}.",
     "text_date_prompt": "\n\nEste archivo de texto tiene fecha del {date}. Incluye esta fecha en el contenido del archivo y asegúrate de que toda la información sea apropiada para esta fecha."
   },
+  "date_range_format": "Asuma que las carpetas y archivos fueron creados durante el siguiente período: {start_date} - {end_date}",
+  "description_templates": {
+    "brief_description": "Breve descripción del contenido y propósito del archivo",
+    "file_description": "Descripción clara del propósito del archivo",
+    "folder_description": "Descripción clara del propósito empresarial de la carpeta"
+  },
   "folder_structure": {
-    "instruction": "Por favor, proponga una estructura de carpetas de proyecto en formato JSON para la siguiente industria: {industry}{role_prompt}",
-    "criteria": "Cree una estructura de carpetas extensa y detallada que cumpla con los siguientes criterios:\n\n1. Incluir al menos 15-20 carpetas principales\n2. Cada carpeta principal debe contener al menos 3-5 subcarpetas\n3. La jerarquía de carpetas debe tener al menos 3-4 niveles de profundidad (por ejemplo, Carpeta Principal/Subcarpeta/Sub-subcarpeta)\n4. Cada carpeta de nivel inferior debe contener al menos 3-5 archivos\n5. Reflejar estructuras de carpetas especializadas específicas para la industria y el rol",
-    "folder_naming_guidelines": "Todos los nombres de carpetas y archivos deben cumplir con las siguientes pautas:\n- Evite nombres genéricos y abstractos como 'Carpeta 1' o 'Documento 2'\n- Utilice terminología específica que refleje términos propios de la industria y procesos comerciales reales\n- Cree nombres de archivos que indiquen claramente el propósito y contenido del documento\n- Incluya nombres específicos de departamentos, proyectos, productos, clientes, etc. cuando sea relevante\n- Indique claramente los tipos de documentos (propuestas, informes, manuales, etc.)",
-    "folder_description_guidelines": "Para las descripciones de carpetas, proporcione un contexto empresarial detallado que explique:\n- El propósito y función empresarial de cada carpeta\n- Cómo se utiliza la carpeta en las operaciones comerciales diarias y flujos de trabajo\n- Qué departamentos o roles suelen trabajar con estos documentos\n- Qué procesos de negocio apoyan estos documentos\n- Cómo se relaciona el contenido de la carpeta con los objetivos comerciales",
-    "file_types": "Los archivos deben ser principalmente archivos comerciales comunes como documentos de Word (.docx), Excel (.xlsx), PDF, archivos de texto (.txt), o archivos de imagen (.png, .jpg), etc.",
-    "language_requirement": "Todos los nombres y descripciones deben estar en español. No utilice nombres de carpetas en otros idiomas.",
     "additional_instructions": "Incluya carpetas relacionadas con diversas áreas de operaciones comerciales, como gestión de proyectos, gestión de documentos, análisis de datos, informes, materiales de reuniones, documentos contractuales, etc.\n\nPara cualquier informe, acta de reunión o documento fechado, incluya la fecha en el nombre del archivo en formato AAAA-MM-DD.",
+    "criteria": "Cree una estructura de carpetas extensa y detallada que cumpla con los siguientes criterios:\n\n1. Incluir al menos 15-20 carpetas principales\n2. Cada carpeta principal debe contener al menos 3-5 subcarpetas\n3. La jerarquía de carpetas debe tener al menos 3-4 niveles de profundidad (por ejemplo, Carpeta Principal/Subcarpeta/Sub-subcarpeta)\n4. Cada carpeta de nivel inferior debe contener al menos 3-5 archivos\n5. Reflejar estructuras de carpetas especializadas específicas para la industria y el rol",
+    "file_types": "Los archivos deben ser principalmente archivos comerciales comunes como documentos de Word (.docx), Excel (.xlsx), PDF, archivos de texto (.txt), o archivos de imagen (.png, .jpg), etc.",
+    "folder_description_guidelines": "Para las descripciones de carpetas, proporcione un contexto empresarial detallado que explique:\n- El propósito y función empresarial de cada carpeta\n- Cómo se utiliza la carpeta en las operaciones comerciales diarias y flujos de trabajo\n- Qué departamentos o roles suelen trabajar con estos documentos\n- Qué procesos de negocio apoyan estos documentos\n- Cómo se relaciona el contenido de la carpeta con los objetivos comerciales",
+    "folder_naming_guidelines": "Todos los nombres de carpetas y archivos deben cumplir con las siguientes pautas:\n- Evite nombres genéricos y abstractos como 'Carpeta 1' o 'Documento 2'\n- Utilice terminología específica que refleje términos propios de la industria y procesos comerciales reales\n- Cree nombres de archivos que indiquen claramente el propósito y contenido del documento\n- Incluya nombres específicos de departamentos, proyectos, productos, clientes, etc. cuando sea relevante\n- Indique claramente los tipos de documentos (propuestas, informes, manuales, etc.)",
+    "instruction": "Por favor, proponga una estructura de carpetas de proyecto en formato JSON para la siguiente industria: {industry}{role_prompt}",
+    "language_requirement": "Todos los nombres y descripciones deben estar en español. No utilice nombres de carpetas en otros idiomas.",
     "response_format": "Devuelva solo el JSON, no se necesita explicación adicional."
   },
   "folder_structure_prompt": {
     "level1": {
-      "instruction": "Crea una estructura de carpetas de Nivel 1 para la industria {industry}. Cada carpeta debe tener una descripción clara de su propósito y función empresarial.",
       "folder_naming": "Crea nombres de carpetas específicos y apropiados para la industria {industry}. Cada carpeta debe tener una descripción detallada que explique su propósito empresarial.",
+      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'.",
       "important_language": "Todos los nombres de carpetas deben estar en español. No utilices nombres de carpetas en otros idiomas.",
-      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'."
+      "instruction": "Crea una estructura de carpetas de Nivel 1 para la industria {industry}. Cada carpeta debe tener una descripción clara de su propósito y función empresarial."
     },
     "level2": {
-      "instruction": "Crea una estructura de carpetas de Nivel 2 para la industria {industry}{role_text} dentro de la carpeta de Nivel 1 llamada \"{l1_folder_name}\".",
       "context": "Descripción de la carpeta de Nivel 1: {l1_description}",
       "folder_instruction": "Por favor, crea carpetas de Nivel 2 específicas y apropiadas que lógicamente pertenecerían dentro de esta carpeta de Nivel 1. Incluye una descripción clara del propósito de cada carpeta.",
       "folder_naming": "Crea nombres de carpetas específicos apropiados para el propósito de la carpeta principal y las características de la industria {industry}. Cada carpeta debe tener una descripción detallada que explique su propósito empresarial.",
+      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'.",
       "important_language": "Todos los nombres de carpetas deben estar en español. No utilices nombres de carpetas en otros idiomas.",
-      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'."
+      "instruction": "Crea una estructura de carpetas de Nivel 2 para la industria {industry}{role_text} dentro de la carpeta de Nivel 1 llamada \"{l1_folder_name}\"."
     },
     "level3": {
-      "instruction": "Crea una estructura de carpetas de Nivel 3 para la industria {industry}{role_text}.",
       "context": "Carpeta de Nivel 1: {l1_folder_name} - {l1_description}\nCarpeta de Nivel 2: {l2_folder_name} - {l2_description}",
       "folder_instruction": "Por favor, crea carpetas de Nivel 3 específicas y apropiadas que lógicamente pertenecerían dentro de esta carpeta de Nivel 2. Incluye una descripción clara del propósito de cada carpeta.",
       "folder_naming": "Crea nombres de carpetas específicos apropiados para el propósito de la carpeta principal y las características de la industria {industry}. Cada carpeta debe tener una descripción detallada que explique su propósito empresarial.",
+      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'.",
       "important_language": "Todos los nombres de carpetas deben estar en español. No utilices nombres de carpetas en otros idiomas.",
-      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'."
+      "instruction": "Crea una estructura de carpetas de Nivel 3 para la industria {industry}{role_text}."
     },
     "level3_files_prompt": {
-      "instruction": "Crea archivos para una carpeta de Nivel 3 en la industria {industry}{role_text}.",
       "context": "Carpeta de Nivel 1: {l1_folder_name} - {l1_description}\nCarpeta de Nivel 2: {l2_folder_name} - {l2_description}",
-      "folder_context": "Esta carpeta contiene las siguientes subcarpetas: {folder_structure}",
       "file_instruction": "Por favor, crea archivos apropiados que lógicamente pertenecerían a esta carpeta de Nivel 2. Estos son archivos directamente en la carpeta de Nivel 2, no dentro de sus subcarpetas.",
       "file_naming": "Crea nombres de archivos específicos apropiados para el propósito de la carpeta principal y las características de la industria {industry}. Cada archivo debe tener una descripción detallada que explique su propósito empresarial.",
+      "folder_context": "Esta carpeta contiene las siguientes subcarpetas: {folder_structure}",
+      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'.",
       "important_language": "Todos los nombres de archivos deben estar en español. No utilices nombres de archivos en otros idiomas.",
-      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'."
+      "instruction": "Crea archivos para una carpeta de Nivel 3 en la industria {industry}{role_text}."
     },
     "level3_folders_prompt": {
-      "instruction": "Crea una estructura de carpetas de Nivel 3 para la industria {industry}{role_text}.",
       "context": "Carpeta de Nivel 1: {l1_folder_name} - {l1_description}\nCarpeta de Nivel 2: {l2_folder_name} - {l2_description}",
       "folder_instruction": "Por favor, crea carpetas de Nivel 3 específicas y apropiadas que lógicamente pertenecerían dentro de esta carpeta de Nivel 2. Incluye una descripción clara del propósito de cada carpeta.",
-      "important_note": "Devuelve SOLO carpetas, no archivos. Los archivos se generarán en un paso separado.",
       "folder_naming": "Crea nombres de carpetas específicos apropiados para el propósito de la carpeta principal y las características de la industria {industry}. Cada carpeta debe tener una descripción detallada que explique su propósito empresarial.",
+      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'.",
       "important_language": "Todos los nombres de carpetas deben estar en español. No utilices nombres de carpetas en otros idiomas.",
-      "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'."
+      "important_note": "Devuelve SOLO carpetas, no archivos. Los archivos se generarán en un paso separado.",
+      "instruction": "Crea una estructura de carpetas de Nivel 3 para la industria {industry}{role_text}."
     },
     "system": "Eres un asistente de IA especializado en crear estructuras de carpetas bien organizadas para empresas. Todos los nombres de carpetas y archivos deben estar en español. Debes responder SOLO con datos JSON válidos sin ningún otro texto antes o después. No incluyas explicaciones, comentarios o mensajes que rodeen el JSON. No envuelvas el JSON en bloques de código o formato markdown."
   },
@@ -80,10 +86,10 @@
     "json_format_instruction": "Por favor, formatea tu respuesta como un objeto JSON válido con llaves y comillas correctas. Todos los nombres de carpetas deben estar en español.",
     "json_object_instruction": "Por favor, devuelve solo {key} como un objeto JSON. Devuelve únicamente los datos de {key}.",
     "level1_folders_prompt": {
-      "instruction": "Crea una estructura de carpetas de nivel 1 para la industria {industry} {role_text}. Incluye una descripción clara del propósito y la función empresarial de cada carpeta.",
       "date_range_instruction": "{date_range}",
       "folder_naming": "Crea nombres de carpetas específicos y apropiados para la industria {industry}. Proporciona descripciones detalladas explicando el propósito empresarial de cada carpeta.",
-      "important_format": "Devuelve solo el objeto JSON. No incluyas texto adicional, explicaciones o comentarios antes o después del JSON. No uses frases como \"Aquí está el JSON\" o \"Espero que esto ayude\". No envuelvas el JSON en un bloque de código."
+      "important_format": "Devuelve solo el objeto JSON. No incluyas texto adicional, explicaciones o comentarios antes o después del JSON. No uses frases como \"Aquí está el JSON\" o \"Espero que esto ayude\". No envuelvas el JSON en un bloque de código.",
+      "instruction": "Crea una estructura de carpetas de nivel 1 para la industria {industry} {role_text}. Incluye una descripción clara del propósito y la función empresarial de cada carpeta."
     },
     "parsing_error_message": "IMPORTANTE: Hubo un error al analizar tu respuesta anterior. Por favor, proporciona un objeto JSON válido con llaves correctas.",
     "structure_error_format": "IMPORTANTE: Tu JSON debe contener las siguientes claves: {keys}.",
@@ -93,11 +99,5 @@
     "content_generation": "Genera contenido para {description} en la industria de {industry}{role_context}. El contenido debe estar en idioma {language}{file_type_context}. Sé conciso y profesional.",
     "file_type_context": ". La salida debe estar en formato {file_type}",
     "role_context": " (para un {role})"
-  },
-  "date_range_format": "Asuma que las carpetas y archivos fueron creados durante el siguiente período: {start_date} - {end_date}",
-  "description_templates": {
-    "folder_description": "Descripción clara del propósito empresarial de la carpeta",
-    "file_description": "Descripción clara del propósito del archivo",
-    "brief_description": "Breve descripción del contenido y propósito del archivo"
   }
 }

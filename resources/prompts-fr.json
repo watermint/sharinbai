@@ -18,56 +18,62 @@
     "spreadsheet_date_prompt": "\n\nCette feuille de calcul est datée du {date}. Incluez cette date dans l'en-tête de la feuille de calcul et assurez-vous que toutes les données sont appropriées pour cette période. S'il s'agit d'un rapport ou d'un document de suivi, incluez des dates dans la feuille de calcul qui sont antérieures ou égales au {date}.",
     "text_date_prompt": "\n\nCe fichier texte est daté du {date}. Incluez cette date dans le contenu du fichier et assurez-vous que toutes les informations sont appropriées pour cette date."
   },
+  "date_range_format": "Supposez que les dossiers et fichiers ont été créés pendant la période suivante : {start_date} - {end_date}",
+  "description_templates": {
+    "brief_description": "Brève description du contenu et de l'objectif du fichier",
+    "file_description": "Description claire de l'objectif du fichier",
+    "folder_description": "Description claire de l'objectif commercial du dossier"
+  },
   "folder_structure": {
-    "instruction": "Veuillez proposer une structure de dossiers de projet au format JSON pour l'industrie suivante : {industry}{role_prompt}",
-    "criteria": "Créez une structure de dossiers complète et détaillée qui répond aux critères suivants :\n\n1. Inclure au moins 15-20 dossiers principaux\n2. Chaque dossier principal doit contenir au moins 3-5 sous-dossiers\n3. La hiérarchie des dossiers doit avoir au moins 3-4 niveaux de profondeur (par exemple, Dossier Principal/Sous-dossier/Sous-sous-dossier)\n4. Chaque dossier de niveau inférieur doit contenir au moins 3-5 fichiers\n5. Refléter des structures de dossiers spécialisées spécifiques à l'industrie et au rôle",
-    "folder_naming_guidelines": "Tous les noms de dossiers et de fichiers doivent respecter les directives suivantes :\n- Évitez les noms génériques et abstraits comme 'Dossier 1' ou 'Document 2'\n- Utilisez une terminologie spécifique qui reflète les termes propres à l'industrie et les processus commerciaux réels\n- Créez des noms de fichiers qui indiquent clairement l'objectif et le contenu du document\n- Incluez des noms spécifiques de départements, projets, produits, clients, etc. lorsque c'est pertinent\n- Indiquez clairement les types de documents (propositions, rapports, manuels, etc.)",
-    "folder_description_guidelines": "Pour les descriptions de dossiers, fournissez un contexte commercial détaillé expliquant :\n- L'objectif et la fonction commerciale de chaque dossier\n- Comment le dossier est utilisé dans les opérations commerciales quotidiennes et les flux de travail\n- Quels départements ou rôles travaillent généralement avec ces documents\n- Quels processus commerciaux ces documents soutiennent\n- Comment le contenu du dossier se rapporte aux objectifs commerciaux",
-    "file_types": "Les fichiers doivent être principalement des fichiers commerciaux courants tels que des documents Word (.docx), Excel (.xlsx), PDF, fichiers texte (.txt), ou fichiers image (.png, .jpg), etc.",
-    "language_requirement": "Tous les noms et descriptions doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues.",
     "additional_instructions": "Incluez des dossiers liés à divers domaines des opérations commerciales, tels que la gestion de projet, la gestion documentaire, l'analyse de données, les rapports, les documents de réunion, les documents contractuels, etc.\n\nPour tout rapport, compte-rendu de réunion ou document daté, incluez la date dans le nom du fichier au format AAAA-MM-JJ.",
+    "criteria": "Créez une structure de dossiers complète et détaillée qui répond aux critères suivants :\n\n1. Inclure au moins 15-20 dossiers principaux\n2. Chaque dossier principal doit contenir au moins 3-5 sous-dossiers\n3. La hiérarchie des dossiers doit avoir au moins 3-4 niveaux de profondeur (par exemple, Dossier Principal/Sous-dossier/Sous-sous-dossier)\n4. Chaque dossier de niveau inférieur doit contenir au moins 3-5 fichiers\n5. Refléter des structures de dossiers spécialisées spécifiques à l'industrie et au rôle",
+    "file_types": "Les fichiers doivent être principalement des fichiers commerciaux courants tels que des documents Word (.docx), Excel (.xlsx), PDF, fichiers texte (.txt), ou fichiers image (.png, .jpg), etc.",
+    "folder_description_guidelines": "Pour les descriptions de dossiers, fournissez un contexte commercial détaillé expliquant :\n- L'objectif et la fonction commerciale de chaque dossier\n- Comment le dossier est utilisé dans les opérations commerciales quotidiennes et les flux de travail\n- Quels départements ou rôles travaillent généralement avec ces documents\n- Quels processus commerciaux ces documents soutiennent\n- Comment le contenu du dossier se rapporte aux objectifs commerciaux",
+    "folder_naming_guidelines": "Tous les noms de dossiers et de fichiers doivent respecter les directives suivantes :\n- Évitez les noms génériques et abstraits comme 'Dossier 1' ou 'Document 2'\n- Utilisez une terminologie spécifique qui reflète les termes propres à l'industrie et les processus commerciaux réels\n- Créez des noms de fichiers qui indiquent clairement l'objectif et le contenu du document\n- Incluez des noms spécifiques de départements, projets, produits, clients, etc. lorsque c'est pertinent\n- Indiquez clairement les types de documents (propositions, rapports, manuels, etc.)",
+    "instruction": "Veuillez proposer une structure de dossiers de projet au format JSON pour l'industrie suivante : {industry}{role_prompt}",
+    "language_requirement": "Tous les noms et descriptions doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues.",
     "response_format": "Retournez uniquement le JSON, aucune explication supplémentaire n'est nécessaire."
   },
   "folder_structure_prompt": {
     "level1": {
-      "instruction": "Créez une structure de dossiers de Niveau 1 pour l'industrie {industry}. Chaque dossier doit avoir une description claire de son objectif et de sa fonction commerciale.",
       "folder_naming": "Créez des noms de dossiers spécifiques et appropriés pour l'industrie {industry}. Chaque dossier doit avoir une description détaillée expliquant son objectif commercial.",
+      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'.",
       "important_language": "Tous les noms de dossiers doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues.",
-      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'."
+      "instruction": "Créez une structure de dossiers de Niveau 1 pour l'industrie {industry}. Chaque dossier doit avoir une description claire de son objectif et de sa fonction commerciale."
     },
     "level2": {
-      "instruction": "Créez une structure de dossiers de Niveau 2 pour l'industrie {industry}{role_text} au sein du dossier de Niveau 1 nommé \"{l1_folder_name}\".",
       "context": "Description du dossier de Niveau 1 : {l1_description}",
       "folder_instruction": "Veuillez créer des dossiers de Niveau 2 spécifiques et appropriés qui appartiendraient logiquement à ce dossier de Niveau 1. Incluez une description claire de l'objectif de chaque dossier.",
       "folder_naming": "Créez des noms de dossiers spécifiques appropriés à l'objectif du dossier parent et aux caractéristiques de l'industrie {industry}. Chaque dossier doit avoir une description détaillée expliquant son objectif commercial.",
+      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'.",
       "important_language": "Tous les noms de dossiers doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues.",
-      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'."
+      "instruction": "Créez une structure de dossiers de Niveau 2 pour l'industrie {industry}{role_text} au sein du dossier de Niveau 1 nommé \"{l1_folder_name}\"."
     },
     "level3": {
-      "instruction": "Créez une structure de dossiers de Niveau 3 pour l'industrie {industry}{role_text}.",
       "context": "Dossier de Niveau 1 : {l1_folder_name} - {l1_description}\nDossier de Niveau 2 : {l2_folder_name} - {l2_description}",
       "folder_instruction": "Veuillez créer des dossiers de Niveau 3 spécifiques et appropriés qui appartiendraient logiquement à ce dossier de Niveau 2. Incluez une description claire de l'objectif de chaque dossier.",
       "folder_naming": "Créez des noms de dossiers spécifiques appropriés à l'objectif du dossier parent et aux caractéristiques de l'industrie {industry}. Chaque dossier doit avoir une description détaillée expliquant son objectif commercial.",
+      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'.",
       "important_language": "Tous les noms de dossiers doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues.",
-      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'."
+      "instruction": "Créez une structure de dossiers de Niveau 3 pour l'industrie {industry}{role_text}."
     },
     "level3_files_prompt": {
-      "instruction": "Créez des fichiers pour un dossier de Niveau 3 dans l'industrie {industry}{role_text}.",
       "context": "Dossier de Niveau 1 : {l1_folder_name} - {l1_description}\nDossier de Niveau 2 : {l2_folder_name} - {l2_description}",
-      "folder_context": "Ce dossier contient les sous-dossiers suivants : {folder_structure}",
       "file_instruction": "Veuillez créer des fichiers appropriés qui appartiendraient logiquement à ce dossier de Niveau 2. Ce sont des fichiers directement dans le dossier de Niveau 2, pas dans ses sous-dossiers.",
       "file_naming": "Créez des noms de fichiers spécifiques appropriés à l'objectif du dossier parent et aux caractéristiques de l'industrie {industry}. Chaque fichier doit avoir une description détaillée expliquant son objectif commercial.",
+      "folder_context": "Ce dossier contient les sous-dossiers suivants : {folder_structure}",
+      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'.",
       "important_language": "Tous les noms de fichiers doivent être en français. N'utilisez pas de noms de fichiers dans d'autres langues.",
-      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'."
+      "instruction": "Créez des fichiers pour un dossier de Niveau 3 dans l'industrie {industry}{role_text}."
     },
     "level3_folders_prompt": {
-      "instruction": "Créez une structure de dossiers de Niveau 3 pour l'industrie {industry}{role_text}.",
       "context": "Dossier de Niveau 1 : {l1_folder_name} - {l1_description}\nDossier de Niveau 2 : {l2_folder_name} - {l2_description}",
       "folder_instruction": "Veuillez créer des dossiers de Niveau 3 spécifiques et appropriés qui appartiendraient logiquement à ce dossier de Niveau 2. Incluez une description claire de l'objectif de chaque dossier.",
-      "important_note": "Retournez UNIQUEMENT des dossiers, pas de fichiers. Les fichiers seront générés dans une étape séparée.",
       "folder_naming": "Créez des noms de dossiers spécifiques appropriés à l'objectif du dossier parent et aux caractéristiques de l'industrie {industry}. Chaque dossier doit avoir une description détaillée expliquant son objectif commercial.",
+      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'.",
       "important_language": "Tous les noms de dossiers doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues.",
-      "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'."
+      "important_note": "Retournez UNIQUEMENT des dossiers, pas de fichiers. Les fichiers seront générés dans une étape séparée.",
+      "instruction": "Créez une structure de dossiers de Niveau 3 pour l'industrie {industry}{role_text}."
     },
     "system": "Vous êtes un assistant IA spécialisé dans la création de structures de dossiers bien organisées pour les entreprises. Tous les noms de dossiers et de fichiers doivent être en français. Vous devez répondre UNIQUEMENT avec des données JSON valides sans aucun autre texte avant ou après. N'incluez pas d'explications, de remarques ou de messages entourant le JSON. N'encadrez pas le JSON dans des blocs de code ou du formatage markdown."
   },
@@ -80,10 +86,10 @@
     "json_format_instruction": "Veuillez formater votre réponse sous forme d'objet JSON valide avec des accolades et des guillemets corrects. Tous les noms de dossiers doivent être en français.",
     "json_object_instruction": "Veuillez retourner uniquement {key} sous forme d'objet JSON. Renvoyez uniquement les données de {key}.",
     "level1_folders_prompt": {
-      "instruction": "Créez une structure de dossiers de niveau 1 pour l'industrie {industry} {role_text}. Incluez une description claire de l'objectif et de la fonction commerciale de chaque dossier.",
       "date_range_instruction": "{date_range}",
       "folder_naming": "Créez des noms de dossiers spécifiques et appropriés pour l'industrie {industry}. Fournissez des descriptions détaillées expliquant l'objectif commercial de chaque dossier.",
-      "important_format": "Retournez uniquement l'objet JSON. N'incluez pas de texte supplémentaire, d'explications ou de commentaires avant ou après le JSON. N'utilisez pas de phrases comme \"Voici le JSON\" ou \"J'espère que cela vous aidera\". N'enveloppez pas le JSON dans un bloc de code."
+      "important_format": "Retournez uniquement l'objet JSON. N'incluez pas de texte supplémentaire, d'explications ou de commentaires avant ou après le JSON. N'utilisez pas de phrases comme \"Voici le JSON\" ou \"J'espère que cela vous aidera\". N'enveloppez pas le JSON dans un bloc de code.",
+      "instruction": "Créez une structure de dossiers de niveau 1 pour l'industrie {industry} {role_text}. Incluez une description claire de l'objectif et de la fonction commerciale de chaque dossier."
     },
     "parsing_error_message": "IMPORTANT : Une erreur s'est produite lors de l'analyse de votre réponse précédente. Veuillez fournir un objet JSON valide avec des accolades correctes.",
     "structure_error_format": "IMPORTANT : Votre JSON doit contenir les clés suivantes : {keys}.",
@@ -93,11 +99,5 @@
     "content_generation": "Générez du contenu pour {description} dans l'industrie {industry}{role_context}. Le contenu doit être en {language}{file_type_context}. Soyez concis et professionnel.",
     "file_type_context": ". La sortie doit être au format {file_type}",
     "role_context": " (en tant que {role})"
-  },
-  "date_range_format": "Supposez que les dossiers et fichiers ont été créés pendant la période suivante : {start_date} - {end_date}",
-  "description_templates": {
-    "folder_description": "Description claire de l'objectif commercial du dossier",
-    "file_description": "Description claire de l'objectif du fichier",
-    "brief_description": "Brève description du contenu et de l'objectif du fichier"
   }
 }

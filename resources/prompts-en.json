@@ -18,56 +18,62 @@
     "spreadsheet_date_prompt": "\n\nThis spreadsheet is dated {date}. Please include this date in the spreadsheet header and ensure all data is appropriate for this time period. If this is a reporting or tracking document, include data before {date} in the spreadsheet.",
     "text_date_prompt": "\n\nThis text file is dated {date}. Please include this date in the file content and ensure all information is appropriate for this date."
   },
+  "date_range_format": "Assume that folders and files were created during the following period: {start_date} - {end_date}",
+  "description_templates": {
+    "brief_description": "Brief description of the file content and purpose",
+    "file_description": "Clear description of the file's purpose",
+    "folder_description": "Clear description of the folder's business purpose"
+  },
   "folder_structure": {
-    "instruction": "Please propose a project folder structure in JSON format for the following industry: {industry}{role_prompt}",
-    "criteria": "Create an extensive and detailed folder structure that meets the following criteria:\n\n1. Include at least 15-20 main folders\n2. Each main folder should contain at least 3-5 subfolders\n3. Folder hierarchy should have at least 3-4 levels of depth (e.g., Main Folder/Subfolder/Sub-subfolder)\n4. Each bottom-level folder should contain at least 3-5 files\n5. Reflect specialized folder structures specific to the industry and role",
-    "folder_naming_guidelines": "All folder and file names should adhere to the following guidelines:\n- Avoid generic and abstract names like \"Folder 1\" or \"Document 2\"\n- Use specific terminology that reflects industry-specific terms and actual business processes\n- Create file names that clearly indicate the purpose and content of the document\n- Include specific names of departments, projects, products, clients, etc. when relevant\n- Clearly indicate document types (proposals, reports, manuals, etc.)",
-    "folder_description_guidelines": "For folder descriptions, provide detailed business context explaining:\n- The business purpose and function of each folder\n- How the folder is used in daily business operations and workflows\n- Which departments or roles typically work with these documents\n- What business processes these documents support\n- How the folder content relates to business objectives",
-    "file_types": "Files should primarily be common business files such as Word documents (.docx), Excel (.xlsx), PDF, text files (.txt), or image files (.png, .jpg), etc.",
-    "language_requirement": "All names and descriptions should be in English. Do not use folder names in other languages.",
     "additional_instructions": "Include folders related to various areas of business operations, such as project management, document management, data analysis, reports, meeting materials, contractual documents, etc.\n\nFor any reports, meeting minutes, or dated documents, include the date in the filename in YYYY-MM-DD format.",
+    "criteria": "Create an extensive and detailed folder structure that meets the following criteria:\n\n1. Include at least 15-20 main folders\n2. Each main folder should contain at least 3-5 subfolders\n3. Folder hierarchy should have at least 3-4 levels of depth (e.g., Main Folder/Subfolder/Sub-subfolder)\n4. Each bottom-level folder should contain at least 3-5 files\n5. Reflect specialized folder structures specific to the industry and role",
+    "file_types": "Files should primarily be common business files such as Word documents (.docx), Excel (.xlsx), PDF, text files (.txt), or image files (.png, .jpg), etc.",
+    "folder_description_guidelines": "For folder descriptions, provide detailed business context explaining:\n- The business purpose and function of each folder\n- How the folder is used in daily business operations and workflows\n- Which departments or roles typically work with these documents\n- What business processes these documents support\n- How the folder content relates to business objectives",
+    "folder_naming_guidelines": "All folder and file names should adhere to the following guidelines:\n- Avoid generic and abstract names like \"Folder 1\" or \"Document 2\"\n- Use specific terminology that reflects industry-specific terms and actual business processes\n- Create file names that clearly indicate the purpose and content of the document\n- Include specific names of departments, projects, products, clients, etc. when relevant\n- Clearly indicate document types (proposals, reports, manuals, etc.)",
+    "instruction": "Please propose a project folder structure in JSON format for the following industry: {industry}{role_prompt}",
+    "language_requirement": "All names and descriptions should be in English. Do not use folder names in other languages.",
     "response_format": "Return only the JSON, no additional explanation is needed."
   },
   "folder_structure_prompt": {
     "level1": {
-      "instruction": "Create a Level 1 folder structure for {industry} industry. Each folder should have a clear description of its purpose and business function.",
       "folder_naming": "Create specific and appropriate folder names for the {industry} industry. Each folder should have a detailed description explaining its business purpose.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
       "important_language": "All folder names must be in English. Do not use folder names in other languages.",
-      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+      "instruction": "Create a Level 1 folder structure for {industry} industry. Each folder should have a clear description of its purpose and business function."
     },
     "level2": {
-      "instruction": "Create a Level 2 folder structure for the {industry} industry{role_text} within the Level 1 folder named \"{l1_folder_name}\".",
       "context": "Level 1 folder description: {l1_description}",
       "folder_instruction": "Please create specific and appropriate Level 2 folders that would logically belong inside this Level 1 folder. Include a clear description for each folder's purpose.",
       "folder_naming": "Create specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
       "important_language": "All folder names must be in English. Do not use folder names in other languages.",
-      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+      "instruction": "Create a Level 2 folder structure for the {industry} industry{role_text} within the Level 1 folder named \"{l1_folder_name}\"."
     },
     "level3": {
-      "instruction": "Create a Level 3 folder structure for the {industry} industry{role_text}.",
       "context": "Level 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}",
       "folder_instruction": "Please create specific and appropriate Level 3 folders that would logically belong inside this Level 2 folder. Include a clear description for each folder's purpose.",
       "folder_naming": "Create specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
       "important_language": "All folder names must be in English. Do not use folder names in other languages.",
-      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+      "instruction": "Create a Level 3 folder structure for the {industry} industry{role_text}."
     },
     "level3_files_prompt": {
-      "instruction": "Create files for a Level 3 folder in the {industry} industry{role_text}.",
       "context": "Level 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}",
-      "folder_context": "This folder contains the following sub-folders: {folder_structure}",
       "file_instruction": "Please create appropriate files that would logically belong inside this Level 2 folder. These are files directly in the Level 2 folder, not inside its sub-folders.",
       "file_naming": "Create specific file names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each file should have a detailed description explaining its business purpose.",
+      "folder_context": "This folder contains the following sub-folders: {folder_structure}",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
       "important_language": "All file names must be in English. Do not use file names in other languages.",
-      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+      "instruction": "Create files for a Level 3 folder in the {industry} industry{role_text}."
     },
     "level3_folders_prompt": {
-      "instruction": "Create a Level 3 folder structure for the {industry} industry{role_text}.",
       "context": "Level 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}",
       "folder_instruction": "Please create specific and appropriate Level 3 folders that would logically belong inside this Level 2 folder. Include a clear description for each folder's purpose.",
-      "important_note": "Return ONLY folders, not files. Files will be generated in a separate step.",
       "folder_naming": "Create specific folder names appropriate to the purpose of the parent folder and characteristics of the {industry} industry. Each folder should have a detailed description explaining its business purpose.",
+      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'.",
       "important_language": "All folder names must be in English. Do not use folder names in other languages.",
-      "important_format": "Return ONLY the JSON object without any additional text, remarks, or explanations before or after it. Do not wrap the JSON in code blocks. Do not include phrases like 'Here is the JSON' or 'I hope this helps'."
+      "important_note": "Return ONLY folders, not files. Files will be generated in a separate step.",
+      "instruction": "Create a Level 3 folder structure for the {industry} industry{role_text}."
     },
     "system": "You are an AI assistant specialized in creating well-organized folder structures for businesses. All folder names and file names must be in English. You must respond with ONLY valid JSON data without any other text before or after. Do not include any explanations, remarks, or messages surrounding the JSON. Do not wrap the JSON in code blocks or markdown formatting."
   },
@@ -80,10 +86,10 @@
     "json_format_instruction": "Please format your response as a valid JSON object with correct braces and quotes. All folder names should be in English.",
     "json_object_instruction": "Please return only {key} as a JSON object. Return only the {key} data.",
     "level1_folders_prompt": {
-      "instruction": "Create a structure of level 1 folders for the {industry} industry {role_text}. Include a clear description of the purpose and business function for each folder.",
       "date_range_instruction": "{date_range}",
       "folder_naming": "Create specific and appropriate folder names for the {industry} industry. Provide detailed descriptions explaining the business purpose of each folder.",
-      "important_format": "Return only the JSON object. Do not include any additional text, explanations, or comments before or after the JSON. Do not use phrases like \"Here is the JSON\" or \"I hope this helps\". Do not wrap the JSON in a code block."
+      "important_format": "Return only the JSON object. Do not include any additional text, explanations, or comments before or after the JSON. Do not use phrases like \"Here is the JSON\" or \"I hope this helps\". Do not wrap the JSON in a code block.",
+      "instruction": "Create a structure of level 1 folders for the {industry} industry {role_text}. Include a clear description of the purpose and business function for each folder."
     },
     "parsing_error_message": "IMPORTANT: There was an error parsing your previous response. Please provide a valid JSON object with correct braces.",
     "structure_error_format": "IMPORTANT: Your JSON must contain the following keys: {keys}.",
@@ -93,11 +99,5 @@
     "content_generation": "Please generate content for {description} in the {industry} industry{role_context}. The content should be in {language}{file_type_context}. Keep it concise and professional.",
     "file_type_context": ". The output should be in {file_type} format",
     "role_context": " (for a {role})"
-  },
-  "date_range_format": "Assume that folders and files were created during the following period: {start_date} - {end_date}",
-  "description_templates": {
-    "folder_description": "Clear description of the folder's business purpose",
-    "file_description": "Clear description of the file's purpose",
-    "brief_description": "Brief description of the file content and purpose"
   }
 }

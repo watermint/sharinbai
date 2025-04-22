@@ -18,56 +18,62 @@
     "spreadsheet_date_prompt": "\n\n本表格日期为{date}。请在表头包含该日期，并确保所有数据均与该期间相符。如为报告或追踪文档，请在表格中包含{date}之前的日期。",
     "text_date_prompt": "\n\n本文本文件日期为{date}。请在内容中包含该日期，并确保所有信息均与该日期相符。"
   },
+  "date_range_format": "假设文件夹和文件是在以下时间段内创建的: {start_date} - {end_date}",
+  "description_templates": {
+    "brief_description": "文件内容与用途的简要说明",
+    "file_description": "关于文件用途的明确说明",
+    "folder_description": "关于文件夹业务目的的明确说明"
+  },
   "folder_structure": {
-    "instruction": "请为以下行业建议项目文件夹结构，格式为JSON: {industry}{role_prompt}",
-    "criteria": "请创建详细且实用的文件夹结构，需符合以下条件：\n\n1. 包含至少15-20个主要文件夹\n2. 每个主要文件夹应包含至少3-5个子文件夹\n3. 文件夹层级需有至少3-4层深度（如：主要文件夹/子文件夹/次子文件夹）\n4. 每个最底层文件夹应包含至少3-5个文件\n5. 反映该行业及角色的专业文件夹结构",
-    "folder_naming_guidelines": "所有文件夹与文件名请遵循以下原则：\n- 避免使用如'文件夹1'或'文档2'等抽象或通用名称\n- 使用能反映行业术语及实际业务流程的具体名称\n- 文件名需清楚说明文档用途与内容\n- 如有需要，请包含部门、项目、产品、客户等具体名称\n- 明确标示文档类型（如提案、报告、手册等）",
-    "folder_description_guidelines": "文件夹说明请提供详细业务背景，包括：\n- 各文件夹的业务目的与功能\n- 文件夹在日常业务运作及流程中的用途\n- 哪些部门或角色通常会使用这些文档\n- 这些文档支持哪些业务流程\n- 文件夹内容如何与业务目标相关联",
-    "file_types": "文件类型以常见商业文档为主，如Word文档（.docx）、Excel（.xlsx）、PDF、纯文本文件（.txt）、图片文件（.png, .jpg）等。",
-    "language_requirement": "所有名称与说明请用中文，不要用其他语言。",
     "additional_instructions": "请包含与各类业务运作相关的文件夹，如项目管理、文档管理、数据分析、报告、会议资料、合同文件等。\n\n如有报告、会议纪要或具日期的文档，请在文件名中以YYYY-MM-DD格式标注日期。",
+    "criteria": "请创建详细且实用的文件夹结构，需符合以下条件：\n\n1. 包含至少15-20个主要文件夹\n2. 每个主要文件夹应包含至少3-5个子文件夹\n3. 文件夹层级需有至少3-4层深度（如：主要文件夹/子文件夹/次子文件夹）\n4. 每个最底层文件夹应包含至少3-5个文件\n5. 反映该行业及角色的专业文件夹结构",
+    "file_types": "文件类型以常见商业文档为主，如Word文档（.docx）、Excel（.xlsx）、PDF、纯文本文件（.txt）、图片文件（.png, .jpg）等。",
+    "folder_description_guidelines": "文件夹说明请提供详细业务背景，包括：\n- 各文件夹的业务目的与功能\n- 文件夹在日常业务运作及流程中的用途\n- 哪些部门或角色通常会使用这些文档\n- 这些文档支持哪些业务流程\n- 文件夹内容如何与业务目标相关联",
+    "folder_naming_guidelines": "所有文件夹与文件名请遵循以下原则：\n- 避免使用如'文件夹1'或'文档2'等抽象或通用名称\n- 使用能反映行业术语及实际业务流程的具体名称\n- 文件名需清楚说明文档用途与内容\n- 如有需要，请包含部门、项目、产品、客户等具体名称\n- 明确标示文档类型（如提案、报告、手册等）",
+    "instruction": "请为以下行业建议项目文件夹结构，格式为JSON: {industry}{role_prompt}",
+    "language_requirement": "所有名称与说明请用中文，不要用其他语言。",
     "response_format": "只返回JSON对象，不要包含额外说明或文本。"
   },
   "folder_structure_prompt": {
     "level1": {
-      "instruction": "请为{industry}行业创建一级文件夹结构。每个文件夹需包含其用途和业务功能的明确说明。",
       "folder_naming": "请为{industry}行业创建具体的中文文件夹名，并为每个文件夹添加详细说明。",
+      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。",
       "important_language": "全部用中文。不要用其他语言。",
-      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。"
+      "instruction": "请为{industry}行业创建一级文件夹结构。每个文件夹需包含其用途和业务功能的明确说明。"
     },
     "level2": {
-      "instruction": "请为{industry}行业{role_text}的一级文件夹\"{l1_folder_name}\"内创建合适的二级文件夹结构。",
       "context": "一级文件夹说明: {l1_description}",
       "folder_instruction": "请创建具体且合适的二级文件夹，并为每个文件夹添加明确说明。",
       "folder_naming": "请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。",
+      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。",
       "important_language": "全部用中文。不要用其他语言。",
-      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。"
+      "instruction": "请为{industry}行业{role_text}的一级文件夹\"{l1_folder_name}\"内创建合适的二级文件夹结构。"
     },
     "level3": {
-      "instruction": "请为{industry}行业{role_text}创建三级文件夹结构。",
       "context": "一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}",
       "folder_instruction": "请创建具体且合适的三级文件夹，并为每个文件夹添加明确说明。",
       "folder_naming": "请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。",
+      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。",
       "important_language": "全部用中文。不要用其他语言。",
-      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。"
+      "instruction": "请为{industry}行业{role_text}创建三级文件夹结构。"
     },
     "level3_files_prompt": {
-      "instruction": "请为{industry}行业{role_text}的三级文件夹创建文件。",
       "context": "一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}",
-      "folder_context": "该文件夹包含以下子文件夹: {folder_structure}",
       "file_instruction": "请为该二级文件夹（非子文件夹）直接创建合适的文件。",
       "file_naming": "请为上级文件夹的用途和{industry}行业特性创建具体中文文件名，并添加详细说明。",
+      "folder_context": "该文件夹包含以下子文件夹: {folder_structure}",
+      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。",
       "important_language": "全部用中文。不要用其他语言。",
-      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。"
+      "instruction": "请为{industry}行业{role_text}的三级文件夹创建文件。"
     },
     "level3_folders_prompt": {
-      "instruction": "请为{industry}行业{role_text}的三级文件夹结构。",
       "context": "一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}",
       "folder_instruction": "请创建具体且合适的三级文件夹，并为每个文件夹添加明确说明。",
-      "important_note": "只返回文件夹，不要返回文件。文件将在单独的步骤中生成。",
       "folder_naming": "请为上级文件夹的用途和{industry}行业特性创建具体中文文件夹名，并添加详细说明。",
+      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。",
       "important_language": "全部用中文。不要用其他语言。",
-      "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。"
+      "important_note": "只返回文件夹，不要返回文件。文件将在单独的步骤中生成。",
+      "instruction": "请为{industry}行业{role_text}的三级文件夹结构。"
     },
     "system": "您是为企业创建文件夹结构的AI助手。所有文件夹名和文件名请用中文。只返回有效JSON数据，不要包含额外文本或说明。不要用JSON或代码块包裹。"
   },
@@ -80,10 +86,10 @@
     "json_format_instruction": "请将您的回答格式化为有效的JSON对象，带有正确的括号和引号。所有文件夹名称应该用中文。",
     "json_object_instruction": "请仅返回{key}作为JSON对象。只返回{key}数据。",
     "level1_folders_prompt": {
-      "instruction": "为{industry}行业{role_text}创建一级文件夹结构。为每个文件夹包含清晰的目的和业务功能描述。",
       "date_range_instruction": "{date_range}",
       "folder_naming": "为{industry}行业创建具体和适当的文件夹名称。提供详细描述解释每个文件夹的业务用途。",
-      "important_format": "只返回JSON对象。不要在JSON前后包含任何额外文本、解释或注释。不要使用\"这是JSON\"或\"希望这有所帮助\"等短语。不要将JSON包装在代码块中。"
+      "important_format": "只返回JSON对象。不要在JSON前后包含任何额外文本、解释或注释。不要使用\"这是JSON\"或\"希望这有所帮助\"等短语。不要将JSON包装在代码块中。",
+      "instruction": "为{industry}行业{role_text}创建一级文件夹结构。为每个文件夹包含清晰的目的和业务功能描述。"
     },
     "parsing_error_message": "重要：解析您之前的回答时出现错误。请提供带有正确括号的有效JSON对象。",
     "structure_error_format": "重要：您的JSON必须包含以下键：{keys}。",
@@ -93,11 +99,5 @@
     "content_generation": "为{industry}行业的{description}{role_context}生成内容。内容应该使用{language}{file_type_context}。保持简洁专业。",
     "file_type_context": "，格式为{file_type}",
     "role_context": "，作为{role}"
-  },
-  "date_range_format": "假设文件夹和文件是在以下时间段内创建的: {start_date} - {end_date}",
-  "description_templates": {
-    "folder_description": "关于文件夹业务目的的明确说明",
-    "file_description": "关于文件用途的明确说明",
-    "brief_description": "文件内容与用途的简要说明"
   }
 }
