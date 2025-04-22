@@ -107,11 +107,9 @@ class ContentGenerator:
                     directory, filename, description, industry, language, role
                 )
             else:
-                # Default to text generator for unknown extensions
-                logging.warning(f"No specific generator for extension '{ext}', using text generator")
-                return self.generators["txt"].generate(
-                    directory, filename, description, industry, language, role
-                )
+                # Ignore unknown extensions instead of creating text files
+                logging.warning(f"Ignoring unknown file extension '{ext}' for file: {filename}")
+                return True
         except Exception as e:
             logging.error(f"Error generating file content for {file_path}: {e}")
             return False
@@ -174,12 +172,10 @@ class ContentGenerator:
                 directory, filename, description, industry, language, role
             )
         else:
-            # Default to text generator for unknown extensions
-            logging.warning(f"No specific generator for extension '{ext}', using text generator")
-            return self.generators["txt"].generate(
-                directory, filename, description, industry, language, role
-            ) 
-            
+            # Ignore unknown extensions instead of creating text files
+            logging.warning(f"Ignoring unknown file extension '{ext}' for file: {filename}")
+            return True
+        
     def _format_timeseries_filename(self, filename: str, ext: str) -> str:
         """
         Format a filename for timeseries folders using a date-based naming convention.
