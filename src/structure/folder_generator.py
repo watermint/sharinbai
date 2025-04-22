@@ -16,6 +16,7 @@ from ..content.file_manager import FileManager
 from ..foundation.llm_client import OllamaClient
 from ..statistics.statistics_tracker import StatisticsTracker
 from ..config.settings import Settings
+from .json_templates import JsonTemplates
 
 
 # Custom exception for short mode limit
@@ -902,24 +903,49 @@ class FolderGenerator:
                     try:
                         # Generate files using the LLM instead of fixed defaults
                         # Use the level3_files_prompt which is designed for file generation
-                        prompt_template = get_translation("folder_structure_prompt.level3_files_prompt", language, None)
+                        instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language, None)
+                        context = get_translation("folder_structure_prompt.level3_files_prompt.context", language, None)
+                        folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language, None)
+                        file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language, None)
+                        file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language, None)
+                        important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language, None)
+                        important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language, None)
                         
-                        if not prompt_template:
-                            logging.error(f"No file generation prompt found for language '{language}'")
+                        # Get translated description template
+                        file_description = get_translation("description_templates.file_description", language, "Clear description of the file's purpose")
+                        
+                        # Check if essential components are missing
+                        if not instruction or not file_instruction:
+                            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt.*)"
+                            logging.error(error_msg)
                             continue
                             
-                        # Format prompt with folder information
+                        # Role placeholder might be formatted differently in localized templates
                         role_text = f" for a {role}" if role else ""
-                        prompt = prompt_template.format(
-                            industry=industry,
-                            l1_folder_name=level1_item.name,
-                            l1_description=l1_description,
-                            l2_folder_name="",  # No L2 folder in this context
-                            l2_description="",  # No L2 folder in this context
-                            folder_structure="",  # No subfolders to consider
-                            role_text=role_text,
-                            industry_info=""  # No specific industry info provided
-                        )
+                        
+                        # Get the JSON template and apply translated descriptions
+                        json_template = JsonTemplates.get_template("level3_files")
+                        json_template = json_template.format(file_description=file_description)
+                        
+                        # Construct the full prompt
+                        prompt_parts = [
+                            instruction.format(industry=industry, role_text=role_text),
+                            context.format(
+                                l1_folder_name=level1_item.name,
+                                l1_description=l1_description,
+                                l2_folder_name="",  # No L2 folder in this context
+                                l2_description=""   # No L2 folder in this context
+                            ),
+                            folder_context.format(folder_structure="") if folder_context else "",
+                            file_instruction,
+                            f"Respond in the following JSON format:\n\n{json_template}",
+                            file_naming.format(industry=industry),
+                            f"IMPORTANT: {important_language}",
+                            f"IMPORTANT: {important_format}"
+                        ]
+                        
+                        # Join all prompt parts, filtering empty ones
+                        prompt = "\n\n".join([part for part in prompt_parts if part])
                         
                         # Generate files structure using LLM
                         logging.info(f"Requesting file structure for {level1_item.name} using LLM")
@@ -1047,24 +1073,49 @@ class FolderGenerator:
                         logging.info(f"Generating files for {level1_item.name}/{level2_item.name}")
                         try:
                             # Use the level3_files_prompt which is designed for file generation
-                            prompt_template = get_translation("folder_structure_prompt.level3_files_prompt", language, None)
+                            instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language, None)
+                            context = get_translation("folder_structure_prompt.level3_files_prompt.context", language, None)
+                            folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language, None)
+                            file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language, None)
+                            file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language, None)
+                            important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language, None)
+                            important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language, None)
                             
-                            if not prompt_template:
-                                logging.error(f"No file generation prompt found for language '{language}'")
+                            # Get translated description template
+                            file_description = get_translation("description_templates.file_description", language, "Clear description of the file's purpose")
+                            
+                            # Check if essential components are missing
+                            if not instruction or not file_instruction:
+                                error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt.*)"
+                                logging.error(error_msg)
                                 continue
                                 
-                            # Format prompt with folder information
+                            # Role placeholder might be formatted differently in localized templates
                             role_text = f" for a {role}" if role else ""
-                            prompt = prompt_template.format(
-                                industry=industry,
-                                l1_folder_name=level1_item.name,
-                                l1_description=l1_description,
-                                l2_folder_name=level2_item.name,
-                                l2_description=l2_description,
-                                folder_structure="",  # No subfolders to consider
-                                role_text=role_text,
-                                industry_info=""  # No specific industry info provided
-                            )
+                            
+                            # Get the JSON template and apply translated descriptions
+                            json_template = JsonTemplates.get_template("level3_files")
+                            json_template = json_template.format(file_description=file_description)
+                            
+                            # Construct the full prompt
+                            prompt_parts = [
+                                instruction.format(industry=industry, role_text=role_text),
+                                context.format(
+                                    l1_folder_name=level1_item.name,
+                                    l1_description=l1_description,
+                                    l2_folder_name=level2_item.name,
+                                    l2_description=l2_description
+                                ),
+                                folder_context.format(folder_structure="") if folder_context else "",
+                                file_instruction,
+                                f"Respond in the following JSON format:\n\n{json_template}",
+                                file_naming.format(industry=industry),
+                                f"IMPORTANT: {important_language}",
+                                f"IMPORTANT: {important_format}"
+                            ]
+                            
+                            # Join all prompt parts, filtering empty ones
+                            prompt = "\n\n".join([part for part in prompt_parts if part])
                             
                             # Generate files structure using LLM
                             logging.info(f"Requesting file structure for {level1_item.name}/{level2_item.name} using LLM")
@@ -1228,12 +1279,18 @@ class FolderGenerator:
         Raises:
             LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
-        # Use get_translation to get the localized prompt from resources
-        prompt_template = get_translation("folder_structure_prompt.level1", language, None)
+        # Get the translated components from language resources
+        instruction = get_translation("folder_structure_prompt.level1.instruction", language, None)
+        folder_naming = get_translation("folder_structure_prompt.level1.folder_naming", language, None)
+        important_language = get_translation("folder_structure_prompt.level1.important_language", language, None)
+        important_format = get_translation("folder_structure_prompt.level1.important_format", language, None)
         
-        # If no translated template found, raise an exception
-        if not prompt_template:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level1)"
+        # Get translated description template
+        folder_description = get_translation("description_templates.folder_description", language, "Clear description of the folder's business purpose")
+        
+        # Check if essential components are missing
+        if not instruction or not folder_naming:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level1.*)"
             logging.error(error_msg)
             raise LocalizedTemplateNotFoundError(error_msg)
         
@@ -1241,18 +1298,21 @@ class FolderGenerator:
         # so we'll use the role_text format from the language templates
         role_text = f" for a {role}" if role else ""
         
-        # Format date range for the prompt
-        date_range = self.date_range_str
+        # Get the JSON template and apply translated descriptions
+        json_template = JsonTemplates.get_template("level1_folders")
+        json_template = json_template.format(folder_description=folder_description)
         
-        # Replace placeholders in the template
-        prompt = prompt_template.format(
-            industry=industry,
-            role_text=role_text,
-            date_range=date_range
-        )
+        # Construct the full prompt
+        prompt_parts = [
+            instruction.format(industry=industry),
+            f"Please respond with a JSON structure in the following format:\n\n{json_template}",
+            folder_naming.format(industry=industry),
+            f"IMPORTANT: {important_language}",
+            f"IMPORTANT: {important_format}"
+        ]
         
-        return prompt
-    
+        return "\n\n".join([part for part in prompt_parts if part])
+        
     def _get_level2_folders_prompt(self, industry: str, l1_folder_name: str, 
                                  l1_description: str, language: str, 
                                  role: Optional[str] = None) -> str:
@@ -1272,28 +1332,42 @@ class FolderGenerator:
         Raises:
             LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
-        # Use get_translation to get the localized prompt from resources
-        prompt_template = get_translation("folder_structure_prompt.level2", language, None)
+        # Get the translated components from language resources
+        instruction = get_translation("folder_structure_prompt.level2.instruction", language, None)
+        context = get_translation("folder_structure_prompt.level2.context", language, None)
+        folder_instruction = get_translation("folder_structure_prompt.level2.folder_instruction", language, None)
+        folder_naming = get_translation("folder_structure_prompt.level2.folder_naming", language, None)
+        important_language = get_translation("folder_structure_prompt.level2.important_language", language, None)
+        important_format = get_translation("folder_structure_prompt.level2.important_format", language, None)
         
-        # If no translated template found, raise an exception
-        if not prompt_template:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level2)"
+        # Get translated description template
+        folder_description = get_translation("description_templates.folder_description", language, "Clear description of the folder's business purpose")
+        
+        # Check if essential components are missing
+        if not instruction or not folder_instruction:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level2.*)"
             logging.error(error_msg)
             raise LocalizedTemplateNotFoundError(error_msg)
         
         # Role placeholder might be formatted differently in localized templates
         role_text = f" for a {role}" if role else ""
         
-        # Replace placeholders in the template
-        prompt = prompt_template.format(
-            industry=industry,
-            l1_folder_name=l1_folder_name,
-            l1_description=l1_description,
-            role_text=role_text,
-            date_range=self.date_range_str
-        )
+        # Get the JSON template and apply translated descriptions
+        json_template = JsonTemplates.get_template("level2_folders")
+        json_template = json_template.format(folder_description=folder_description)
         
-        return prompt
+        # Construct the full prompt
+        prompt_parts = [
+            instruction.format(industry=industry, role_text=role_text, l1_folder_name=l1_folder_name),
+            context.format(l1_description=l1_description),
+            folder_instruction,
+            f"Respond in the following JSON format:\n\n{json_template}",
+            folder_naming.format(industry=industry),
+            f"IMPORTANT: {important_language}",
+            f"IMPORTANT: {important_format}"
+        ]
+        
+        return "\n\n".join([part for part in prompt_parts if part])
     
     def _generate_level3_folders(self, industry: str, l2_folder_name: str, 
                                l2_folder_data: Dict[str, Any], l1_description: str,
@@ -1346,30 +1420,47 @@ class FolderGenerator:
         """
         l2_description = l2_folder_data.get("description", "")
         
-        # Use get_translation to get the localized prompt from resources
-        prompt_template = get_translation("folder_structure_prompt.level3", language, None)
+        # Get the translated components from language resources
+        instruction = get_translation("folder_structure_prompt.level3.instruction", language, None)
+        context = get_translation("folder_structure_prompt.level3.context", language, None)
+        folder_instruction = get_translation("folder_structure_prompt.level3.folder_instruction", language, None)
+        folder_naming = get_translation("folder_structure_prompt.level3.folder_naming", language, None)
+        important_language = get_translation("folder_structure_prompt.level3.important_language", language, None)
+        important_format = get_translation("folder_structure_prompt.level3.important_format", language, None)
         
-        # If no translated template found, raise an exception
-        if not prompt_template:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3)"
+        # Get translated description template
+        folder_description = get_translation("description_templates.folder_description", language, "Clear description of the folder's business purpose")
+        
+        # Check if essential components are missing
+        if not instruction or not folder_instruction:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3.*)"
             logging.error(error_msg)
             raise LocalizedTemplateNotFoundError(error_msg)
         
         # Role placeholder might be formatted differently in localized templates
         role_text = f" for a {role}" if role else ""
         
-        # Replace placeholders in the template
-        prompt = prompt_template.format(
-            industry=industry,
-            l1_folder_name=l1_folder_name,
-            l1_description=l1_description,
-            l2_folder_name=l2_folder_name,
-            l2_description=l2_description,
-            role_text=role_text,
-            date_range=self.date_range_str
-        )
+        # Get the JSON template and apply translated descriptions
+        json_template = JsonTemplates.get_template("level3_folders")
+        json_template = json_template.format(folder_description=folder_description)
         
-        return prompt
+        # Construct the full prompt
+        prompt_parts = [
+            instruction.format(industry=industry, role_text=role_text),
+            context.format(
+                l1_folder_name=l1_folder_name,
+                l1_description=l1_description,
+                l2_folder_name=l2_folder_name,
+                l2_description=l2_description
+            ),
+            folder_instruction,
+            f"Respond in the following JSON format:\n\n{json_template}",
+            folder_naming.format(industry=industry),
+            f"IMPORTANT: {important_language}",
+            f"IMPORTANT: {important_format}"
+        ]
+        
+        return "\n\n".join([part for part in prompt_parts if part])
     
     def _generate_level3_files(self, industry: str, l2_folder_name: str, 
                              l2_folder_data: Dict[str, Any], l1_description: str,
@@ -1422,41 +1513,55 @@ class FolderGenerator:
         """
         l2_description = l2_folder_data.get("description", "")
         
-        # Get folder structure from level 2 data if available
+        # Format folder structure for display in prompt
         folder_structure = ""
-        if "folders" in l2_folder_data and l2_folder_data["folders"]:
-            folder_names = ", ".join([f'"{name}"' for name in l2_folder_data["folders"].keys()])
-            folder_structure = f"[{folder_names}]"
+        if "folders" in l2_folder_data:
+            folders = l2_folder_data["folders"]
+            folder_structure = ", ".join([f'"{name}"' for name in folders.keys()])
         
-        # Use get_translation to get the localized prompt from resources
-        prompt_template = get_translation("folder_structure_prompt.level3_files_prompt", language, None)
+        # Get the translated components from language resources
+        instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language, None)
+        context = get_translation("folder_structure_prompt.level3_files_prompt.context", language, None)
+        folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language, None)
+        file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language, None)
+        file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language, None)
+        important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language, None)
+        important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language, None)
         
-        # If no translated template found, raise an exception
-        if not prompt_template:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt)"
+        # Get translated description template
+        file_description = get_translation("description_templates.file_description", language, "Clear description of the file's purpose")
+        
+        # Check if essential components are missing
+        if not instruction or not file_instruction:
+            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt.*)"
             logging.error(error_msg)
             raise LocalizedTemplateNotFoundError(error_msg)
-            
+        
         # Role placeholder might be formatted differently in localized templates
         role_text = f" for a {role}" if role else ""
         
-        # Get industry info if available
-        industry_info = ""
+        # Get the JSON template and apply translated descriptions
+        json_template = JsonTemplates.get_template("level3_files")
+        json_template = json_template.format(file_description=file_description)
         
-        # Replace placeholders in the template
-        prompt = prompt_template.format(
-            industry=industry,
-            industry_info=industry_info,
-            l1_folder_name=l1_folder_name,
-            l1_description=l1_description,
-            l2_folder_name=l2_folder_name,
-            l2_description=l2_description,
-            folder_structure=folder_structure,
-            role_text=role_text,
-            date_range=self.date_range_str
-        )
+        # Construct the full prompt
+        prompt_parts = [
+            instruction.format(industry=industry, role_text=role_text),
+            context.format(
+                l1_folder_name=l1_folder_name,
+                l1_description=l1_description,
+                l2_folder_name=l2_folder_name,
+                l2_description=l2_description
+            ),
+            folder_context.format(folder_structure=folder_structure) if folder_structure else "",
+            file_instruction,
+            f"Respond in the following JSON format:\n\n{json_template}",
+            file_naming.format(industry=industry),
+            f"IMPORTANT: {important_language}",
+            f"IMPORTANT: {important_format}"
+        ]
         
-        return prompt
+        return "\n\n".join([part for part in prompt_parts if part])
         
     def _generate_timeseries_files(self, folder_path: Path, folder_name: str, folder_description: str,
                                  industry: str, language: str, role: Optional[str] = None) -> bool:

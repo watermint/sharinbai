@@ -24,7 +24,16 @@
     "spreadsheet_date_prompt": "\n\nThis spreadsheet is from {date}. Please incorporate this date into the spreadsheet heading and ensure all data aligns with this time period. If it's a report or tracking document, include data prior to {date} in the spreadsheet.",
     "text_date_prompt": "\n\nThis text file is from {date}. Please incorporate this date into the content and ensure all information aligns with this date."
   },
-  "folder_structure": "Please recommend a project folder structure for the following industry in JSON format: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\nPlease create a detailed and practical folder structure.\n\nImportant: Please return only a JSON object, without additional explanations or text.",
+  "folder_structure": {
+    "instruction": "Please propose a project folder structure in JSON format for the following industry: {industry}{role_prompt}",
+    "criteria": "Create an extensive and detailed folder structure that meets the following criteria:\n\n1. Include at least 15-20 main folders\n2. Each main folder should contain at least 3-5 subfolders\n3. Folder hierarchy should have at least 3-4 levels of depth (e.g., Main Folder/Subfolder/Sub-subfolder)\n4. Each bottom-level folder should contain at least 3-5 files\n5. Reflect specialised folder structures specific to the industry and role",
+    "folder_naming_guidelines": "All folder and file names should adhere to the following guidelines:\n- Avoid generic and abstract names like 'Folder 1' or 'Document 2'\n- Use specific terminology that reflects industry-specific terms and actual business processes\n- Create file names that clearly indicate the purpose and content of the document\n- Include specific names of departments, projects, products, clients, etc. when relevant\n- Clearly indicate document types (proposals, reports, manuals, etc.)",
+    "folder_description_guidelines": "For folder descriptions, provide detailed business context explaining:\n- The business purpose and function of each folder\n- How the folder is used in daily business operations and workflows\n- Which departments or roles typically work with these documents\n- What business processes these documents support\n- How the folder content relates to business objectives",
+    "file_types": "Files should primarily be common business files such as Word documents (.docx), Excel (.xlsx), PDF, text files (.txt), or image files (.png, .jpg), etc.",
+    "language_requirement": "All names and descriptions should be in English. Do not use folder names in other languages.",
+    "additional_instructions": "Include folders related to various areas of business operations, such as project management, document management, data analysis, reports, meeting materials, contractual documents, etc.\n\nFor any reports, meeting minutes, or dated documents, include the date in the filename in YYYY-MM-DD format.",
+    "response_format": "Return only the JSON, no additional explanation is needed."
+  },
   "folder_structure_prompt": {
     "level1": "Please create a first-level folder structure for the {industry} industry. Each folder should include a clear description of its purpose and business function.\n\n{date_range}\n\nPlease reply in the following JSON format:\n\n{\n  \"folders\": {\n    \"FolderName1\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    },\n    \"FolderName2\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    }\n  }\n}\n\nPlease create concrete folder names for the {industry} industry and add detailed descriptions for each folder. Important: Return only a JSON object.",
     "level2": "Please create an appropriate second-level folder structure within the first-level folder \"{l1_folder_name}\" for the {industry} industry {role_text}.\n\nDescription of the first-level folder: {l1_description}\n\nPlease reply in the following JSON format:\n\n{\n  \"folders\": {\n    \"FolderName1\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    },\n    \"FolderName2\": {\n      \"description\": \"A clear explanation of the business purpose of the folder\"\n    }\n  }\n}\n\nPlease create concrete folder names based on the purpose of the parent folder and the specifics of the {industry} industry and add detailed descriptions. Important: Return only a JSON object.",
@@ -51,5 +60,10 @@
     "file_type_context": " and in {file_type} format",
     "role_context": " as {role}"
   },
-  "date_range_format": "Assume folder and files were created in the following time period: {start_date} - {end_date}"
+  "date_range_format": "Assume folder and files were created in the following time period: {start_date} - {end_date}",
+  "description_templates": {
+    "folder_description": "Clear description of the folder's business purpose",
+    "file_description": "Clear description of the file's purpose",
+    "brief_description": "Brief description of the file content and purpose"
+  }
 }

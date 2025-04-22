@@ -40,7 +40,22 @@
     "spreadsheet_date_prompt": "\n\nDiese Tabellenkalkulation ist vom {date}. Bitte integrieren Sie dieses Datum in die Überschrift der Tabellenkalkulation und stellen Sie sicher, dass alle Daten mit diesem Zeitraum übereinstimmen. Wenn es sich um einen Bericht oder ein Tracking-Dokument handelt, schließen Sie Daten vor dem {date} in die Tabellenkalkulation ein.",
     "text_date_prompt": "\n\nDiese Textdatei ist vom {date}. Bitte integrieren Sie dieses Datum in den Inhalt und stellen Sie sicher, dass alle Informationen mit diesem Datum übereinstimmen."
   },
-  "folder_structure": "Bitte empfehlen Sie eine Projektordnerstruktur für die folgende Branche im JSON-Format: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\nBitte erstellen Sie eine detaillierte und praktische Ordnerstruktur.\n\nWichtig: Bitte geben Sie nur ein JSON-Objekt zurück, ohne zusätzliche Erklärungen oder Text.",
+  "date_range_format": "Nehmen Sie an, dass Ordner und Dateien im folgenden Zeitraum erstellt wurden: {start_date} - {end_date}",
+  "description_templates": {
+    "brief_description": "Kurze Beschreibung des Dateiinhalts und -zwecks",
+    "file_description": "Klare Beschreibung des Zwecks der Datei",
+    "folder_description": "Klare Beschreibung des geschäftlichen Zwecks des Ordners"
+  },
+  "folder_structure": {
+    "additional_instructions": "Fügen Sie Ordner hinzu, die verschiedene Bereiche der Geschäftsprozesse abdecken, wie Projektmanagement, Dokumentenmanagement, Datenanalyse, Berichte, Besprechungsunterlagen, Vertragsdokumente usw.\n\nFür Berichte, Protokolle oder datierte Dokumente fügen Sie das Datum im Dateinamen im Format JJJJ-MM-TT ein.",
+    "criteria": "Erstellen Sie eine umfangreiche und detaillierte Ordnerstruktur, die die folgenden Kriterien erfüllt:\n\n1. Mindestens 15-20 Hauptordner\n2. Jeder Hauptordner sollte mindestens 3-5 Unterordner enthalten\n3. Die Ordnerhierarchie sollte mindestens 3-4 Ebenen tief sein (z.B. Hauptordner/Unterordner/Unter-Unterordner)\n4. Jeder unterste Ordner sollte mindestens 3-5 Dateien enthalten\n5. Die Struktur sollte branchenspezifische und rollenbezogene Besonderheiten widerspiegeln",
+    "file_types": "Dateien sollten hauptsächlich gängige Geschäftsdokumente wie Word-Dokumente (.docx), Excel (.xlsx), PDF, Textdateien (.txt) oder Bilddateien (.png, .jpg) usw. sein.",
+    "folder_description_guidelines": "Für Ordnerbeschreibungen geben Sie einen detaillierten Geschäftskontext an, der Folgendes erklärt:\n- Den geschäftlichen Zweck und die Funktion jedes Ordners\n- Wie der Ordner im täglichen Geschäftsbetrieb und in Arbeitsabläufen verwendet wird\n- Welche Abteilungen oder Rollen typischerweise mit diesen Dokumenten arbeiten\n- Welche Geschäftsprozesse diese Dokumente unterstützen\n- Wie der Ordnerinhalt mit den Unternehmenszielen zusammenhängt",
+    "folder_naming_guidelines": "Alle Ordner- und Dateinamen sollten folgende Richtlinien erfüllen:\n- Vermeiden Sie generische und abstrakte Namen wie 'Ordner 1' oder 'Dokument 2'\n- Verwenden Sie spezifische Begriffe, die branchenspezifische Begriffe und tatsächliche Geschäftsprozesse widerspiegeln\n- Erstellen Sie Dateinamen, die den Zweck und Inhalt des Dokuments klar angeben\n- Fügen Sie relevante Namen von Abteilungen, Projekten, Produkten, Kunden usw. ein\n- Geben Sie den Dokumenttyp klar an (z.B. Angebote, Berichte, Handbücher usw.)",
+    "instruction": "Bitte schlagen Sie eine Projektordnerstruktur im JSON-Format für die folgende Branche vor: {industry}{role_prompt}",
+    "language_requirement": "Alle Namen und Beschreibungen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.",
+    "response_format": "Geben Sie nur das JSON zurück, keine zusätzliche Erklärung ist nötig."
+  },
   "folder_structure_prompt": {
     "level1": "Bitte erstellen Sie eine Ordnerstruktur der ersten Ebene für die Branche {industry}. Jeder Ordner sollte eine klare Beschreibung seines Zwecks und seiner Geschäftsfunktion enthalten.\n\n{date_range}\n\nBitte antworten Sie im folgenden JSON-Format:\n\n{\n  \"folders\": {\n    \"Ordnername1\": {\n      \"description\": \"Eine klare Erklärung des Geschäftszwecks des Ordners\"\n    },\n    \"Ordnername2\": {\n      \"description\": \"Eine klare Erklärung des Geschäftszwecks des Ordners\"\n    }\n  }\n}\n\nBitte erstellen Sie konkrete Ordnernamen für die Branche {industry} und fügen Sie detaillierte Beschreibungen für jeden Ordner hinzu. Wichtig: Geben Sie nur ein JSON-Objekt zurück.",
     "level2": "Bitte erstellen Sie eine geeignete Ordnerstruktur der zweiten Ebene innerhalb des Ordners der ersten Ebene \"{l1_folder_name}\" für die Branche {industry} {role_text}.\n\nBeschreibung des Ordners der ersten Ebene: {l1_description}\n\nBitte antworten Sie im folgenden JSON-Format:\n\n{\n  \"folders\": {\n    \"Ordnername1\": {\n      \"description\": \"Eine klare Erklärung des Geschäftszwecks des Ordners\"\n    },\n    \"Ordnername2\": {\n      \"description\": \"Eine klare Erklärung des Geschäftszwecks des Ordners\"\n    }\n  }\n}\n\nBitte erstellen Sie konkrete Ordnernamen basierend auf dem Zweck des Hauptordners und den Besonderheiten der Branche {industry} und fügen Sie detaillierte Beschreibungen hinzu. Wichtig: Geben Sie nur ein JSON-Objekt zurück.",
@@ -66,6 +81,5 @@
     "content_generation": "Generieren Sie Inhalte für {description} in der Branche {industry}{role_context}. Der Inhalt sollte in {language}{file_type_context} sein. Halten Sie es präzise und professionell.",
     "file_type_context": " und im Format {file_type}",
     "role_context": " als {role}"
-  },
-  "date_range_format": "Nehmen Sie an, dass Ordner und Dateien im folgenden Zeitraum erstellt wurden: {start_date} - {end_date}"
+  }
 }

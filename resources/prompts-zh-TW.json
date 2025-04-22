@@ -18,13 +18,62 @@
     "spreadsheet_date_prompt": "\n\n本試算表日期為{date}。請於表頭包含該日期，並確保所有資料均與該期間相符。如為報告或追蹤文件，請於試算表中包含{date}之前的日期。",
     "text_date_prompt": "\n\n本純文字檔案日期為{date}。請於內容中包含該日期，並確保所有資訊均與該日期相符。"
   },
-  "folder_structure": "請為下列產業建議專案資料夾結構，格式為JSON: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n請建立詳細且實用的資料夾結構。\n\n重要: 所有資料夾名稱和檔案名稱請用中文，不要用英文名稱。\n\n只返回JSON物件，不要包含額外說明或文字。",
+  "folder_structure": {
+    "instruction": "請為下列產業建議專案資料夾結構，格式為JSON: {industry}{role_prompt}",
+    "criteria": "請建立詳細且實用的資料夾結構，需符合以下條件：\n\n1. 包含至少15-20個主要資料夾\n2. 每個主要資料夾應包含至少3-5個子資料夾\n3. 資料夾階層需有至少3-4層深度（如：主要資料夾/子資料夾/次子資料夾）\n4. 每個最底層資料夾應包含至少3-5個檔案\n5. 反映該產業及角色的專業資料夾結構",
+    "folder_naming_guidelines": "所有資料夾與檔案名稱請遵循以下原則：\n- 避免使用如『資料夾1』或『文件2』等抽象或通用名稱\n- 使用能反映產業術語及實際業務流程的具體名稱\n- 檔案名稱需清楚說明文件用途與內容\n- 如有需要，請包含部門、專案、產品、客戶等具體名稱\n- 明確標示文件類型（如提案、報告、手冊等）",
+    "folder_description_guidelines": "資料夾說明請提供詳細業務背景，包括：\n- 各資料夾的業務目的與功能\n- 資料夾於日常業務運作及流程中的用途\n- 哪些部門或角色通常會使用這些文件\n- 這些文件支援哪些業務流程\n- 資料夾內容如何與業務目標相關聯",
+    "file_types": "檔案類型以常見商業文件為主，如Word文件（.docx）、Excel（.xlsx）、PDF、純文字檔（.txt）、圖片檔（.png, .jpg）等。",
+    "language_requirement": "所有名稱與說明請用中文，不要用其他語言。",
+    "additional_instructions": "請包含與各種業務運作相關的資料夾，如專案管理、文件管理、數據分析、報告、會議資料、合約文件等。\n\n如有報告、會議紀錄或具日期的文件，請於檔名中以YYYY-MM-DD格式標示日期。",
+    "response_format": "只返回JSON物件，不要包含額外說明或文字。"
+  },
+  "description_templates": {
+    "folder_description": "關於資料夾業務目的的明確說明",
+    "file_description": "關於檔案用途的明確說明",
+    "brief_description": "檔案內容與用途的簡要說明"
+  },
   "folder_structure_prompt": {
-    "level1": "請為{industry}產業建立第一層資料夾結構。每個資料夾需包含其用途和業務功能的明確說明。\n\n{date_range}\n\n請依下列JSON格式回答：\n\n{{\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務目的的明確說明\"\n    }}\n  }}\n}}\n\n請為{industry}產業建立具體的中文資料夾名稱，並為每個資料夾添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-    "level2": "請為{industry}產業{role_text}的第一層資料夾「{l1_folder_name}」內建立合適的第二層資料夾結構。\n\n第一層資料夾說明: {l1_description}\n\n請依下列JSON格式回答：\n\n{{\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務目的的明確說明\"\n    }}\n  }}\n}}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-    "level3": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n請於該第二層資料夾下建立具體的第三層資料夾，並明確說明各自用途。\n\n請依下列JSON格式回答：\n\n{{\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務目的的明確說明\"\n    }}\n  }}\n}}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-    "level3_files_prompt": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n該資料夾包含以下子資料夾: {folder_structure}\n\n請為該第二層資料夾（非子資料夾）直接建立合適的檔案。\n\n請依下列JSON格式回答：\n\n{{\n  \"files\": [\n    {{\n      \"name\": \"檔案名稱1.docx\",\n      \"type\": \"docx\",\n      \"description\": \"關於檔案用途的明確說明\"\n    }},\n    {{\n      \"name\": \"檔案名稱2.xlsx\",\n      \"type\": \"xlsx\",\n      \"description\": \"關於檔案用途的明確說明\"\n    }}\n  ]\n}}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文檔案名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
-    "level3_folders_prompt": "{industry}產業{role_text}的第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}\n\n請於該第二層資料夾下建立具體的第三層資料夾，並明確說明各自用途。\n\n重要：只返回資料夾，不要返回檔案。檔案將在單獨的步驟中生成。\n\n請依下列JSON格式回答：\n\n{{\n  \"folders\": {{\n    \"資料夾名稱1\": {{\n      \"description\": \"關於資料夾業務目的的明確說明\"\n    }},\n    \"資料夾名稱2\": {{\n      \"description\": \"資料夾業務目的的明確說明\"\n    }}\n  }}\n}}\n\n請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。重要: 全部用中文。只返回JSON物件。",
+    "level1": {
+      "instruction": "請為{industry}產業建立第一層資料夾結構。每個資料夾需包含其用途和業務功能的明確說明。",
+      "folder_naming": "請為{industry}產業建立具體的中文資料夾名稱，並為每個資料夾添加詳細說明。",
+      "important_language": "全部用中文。不要用其他語言。",
+      "important_format": "只返回JSON物件，不要包含額外說明或文字。不要用JSON或程式碼區塊包裹。"
+    },
+    "level2": {
+      "instruction": "請為{industry}產業{role_text}的第一層資料夾「{l1_folder_name}」內建立合適的第二層資料夾結構。",
+      "context": "第一層資料夾說明: {l1_description}",
+      "folder_instruction": "請建立具體且合適的第二層資料夾，並為每個資料夾添加明確說明。",
+      "folder_naming": "請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。",
+      "important_language": "全部用中文。不要用其他語言。",
+      "important_format": "只返回JSON物件，不要包含額外說明或文字。不要用JSON或程式碼區塊包裹。"
+    },
+    "level3": {
+      "instruction": "請為{industry}產業{role_text}建立第三層資料夾結構。",
+      "context": "第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}",
+      "folder_instruction": "請建立具體且合適的第三層資料夾，並為每個資料夾添加明確說明。",
+      "folder_naming": "請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。",
+      "important_language": "全部用中文。不要用其他語言。",
+      "important_format": "只返回JSON物件，不要包含額外說明或文字。不要用JSON或程式碼區塊包裹。"
+    },
+    "level3_files_prompt": {
+      "instruction": "請為{industry}產業{role_text}的第三層資料夾建立檔案。",
+      "context": "第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}",
+      "folder_context": "該資料夾包含以下子資料夾: {folder_structure}",
+      "file_instruction": "請為該第二層資料夾（非子資料夾）直接建立合適的檔案。",
+      "file_naming": "請為上層資料夾的用途和{industry}產業特性建立具體中文檔案名稱，並添加詳細說明。",
+      "important_language": "全部用中文。不要用其他語言。",
+      "important_format": "只返回JSON物件，不要包含額外說明或文字。不要用JSON或程式碼區塊包裹。"
+    },
+    "level3_folders_prompt": {
+      "instruction": "請為{industry}產業{role_text}的第三層資料夾結構。",
+      "context": "第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}",
+      "folder_instruction": "請建立具體且合適的第三層資料夾，並為每個資料夾添加明確說明。",
+      "important_note": "只返回資料夾，不要返回檔案。檔案將在單獨的步驟中生成。",
+      "folder_naming": "請為上層資料夾的用途和{industry}產業特性建立具體中文資料夾名稱，並添加詳細說明。",
+      "important_language": "全部用中文。不要用其他語言。",
+      "important_format": "只返回JSON物件，不要包含額外說明或文字。不要用JSON或程式碼區塊包裹。"
+    },
     "system": "您是為企業建立資料夾結構的AI助理。所有資料夾名稱和檔案名稱請用中文。只返回有效JSON資料，不要包含額外文字或說明。不要用JSON或程式碼區塊包裹。"
   },
   "json_fix_prompts": {

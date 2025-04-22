@@ -18,7 +18,16 @@
     "spreadsheet_date_prompt": "\n\n이 스프레드시트의 날짜는 {date}입니다. 스프레드시트 헤더에 이 날짜를 포함하고, 모든 데이터가 이 기간에 적합한지 확인하세요. 이것이 보고서 또는 추적 문서라면 {date} 이전 날짜를 스프레드시트에 포함하세요.",
     "text_date_prompt": "\n\n이 텍스트 파일의 날짜는 {date}입니다. 파일 내용에 이 날짜를 포함하고, 모든 정보가 이 날짜에 적합한지 확인하세요."
   },
-  "folder_structure": "다음 업계를 위한 프로젝트 폴더 구조를 JSON 형식으로 제안하세요: {industry}{role_prompt}{date_range_prompt}{date_organization_prompt}{existing_structure_prompt}{scenario_prompt}\n\n자세하고 실용적인 폴더 구조를 생성하세요.\n\n중요: 모든 폴더명과 파일명은 한국어로 작성하세요. 영어 이름은 사용하지 마세요.\n\n응답은 JSON 객체만으로, 추가 설명이나 텍스트를 포함하지 마세요.",
+  "folder_structure": {
+    "instruction": "다음 업계를 위한 프로젝트 폴더 구조를 JSON 형식으로 제안하세요: {industry}{role_prompt}",
+    "criteria": "다음 기준을 충족하는 광범위하고 자세한 폴더 구조를 생성하세요:\n\n1. 최소 15~20개의 메인 폴더 포함\n2. 각 메인 폴더는 최소 3~5개의 하위 폴더 포함\n3. 폴더 계층은 최소 3~4단계 깊이(예: 메인 폴더/하위 폴더/하위-하위 폴더)\n4. 최하위 폴더마다 최소 3~5개의 파일 포함\n5. 업계 및 역할에 특화된 전문 폴더 구조 반영",
+    "folder_naming_guidelines": "모든 폴더 및 파일명은 다음 지침을 따라야 합니다:\n- '폴더1' 또는 '문서2'와 같은 일반적이고 추상적인 이름은 피하세요\n- 업계 고유 용어나 실제 비즈니스 프로세스를 반영한 구체적 용어 사용\n- 문서의 목적과 내용을 명확히 나타내는 파일명 생성\n- 필요시 부서, 프로젝트, 제품, 고객 등 구체적 명칭 포함\n- 문서 유형(제안서, 보고서, 매뉴얼 등) 명확히 표시",
+    "folder_description_guidelines": "폴더 설명에는 다음과 같은 자세한 비즈니스 맥락을 제공하세요:\n- 각 폴더의 비즈니스 목적과 기능\n- 폴더가 일상 업무 및 워크플로우에서 어떻게 사용되는지\n- 어떤 부서나 역할이 이 문서들을 주로 다루는지\n- 이 문서들이 지원하는 비즈니스 프로세스\n- 폴더 내용이 비즈니스 목표와 어떻게 연관되는지",
+    "file_types": "파일은 주로 워드 문서(.docx), 엑셀(.xlsx), PDF, 텍스트 파일(.txt), 이미지 파일(.png, .jpg) 등 일반적인 비즈니스 파일이어야 합니다.",
+    "language_requirement": "모든 이름과 설명은 반드시 한국어로 작성해야 합니다. 다른 언어로 폴더명을 사용하지 마세요.",
+    "additional_instructions": "프로젝트 관리, 문서 관리, 데이터 분석, 보고서, 회의 자료, 계약 문서 등 다양한 비즈니스 운영 영역과 관련된 폴더를 포함하세요.\n\n보고서, 회의록, 날짜가 포함된 문서의 경우 파일명에 YYYY-MM-DD 형식의 날짜를 포함하세요.",
+    "response_format": "JSON만 반환하세요. 추가 설명은 필요하지 않습니다."
+  },
   "folder_structure_prompt": {
     "level1": "{industry} 업계의 1단계 폴더 구조를 생성하세요. 각 폴더에는 그 목적과 비즈니스 기능에 대한 명확한 설명을 포함하세요.\n\n{date_range}\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n{industry} 업계에 적합한 구체적인 폴더명을 생성하고, 각 폴더에는 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
     "level2": "{industry} 업계{role_text}의 1단계 폴더 \"{l1_folder_name}\" 내에 적합한 2단계 폴더 구조를 생성하세요.\n\n1단계 폴더 설명: {l1_description}\n\n다음 JSON 형식으로 응답하세요:\n\n{\n  \"folders\": {\n    \"폴더명1\": {\n      \"description\": \"폴더의 비즈니스 목적에 대한 명확한 설명\"\n    },\n    ...\n  }\n}\n\n상위 폴더의 목적과 {industry} 업계의 특성에 적합한 구체적인 폴더명을 생성하고, 자세한 설명을 추가하세요. 중요: 모두 한국어로 작성하세요. JSON 객체만 반환하세요.",
@@ -45,5 +54,10 @@
     "file_type_context": ". 출력은 {file_type} 형식이어야 합니다.",
     "role_context": " ({role}용)"
   },
-  "date_range_format": "다음 기간 동안 폴더와 파일이 생성되었다고 가정합니다: {start_date} - {end_date}"
+  "date_range_format": "다음 기간 동안 폴더와 파일이 생성되었다고 가정합니다: {start_date} - {end_date}",
+  "description_templates": {
+    "folder_description": "폴더의 비즈니스 목적에 대한 명확한 설명",
+    "file_description": "파일 목적에 대한 명확한 설명",
+    "brief_description": "파일 내용과 목적에 대한 간단한 설명"
+  }
 }
