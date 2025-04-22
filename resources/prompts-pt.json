@@ -85,6 +85,7 @@
     "json_error_message": "Houve um erro ao analisar sua resposta anterior. Por favor, forneça um objeto JSON sintaticamente válido com chaves corretas.",
     "json_format_instruction": "Por favor, formate sua resposta como um objeto JSON válido com chaves e aspas corretas. Todos os nomes de pastas devem estar em português.",
     "json_object_instruction": "Por favor, retorne apenas {key} como um objeto JSON. Retorne apenas os dados de {key}.",
+    "json_response_format_instruction": "Por favor, responda com uma estrutura JSON no seguinte formato:\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Crie nomes de pastas específicos e apropriados para a indústria {industry}. Forneça descrições detalhadas explicando o propósito empresarial de cada pasta.",

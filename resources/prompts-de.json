@@ -107,6 +107,7 @@
     "json_error_message": "Bei der Analyse Ihrer vorherigen Antwort ist ein Fehler aufgetreten. Bitte stellen Sie ein syntaktisch gültiges JSON-Objekt mit korrekten Klammern bereit.",
     "json_format_instruction": "Bitte formatieren Sie Ihre Antwort als gültiges JSON-Objekt mit korrekten Klammern und Anführungszeichen. Alle Ordnernamen sollten auf Deutsch sein.",
     "json_object_instruction": "Bitte geben Sie nur {key} als JSON-Objekt zurück. Geben Sie nur die {key}-Daten zurück.",
+    "json_response_format_instruction": "Bitte antworten Sie mit einer JSON-Struktur im folgenden Format:\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Erstellen Sie konkrete und geeignete Ordnernamen für die Branche {industry}. Geben Sie detaillierte Beschreibungen an, die den Geschäftszweck jedes Ordners erklären.",

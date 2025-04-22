@@ -85,6 +85,7 @@
     "json_error_message": "解析您之前的回答时出现错误。请提供一个语法有效的JSON对象，且括号正确。",
     "json_format_instruction": "请将您的回答格式化为有效的JSON对象，带有正确的括号和引号。所有文件夹名称应该用中文。",
     "json_object_instruction": "请仅返回{key}作为JSON对象。只返回{key}数据。",
+    "json_response_format_instruction": "请按以下JSON结构格式回应：\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "为{industry}行业创建具体和适当的文件夹名称。提供详细描述解释每个文件夹的业务用途。",

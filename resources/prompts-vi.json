@@ -85,6 +85,7 @@
     "json_error_message": "Đã xảy ra lỗi khi phân tích phản hồi trước đó của bạn. Vui lòng cung cấp một đối tượng JSON hợp lệ về mặt cú pháp với dấu ngoặc nhọn chính xác.",
     "json_format_instruction": "Vui lòng định dạng phản hồi của bạn như một đối tượng JSON hợp lệ với dấu ngoặc nhọn và dấu ngoặc kép chính xác. Tất cả tên thư mục nên dùng tiếng Anh.",
     "json_object_instruction": "Vui lòng chỉ trả về {key} dưới dạng đối tượng JSON. Chỉ trả về dữ liệu {key}.",
+    "json_response_format_instruction": "Vui lòng phản hồi bằng cấu trúc JSON theo định dạng sau:\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Tạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Cung cấp mô tả chi tiết giải thích mục đích kinh doanh của mỗi thư mục.",

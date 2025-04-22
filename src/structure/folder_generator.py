@@ -1302,10 +1302,13 @@ class FolderGenerator:
         json_template = JsonTemplates.get_template("level1_folders")
         json_template = json_template.format(folder_description=folder_description)
         
+        # Get the JSON response format instruction template
+        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language, "Please respond with a JSON structure in the following format:\n\n{json_template}")
+
         # Construct the full prompt
         prompt_parts = [
             instruction.format(industry=industry),
-            f"Please respond with a JSON structure in the following format:\n\n{json_template}",
+            json_response_format_instruction.format(json_template=json_template),
             folder_naming.format(industry=industry),
             f"IMPORTANT: {important_language}",
             f"IMPORTANT: {important_format}"
@@ -1356,12 +1359,15 @@ class FolderGenerator:
         json_template = JsonTemplates.get_template("level2_folders")
         json_template = json_template.format(folder_description=folder_description)
         
+        # Get the JSON response format instruction template
+        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language, "Respond in the following JSON format:\n\n{json_template}")
+        
         # Construct the full prompt
         prompt_parts = [
             instruction.format(industry=industry, role_text=role_text, l1_folder_name=l1_folder_name),
             context.format(l1_description=l1_description),
             folder_instruction,
-            f"Respond in the following JSON format:\n\n{json_template}",
+            json_response_format_instruction.format(json_template=json_template),
             folder_naming.format(industry=industry),
             f"IMPORTANT: {important_language}",
             f"IMPORTANT: {important_format}"
@@ -1444,6 +1450,9 @@ class FolderGenerator:
         json_template = JsonTemplates.get_template("level3_folders")
         json_template = json_template.format(folder_description=folder_description)
         
+        # Get the JSON response format instruction template
+        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language, "Respond in the following JSON format:\n\n{json_template}")
+        
         # Construct the full prompt
         prompt_parts = [
             instruction.format(industry=industry, role_text=role_text),
@@ -1454,7 +1463,7 @@ class FolderGenerator:
                 l2_description=l2_description
             ),
             folder_instruction,
-            f"Respond in the following JSON format:\n\n{json_template}",
+            json_response_format_instruction.format(json_template=json_template),
             folder_naming.format(industry=industry),
             f"IMPORTANT: {important_language}",
             f"IMPORTANT: {important_format}"
@@ -1543,6 +1552,9 @@ class FolderGenerator:
         # Get the JSON template and apply translated descriptions
         json_template = JsonTemplates.get_template("level3_files")
         json_template = json_template.format(file_description=file_description)
+
+        # Get the JSON response format instruction template
+        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language, "Respond in the following JSON format:\n\n{json_template}")
         
         # Construct the full prompt
         prompt_parts = [
@@ -1555,7 +1567,7 @@ class FolderGenerator:
             ),
             folder_context.format(folder_structure=folder_structure) if folder_structure else "",
             file_instruction,
-            f"Respond in the following JSON format:\n\n{json_template}",
+            json_response_format_instruction.format(json_template=json_template),
             file_naming.format(industry=industry),
             f"IMPORTANT: {important_language}",
             f"IMPORTANT: {important_format}"

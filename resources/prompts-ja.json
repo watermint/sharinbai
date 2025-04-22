@@ -82,12 +82,13 @@
   },
   "json_format_instructions": {
     "json_array_instruction": "{key}のみをJSON配列として返してください。{key}データのみを返してください。",
-    "json_error_message": "前回の回答の解析中にエラーが発生しました。正しい括弧を持つ構文的に有効なJSONオブジェクトを提供してください。",
-    "json_format_instruction": "回答を正しい括弧と引用符を持つ有効なJSONオブジェクトとしてフォーマットしてください。すべてのフォルダ名は日本語にしてください。",
+    "json_error_message": "以前の応答の解析中にエラーが発生しました。正しい中括弧を持つ構文的に有効なJSONオブジェクトを提供してください。",
+    "json_format_instruction": "応答を正しい中括弧と引用符を持つ有効なJSONオブジェクトとしてフォーマットしてください。すべてのフォルダ名は日本語である必要があります。",
     "json_object_instruction": "{key}のみをJSONオブジェクトとして返してください。{key}データのみを返してください。",
+    "json_response_format_instruction": "以下のJSON構造で応答してください：\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
-      "folder_naming": "{industry}業界に適した具体的かつ適切なフォルダ名を作成してください。各フォルダのビジネス目的を説明する詳細な説明を提供してください。",
+      "folder_naming": "{industry}業界の具体的で適切なフォルダ名を作成してください。各フォルダのビジネス目的を説明する詳細な説明を提供してください。",
       "important_format": "JSONオブジェクトのみを返してください。JSONの前後に追加のテキスト、説明、またはコメントを含めないでください。「これがJSONです」や「お役に立てれば幸いです」などのフレーズを使用しないでください。JSONをコードブロックで囲まないでください。",
       "instruction": "{industry}業界の{role_text}のための第1レベルフォルダ構造を作成してください。各フォルダの目的とビジネス機能を明確に説明してください。"
     },

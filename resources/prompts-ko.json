@@ -85,6 +85,7 @@
     "json_error_message": "이전 응답 파싱 중 오류가 발생했습니다. 중괄호가 올바른 구문적으로 유효한 JSON 객체를 제공하세요.",
     "json_format_instruction": "올바른 중괄호와 따옴표가 있는 유효한 JSON 객체로 응답을 포맷하세요. 모든 폴더 이름은 한국어로 작성하세요.",
     "json_object_instruction": "{key}만 JSON 객체로 반환하세요. {key} 데이터만 반환하세요.",
+    "json_response_format_instruction": "다음 JSON 구조로 응답해 주세요:\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "{industry} 산업에 적합한 특정 폴더 이름을 만드세요. 각 폴더의 비즈니스 목적을 설명하는 자세한 설명을 제공하세요.",

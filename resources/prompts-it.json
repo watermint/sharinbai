@@ -104,12 +104,13 @@
   },
   "json_format_instructions": {
     "json_array_instruction": "Si prega di restituire solo {key} come array JSON. Restituire solo i dati {key}.",
-    "json_error_message": "Si è verificato un errore durante l'analisi della risposta precedente. Si prega di fornire un oggetto JSON sintatticamente valido con parentesi corrette.",
-    "json_format_instruction": "Si prega di formattare la risposta come un oggetto JSON valido con parentesi e virgolette corrette. Tutti i nomi delle cartelle dovrebbero essere in italiano.",
+    "json_error_message": "Si è verificato un errore durante l'analisi della risposta precedente. Si prega di fornire un oggetto JSON sintatticamente valido con le parentesi graffe corrette.",
+    "json_format_instruction": "Si prega di formattare la risposta come un oggetto JSON valido con le parentesi graffe e le virgolette corrette. Tutti i nomi delle cartelle dovrebbero essere in italiano.",
     "json_object_instruction": "Si prega di restituire solo {key} come oggetto JSON. Restituire solo i dati {key}.",
+    "json_response_format_instruction": "Si prega di rispondere con una struttura JSON nel seguente formato:\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
-      "folder_naming": "Crea nomi di cartelle concreti e appropriati per il settore {industry}. Fornisci descrizioni dettagliate che spiegano lo scopo aziendale di ogni cartella.",
+      "folder_naming": "Crea nomi di cartelle specifici e appropriati per il settore {industry}. Fornisci descrizioni dettagliate che spieghino lo scopo aziendale di ciascuna cartella.",
       "important_format": "Restituisci solo l'oggetto JSON. Non includere alcun testo aggiuntivo, spiegazioni o commenti prima o dopo il JSON. Non usare frasi come \"Ecco il JSON\" o \"Spero che questo aiuti\". Non avvolgere il JSON in un blocco di codice.",
       "instruction": "Crea una struttura di cartelle di primo livello per il settore {industry} {role_text}. Includi per ogni cartella una chiara descrizione del suo scopo e funzione aziendale."
     },

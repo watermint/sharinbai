@@ -81,10 +81,11 @@
     "fix_json": "La structure JSON suivante est invalide ou n'a pas pu être analysée correctement.\nVeuillez corriger la structure et retourner un format JSON valide.\nAssurez-vous que toutes les clés et valeurs sont correctement entre guillemets et que tous les crochets sont équilibrés.\n\nRéponse problématique :\n{failed_response}\n\nVeuillez retourner uniquement la structure JSON corrigée sans explication supplémentaire.\n\nIMPORTANT : Tous les noms de dossiers doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues."
   },
   "json_format_instructions": {
-    "json_array_instruction": "Veuillez retourner uniquement {key} sous forme de tableau JSON. Renvoyez uniquement les données de {key}.",
-    "json_error_message": "Une erreur s'est produite lors de l'analyse de votre réponse précédente. Veuillez fournir un objet JSON syntaxiquement valide avec des accolades correctes.",
-    "json_format_instruction": "Veuillez formater votre réponse sous forme d'objet JSON valide avec des accolades et des guillemets corrects. Tous les noms de dossiers doivent être en français.",
-    "json_object_instruction": "Veuillez retourner uniquement {key} sous forme d'objet JSON. Renvoyez uniquement les données de {key}.",
+    "json_array_instruction": "Veuillez retourner uniquement {key} sous forme de tableau JSON. Retournez uniquement les données {key}.",
+    "json_error_message": "Une erreur s'est produite lors de l'analyse de votre réponse précédente. Veuillez fournir un objet JSON syntaxiquement valide avec les accolades correctes.",
+    "json_format_instruction": "Veuillez formater votre réponse en tant qu'objet JSON valide avec les accolades et les guillemets corrects. Tous les noms de dossiers doivent être en français.",
+    "json_object_instruction": "Veuillez retourner uniquement {key} sous forme d'objet JSON. Retournez uniquement les données {key}.",
+    "json_response_format_instruction": "Veuillez répondre avec une structure JSON dans le format suivant :\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Créez des noms de dossiers spécifiques et appropriés pour l'industrie {industry}. Fournissez des descriptions détaillées expliquant l'objectif commercial de chaque dossier.",

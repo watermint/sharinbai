@@ -85,6 +85,7 @@
     "json_error_message": "解析您之前的回答時出現錯誤。請提供一個語法有效的JSON物件，且括號正確。",
     "json_format_instruction": "請將您的回答格式化為有效的JSON物件，帶有正確的括號和引號。所有資料夾名稱應該用中文。",
     "json_object_instruction": "請只返回{key}作為JSON物件。只返回{key}資料。",
+    "json_response_format_instruction": "請按以下JSON結構格式回應：\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "為{industry}產業創建具體和適當的資料夾名稱。提供詳細描述解釋每個資料夾的業務用途。",

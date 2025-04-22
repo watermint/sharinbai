@@ -85,6 +85,7 @@
     "json_error_message": "There was an error parsing your previous response. Please provide a syntactically valid JSON object with correct braces.",
     "json_format_instruction": "Please format your response as a valid JSON object with correct braces and quotes. All folder names should be in English.",
     "json_object_instruction": "Please return only {key} as a JSON object. Return only the {key} data.",
+    "json_response_format_instruction": "Please respond with a JSON structure in the following format:\\n\\n{json_template}",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Create specific and appropriate folder names for the {industry} industry. Provide detailed descriptions explaining the business purpose of each folder.",
