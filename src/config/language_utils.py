@@ -12,6 +12,12 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 
 
+# Custom exception for missing localized template
+class LocalizedTemplateNotFoundError(Exception):
+    """Raised when a localized template is not found for the selected language."""
+    pass
+
+
 def get_resource_paths() -> List[Path]:
     """
     Get paths to resource directories.
@@ -210,10 +216,13 @@ def get_translation(key: str, language: str, default: str = None) -> str:
     Args:
         key: Translation key
         language: Language code
-        default: Default value if translation not found
+        default: Default value if translation not found (deprecated, will be removed)
     
     Returns:
-        Translated string or default
+        Translated string
+        
+    Raises:
+        LocalizedTemplateNotFoundError: If no translation is found and no default is provided
     """
     language_files = get_available_language_files()
     normalized_lang = get_normalized_language_key(language)
@@ -246,5 +255,12 @@ def get_translation(key: str, language: str, default: str = None) -> str:
             except Exception as e:
                 logging.debug(f"Error loading translation for {lang}: {e}")
     
-    # If no translation found, return default
-    return default if default is not None else key 
+    # If no translation found and default is provided, return default
+    if default is not None:
+        logging.warning(f"No translation found for key '{key}' in language '{language}'. Using provided default value.")
+        return default
+        
+    # If no translation found and no default is provided, raise an exception
+    error_msg = f"No translation found for key '{key}' in language '{language}'"
+    logging.error(error_msg)
+    raise LocalizedTemplateNotFoundError(error_msg) 

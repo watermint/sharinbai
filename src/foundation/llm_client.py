@@ -11,6 +11,8 @@ import time
 from typing import Dict, Any, Optional, List, Union
 
 from src.config.settings import Settings
+from src.config import get_translation
+from src.config.language_utils import LocalizedTemplateNotFoundError
 
 class OllamaClient:
     """Client for communicating with Ollama API"""
@@ -93,25 +95,35 @@ class OllamaClient:
         """
         return self._make_request(prompt, system, max_attempts)
     
-    def get_json_completion(self, prompt: str, system: Optional[str] = None, 
-                           max_attempts: int = 3) -> Optional[Dict[str, Any]]:
+    def get_json_completion(self, prompt: str, system_prompt: Optional[str] = None, 
+                           max_attempts: int = 3, language: str = "en") -> Optional[Dict[str, Any]]:
         """
         Get a JSON formatted completion from the model.
         
         Args:
             prompt: The prompt to send to the model
-            system: Optional system message
+            system_prompt: Optional system message
             max_attempts: Maximum number of retry attempts
+            language: Language code for translations
             
         Returns:
             Parsed JSON response or None if parsing failed
-        """
-        system_prompt = system or ""
             
+        Raises:
+            LocalizedTemplateNotFoundError: If required translation is not found
+        """
+        # Get the json format instruction from the translation resources
+        json_validation_instruction = get_translation("json_format_instructions.json_format_instruction", language, None)
+        if not json_validation_instruction:
+            error_msg = f"No translation found for 'json_format_instructions.json_format_instruction' in language '{language}'"
+            logging.error(error_msg)
+            raise LocalizedTemplateNotFoundError(error_msg)
+            
+        # Update system prompt with the translated JSON instruction
         if system_prompt:
-            system_prompt += "\nYour response must be a valid JSON object. Do not include any explanations, markdown or text outside the JSON structure."
+            system_prompt += f"\n{json_validation_instruction}"
         else:
-            system_prompt = "Your response must be a valid JSON object. Do not include any explanations, markdown or text outside the JSON structure."
+            system_prompt = json_validation_instruction
         
         # Log the final prompt being sent
         logging.debug(f"LLM Prompt: {prompt}")

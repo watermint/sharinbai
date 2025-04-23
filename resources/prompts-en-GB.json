@@ -1,5 +1,8 @@
 {
   "content_generation": {
+    "excel_prompt_template": "Generate a realistic Excel spreadsheet {file_description} for the {industry} industry{role_context}{folder_context}. The output should be in {language}.",
+    "excel_style_prompt": "\n\nFocus on realistic {style_type}, including appropriate headers, columns, and data types.",
+    "excel_time_prompt": "\n\nGenerate content appropriate for the current time period.",
     "xlsx_generation": "Generate content for Excel spreadsheets. Please respond with the following JSON object format:\n{\n  \"sheets\": [\n    {\n      \"name\": \"Sheet name\",\n      \"headers\": [\"Header1\", \"Header2\", ...],\n      \"data\": [\n        [\"Row1Cell1\", \"Row1Cell2\", ...],\n        [\"Row2Cell1\", \"Row2Cell2\", ...]\n      ]\n    }\n  ]\n}"
   },
   "date_formats": {

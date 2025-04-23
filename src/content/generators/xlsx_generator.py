@@ -81,10 +81,7 @@ class XlsxGenerator(BaseGenerator):
         # Load system message from language resources
         try:
             # Get system message for structured output
-            system_message = get_translation("content_generation.xlsx_generation", language, None)
-            if not system_message:
-                logging.error(f"Missing 'content_generation.xlsx_generation' in language resources for {language}")
-                return False
+            system_message = get_translation("content_generation.xlsx_generation", language)
                 
         except Exception as e:
             logging.error(f"Failed to load system message from language resources for '{language}': {e}")
@@ -99,7 +96,9 @@ class XlsxGenerator(BaseGenerator):
         # Generate structured content using LLM
         content = self.llm_client.get_json_completion(
             prompt=prompt,
-            system=system_message
+            system_prompt=system_message,
+            max_attempts=3,
+            language=language
         )
         
         if not content or "sheets" not in content:
@@ -146,3 +145,51 @@ class XlsxGenerator(BaseGenerator):
         except Exception as e:
             logging.error(f"Failed to create Excel document {filename}: {e}")
             return False 
+
+    def generate_excel_data(self, file_description: str, industry: str, folder_path: str, language: str, role: Optional[str] = None) -> Dict:
+        """
+        Generate excel file data with the provided parameters.
+        
+        Args:
+            file_description: Description of the file purpose
+            industry: Industry context
+            folder_path: Path of the folder containing the file 
+            language: Language to use
+            role: User role context
+            
+        Returns:
+            Dictionary containing cells data
+        """
+        role_context = f" for a {role}" if role else ""
+        folder_context = f" in the context of {folder_path}" if folder_path else ""
+        
+        # Get system message from translation resources
+        system_message = get_translation("content_generation.xlsx_generation", language)
+        
+        # Format the main prompt with the input parameters
+        prompt_template = get_translation("content_generation.excel_prompt_template", language)
+        prompt = prompt_template.format(
+            file_description=file_description,
+            industry=industry,
+            role_context=role_context,
+            folder_context=folder_context,
+            language=language
+        )
+        
+        # Add style information
+        style_type = get_translation(f"style_type_mapping.xlsx.{language}", language)
+        style_prompt = get_translation("content_generation.excel_style_prompt", language)
+        prompt += style_prompt.format(style_type=style_type)
+        
+        # Request date-appropriate content
+        time_prompt = get_translation("content_generation.excel_time_prompt", language)
+        prompt += time_prompt
+        
+        content = self.llm_client.get_json_completion(
+            prompt=prompt,
+            system_prompt=system_message,
+            max_attempts=3,
+            language=language
+        )
+        
+        return content 

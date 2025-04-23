@@ -1,5 +1,8 @@
 {
   "content_generation": {
+    "excel_prompt_template": "{industry}業界の{file_description}のための現実的なExcelスプレッドシートを生成してください{role_context}{folder_context}。出力は{language}でお願いします。",
+    "excel_style_prompt": "\n\n適切なヘッダー、列、データタイプを含む現実的な{style_type}に焦点を当ててください。",
+    "excel_time_prompt": "\n\n現在の時期に適したコンテンツを生成してください。",
     "xlsx_generation": "Excelスプレッドシートのコンテンツを作成していただきます。以下の構造のJSONオブジェクトを返してください：\n{\n  \"sheets\": [\n    {\n      \"name\": \"シート名\",\n      \"headers\": [\"ヘッダー1\", \"ヘッダー2\", ...],\n      \"data\": [\n        [\"1行目セル1\", \"1行目セル2\", ...],\n        [\"2行目セル1\", \"2行目セル2\", ...]\n      ]\n    }\n  ]\n}"
   },
   "date_formats": {

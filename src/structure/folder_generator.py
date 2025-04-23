@@ -141,14 +141,7 @@ class FolderGenerator:
         end_date_str = end_date.strftime('%Y-%m-%d')
             
         # Use translation resource for date range format
-        date_format_template = get_translation("date_range_format", language, None)
-        
-        # Check if we got back the key itself (which means translation wasn't found)
-        # get_translation returns the key itself if default is None and translation isn't found
-        if date_format_template == "date_range_format":
-            error_msg = f"No localized template found for '{language}' language (date_range_format)"
-            logging.error(error_msg)
-            raise LocalizedTemplateNotFoundError(error_msg)
+        date_format_template = get_translation("date_range_format", language)
         
         # Use the translated template with formatted dates
         return date_format_template.format(start_date=start_date_str, end_date=end_date_str)
@@ -1110,7 +1103,8 @@ class FolderGenerator:
                         logging.info(f"Requesting file structure for {level1_item.name} using LLM")
                         file_structure = self.llm_client.get_json_completion(
                             prompt=prompt,
-                            max_attempts=3
+                            max_attempts=3,
+                            language=language
                         )
                         
                         # Process the file structure
@@ -1280,7 +1274,8 @@ class FolderGenerator:
                             logging.info(f"Requesting file structure for {level1_item.name}/{level2_item.name} using LLM")
                             file_structure = self.llm_client.get_json_completion(
                                 prompt=prompt,
-                                max_attempts=3
+                                max_attempts=3,
+                                language=language
                             )
                             
                             # Process the file structure
@@ -1397,7 +1392,8 @@ class FolderGenerator:
         
         return self.llm_client.get_json_completion(
             prompt=prompt,
-            max_attempts=3
+            max_attempts=3,
+            language=language
         )
     
     def _generate_level2_folders(self, industry: str, l1_folder_name: str, 
@@ -1420,7 +1416,8 @@ class FolderGenerator:
         
         return self.llm_client.get_json_completion(
             prompt=prompt,
-            max_attempts=3
+            max_attempts=3,
+            language=language
         )
     
     def _get_level1_folders_prompt(self, industry: str, language: str, role: Optional[str] = None) -> str:
@@ -1439,19 +1436,13 @@ class FolderGenerator:
             LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
         # Get the translated components from language resources
-        instruction = get_translation("folder_structure_prompt.level1.instruction", language, None)
-        folder_naming = get_translation("folder_structure_prompt.level1.folder_naming", language, None)
-        important_language = get_translation("folder_structure_prompt.level1.important_language", language, None)
-        important_format = get_translation("folder_structure_prompt.level1.important_format", language, None)
+        instruction = get_translation("folder_structure_prompt.level1.instruction", language)
+        folder_naming = get_translation("folder_structure_prompt.level1.folder_naming", language)
+        important_language = get_translation("folder_structure_prompt.level1.important_language", language)
+        important_format = get_translation("folder_structure_prompt.level1.important_format", language)
         
         # Get translated description template
-        folder_description = get_translation("description_templates.folder_description", language, "Clear description of the folder's business purpose")
-        
-        # Check if essential components are missing
-        if not instruction or not folder_naming:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level1.*)"
-            logging.error(error_msg)
-            raise LocalizedTemplateNotFoundError(error_msg)
+        folder_description = get_translation("description_templates.folder_description", language)
         
         # Role placeholder might be formatted differently in localized templates
         # so we'll use the role_text format from the language templates
@@ -1462,7 +1453,7 @@ class FolderGenerator:
         json_template = json_template.format(folder_description=folder_description)
         
         # Get the JSON response format instruction template
-        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language, "Please respond with a JSON structure in the following format:\n\n{json_template}")
+        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language)
 
         # Construct the full prompt
         prompt_parts = [
@@ -1495,21 +1486,15 @@ class FolderGenerator:
             LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
         # Get the translated components from language resources
-        instruction = get_translation("folder_structure_prompt.level2.instruction", language, None)
-        context = get_translation("folder_structure_prompt.level2.context", language, None)
-        folder_instruction = get_translation("folder_structure_prompt.level2.folder_instruction", language, None)
-        folder_naming = get_translation("folder_structure_prompt.level2.folder_naming", language, None)
-        important_language = get_translation("folder_structure_prompt.level2.important_language", language, None)
-        important_format = get_translation("folder_structure_prompt.level2.important_format", language, None)
+        instruction = get_translation("folder_structure_prompt.level2.instruction", language)
+        context = get_translation("folder_structure_prompt.level2.context", language)
+        folder_instruction = get_translation("folder_structure_prompt.level2.folder_instruction", language)
+        folder_naming = get_translation("folder_structure_prompt.level2.folder_naming", language)
+        important_language = get_translation("folder_structure_prompt.level2.important_language", language)
+        important_format = get_translation("folder_structure_prompt.level2.important_format", language)
         
         # Get translated description template
-        folder_description = get_translation("description_templates.folder_description", language, "Clear description of the folder's business purpose")
-        
-        # Check if essential components are missing
-        if not instruction or not folder_instruction:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level2.*)"
-            logging.error(error_msg)
-            raise LocalizedTemplateNotFoundError(error_msg)
+        folder_description = get_translation("description_templates.folder_description", language)
         
         # Role placeholder might be formatted differently in localized templates
         role_text = f" for a {role}" if role else ""
@@ -1519,7 +1504,7 @@ class FolderGenerator:
         json_template = json_template.format(folder_description=folder_description)
         
         # Get the JSON response format instruction template
-        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language, "Respond in the following JSON format:\n\n{json_template}")
+        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language)
         
         # Construct the full prompt
         prompt_parts = [
@@ -1558,7 +1543,8 @@ class FolderGenerator:
         
         return self.llm_client.get_json_completion(
             prompt=prompt,
-            max_attempts=3
+            max_attempts=3,
+            language=language
         )
     
     def _get_level3_folders_prompt(self, industry: str, l2_folder_name: str, 
@@ -1586,21 +1572,15 @@ class FolderGenerator:
         l2_description = l2_folder_data.get("description", "")
         
         # Get the translated components from language resources
-        instruction = get_translation("folder_structure_prompt.level3.instruction", language, None)
-        context = get_translation("folder_structure_prompt.level3.context", language, None)
-        folder_instruction = get_translation("folder_structure_prompt.level3.folder_instruction", language, None)
-        folder_naming = get_translation("folder_structure_prompt.level3.folder_naming", language, None)
-        important_language = get_translation("folder_structure_prompt.level3.important_language", language, None)
-        important_format = get_translation("folder_structure_prompt.level3.important_format", language, None)
+        instruction = get_translation("folder_structure_prompt.level3.instruction", language)
+        context = get_translation("folder_structure_prompt.level3.context", language)
+        folder_instruction = get_translation("folder_structure_prompt.level3.folder_instruction", language)
+        folder_naming = get_translation("folder_structure_prompt.level3.folder_naming", language)
+        important_language = get_translation("folder_structure_prompt.level3.important_language", language)
+        important_format = get_translation("folder_structure_prompt.level3.important_format", language)
         
         # Get translated description template
-        folder_description = get_translation("description_templates.folder_description", language, "Clear description of the folder's business purpose")
-        
-        # Check if essential components are missing
-        if not instruction or not folder_instruction:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3.*)"
-            logging.error(error_msg)
-            raise LocalizedTemplateNotFoundError(error_msg)
+        folder_description = get_translation("description_templates.folder_description", language)
         
         # Role placeholder might be formatted differently in localized templates
         role_text = f" for a {role}" if role else ""
@@ -1610,7 +1590,7 @@ class FolderGenerator:
         json_template = json_template.format(folder_description=folder_description)
         
         # Get the JSON response format instruction template
-        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language, "Respond in the following JSON format:\n\n{json_template}")
+        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language)
         
         # Construct the full prompt
         prompt_parts = [
@@ -1654,7 +1634,8 @@ class FolderGenerator:
         
         return self.llm_client.get_json_completion(
             prompt=prompt,
-            max_attempts=3
+            max_attempts=3,
+            language=language
         )
     
     def _get_level3_files_prompt(self, industry: str, l2_folder_name: str, 
@@ -1681,29 +1662,17 @@ class FolderGenerator:
         """
         l2_description = l2_folder_data.get("description", "")
         
-        # Format folder structure for display in prompt
-        folder_structure = ""
-        if "folders" in l2_folder_data:
-            folders = l2_folder_data["folders"]
-            folder_structure = ", ".join([f'"{name}"' for name in folders.keys()])
-        
         # Get the translated components from language resources
-        instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language, None)
-        context = get_translation("folder_structure_prompt.level3_files_prompt.context", language, None)
-        folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language, None)
-        file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language, None)
-        file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language, None)
-        important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language, None)
-        important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language, None)
+        instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language)
+        context = get_translation("folder_structure_prompt.level3_files_prompt.context", language)
+        folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language)
+        file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language)
+        file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language)
+        important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language)
+        important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language)
         
         # Get translated description template
-        file_description = get_translation("description_templates.file_description", language, "Clear description of the file's purpose")
-        
-        # Check if essential components are missing
-        if not instruction or not file_instruction:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt.*)"
-            logging.error(error_msg)
-            raise LocalizedTemplateNotFoundError(error_msg)
+        file_description = get_translation("description_templates.file_description", language)
         
         # Role placeholder might be formatted differently in localized templates
         role_text = f" for a {role}" if role else ""
@@ -1713,18 +1682,24 @@ class FolderGenerator:
         json_template = json_template.format(file_description=file_description)
 
         # Get the JSON response format instruction template
-        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language, "Respond in the following JSON format:\n\n{json_template}")
+        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language)
         
         # Construct the full prompt
         prompt_parts = [
-            instruction.format(industry=industry, role_text=role_text),
-            context.format(
-                l1_folder_name=l1_folder_name,
-                l1_description=l1_description,
+            instruction.format(
+                industry=industry,
+                role_text=role_text,
                 l2_folder_name=l2_folder_name,
+                l1_folder_name=l1_folder_name
+            ),
+            context.format(
+                l1_description=l1_description,
                 l2_description=l2_description
             ),
-            folder_context.format(folder_structure=folder_structure) if folder_structure else "",
+            folder_context.format(
+                l1_description=l1_description,
+                l2_description=l2_description
+            ),
             file_instruction,
             json_response_format_instruction.format(json_template=json_template),
             file_naming.format(industry=industry),
@@ -1754,13 +1729,7 @@ class FolderGenerator:
             LocalizedTemplateNotFoundError: If no localized template is found for the specified language
         """
         # Get localized prompt template
-        prompt_template = get_translation("folder_structure_prompt.timeseries_files_prompt", language, None)
-        
-        # If no translated template found, raise an exception
-        if not prompt_template:
-            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.timeseries_files_prompt)"
-            logging.error(error_msg)
-            raise LocalizedTemplateNotFoundError(error_msg)
+        prompt_template = get_translation("folder_structure_prompt.timeseries_files_prompt", language)
             
         # Replace placeholders in the template
         role_text = f" for a {role}" if role else ""
@@ -1775,39 +1744,59 @@ class FolderGenerator:
         
         file_structure = self.llm_client.get_json_completion(
             prompt=prompt,
-            max_attempts=3
+            max_attempts=3,
+            language=language
         )
         
+        # Process the file structure
         if not file_structure or "files" not in file_structure:
-            logging.error(f"Failed to get valid file structure for timeseries folder {folder_name}")
+            logging.warning(f"Failed to get valid file structure for {folder_path}")
             return False
             
-        success = True
+        # Handle both list and dict format for files
+        timeseries_files = []
+        if isinstance(file_structure["files"], list):
+            timeseries_files = file_structure["files"]
+        elif isinstance(file_structure["files"], dict):
+            for file_name, file_data in file_structure["files"].items():
+                if isinstance(file_data, dict):
+                    file_data["name"] = file_name
+                    timeseries_files.append(file_data)
         
-        # Create each file
-        for file_info in file_structure["files"]:
-            try:
-                if not isinstance(file_info, dict) or "name" not in file_info:
-                    continue
-                    
-                file_name = file_info["name"]
-                file_description = file_info.get("description", "")
+        logging.info(f"Generated {len(timeseries_files)} files for {folder_path}")
+        
+        # Create the files
+        for file_data in timeseries_files:
+            if not isinstance(file_data, dict) or "name" not in file_data:
+                logging.warning(f"Invalid file data: {file_data}")
+                continue
                 
-                self.content_generator.generate_file(
-                    str(folder_path), file_name, file_description,
-                    industry, language, role, purpose="timeseries"
-                )
-                logging.info(f"Created timeseries file: {folder_path}/{file_name}")
+            file_name = file_data.get("name", "")
+            file_type = file_data.get("type", "")
+            file_description = file_data.get("description", "")
+            
+            # Check limit after extracting file data
+            if self._check_short_mode_limit(self.ITEM_TYPE_FILE):
+                raise ShortModeLimitReached()
                 
-                # Check file limit after successfully creating a file
-                if self._check_short_mode_limit(self.ITEM_TYPE_FILE): 
-                    logging.info(f"Short mode file limit reached after creating {file_name}")
-                    raise ShortModeLimitReached()
-            except Exception as e:
-                logging.error(f"Error creating timeseries file: {e}")
-                success = False
+            # Generate content for the file
+            file_path = folder_path / self.file_manager.sanitize_path(file_name)
+            
+            if self.content_generator.generate_file(
+                str(file_path),
+                file_type,
+                file_description,
+                industry,
+                str(folder_path.relative_to(folder_path.parent.parent)),
+                language,
+                role
+            ):
+                # Successfully generated file
+                self.statistics_tracker.add_file(str(file_path))
+            else:
+                logging.error(f"Failed to generate file {file_name}")
                 
-        return success
+        return True
 
     def _check_short_mode_limit(self, item_type: str) -> bool:
         """
