@@ -748,3 +748,806 @@ class FolderGenerator:
             return True
             
         return False
+
+    # --- Private Helper Methods ---
+    
+    def _generate_level1_folders(self, industry: str, language: str, role: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Generate level 1 folder structure using the LLM client.
+        
+        Args:
+            industry: The industry to generate folders for
+            language: The language to use for generation
+            role: Optional role context
+            
+        Returns:
+            Dictionary containing the level 1 folder structure
+        """
+        try:
+            # Prepare the role context
+            role_text = f" as {role}" if role else ""
+            
+            # Get translations for the prompts
+            folder_naming = get_translation("folder_structure_prompt.level1.folder_naming", language)
+            important_format = get_translation("folder_structure_prompt.level1.important_format", language)
+            important_language = get_translation("folder_structure_prompt.level1.important_language", language)
+            instruction = get_translation("folder_structure_prompt.level1.instruction", language)
+            
+            # Create the prompt 
+            prompt = f"{instruction.format(industry=industry)}\n\n"
+            prompt += f"{folder_naming.format(industry=industry)}\n\n"
+            
+            # Add date range if available
+            if self.date_range_str:
+                date_range_instruction = get_translation(
+                    "json_format_instructions.level1_folders_prompt.date_range_instruction", 
+                    language
+                )
+                prompt += f"{date_range_instruction.format(date_range=self.date_range_str)}\n\n"
+            
+            # Add format instructions
+            prompt += f"{important_format}\n{important_language}"
+            
+            # Get the template for the structure
+            from src.structure.json_templates import JsonTemplates
+            template = JsonTemplates.LEVEL1_FOLDERS_TEMPLATE
+            
+            # Get localized template label
+            template_label = get_translation(
+                "json_format_instructions.json_template_label", 
+                language
+            )
+            
+            # Add JSON template and description template to the prompt
+            folder_description = get_translation("description_templates.folder_description", language) 
+            template = template.format(folder_description=folder_description)
+            prompt += f"\n\n{template_label}\n{template}"
+            
+            # Generate JSON using LLM
+            logging.info(f"Requesting level 1 folder structure using LLM for {industry} in {language}")
+            level1_structure = self.llm_client.get_json_completion(
+                prompt=prompt,
+                max_attempts=3,
+                language=language
+            )
+            
+            if not level1_structure or "folders" not in level1_structure:
+                logging.error("Failed to get valid level 1 structure")
+                # Return empty structure as fallback
+                return {"folders": {}}
+                
+            return level1_structure
+            
+        except Exception as e:
+            logging.error(f"Error generating level 1 folders: {e}")
+            # Return empty structure as fallback
+            return {"folders": {}}
+
+    def _process_folder_structure(self, level1_structure: Dict[str, Any], target_dir: Path, 
+                                 industry: str, language: str, role: Optional[str] = None) -> bool:
+        """
+        Process the complete folder structure including files.
+        
+        Args:
+            level1_structure: Dictionary containing the level 1 folder structure
+            target_dir: Target directory where folders will be created
+            industry: Industry context for content generation
+            language: Language to use for content generation
+            role: Optional role context
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Create Level 1 folders
+            l1_folders = level1_structure.get("folders", {})
+            if not l1_folders:
+                logging.error("No level 1 folders found in structure")
+                return False
+            
+            # Track overall success
+            overall_success = True
+            
+            # Create each Level 1 folder
+            for folder_name, folder_data in l1_folders.items():
+                # Check short mode folder limit
+                if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER):
+                    raise ShortModeLimitReached()
+                
+                # Get folder description
+                folder_description = folder_data.get("description", "")
+                
+                # Create the folder path
+                folder_path = target_dir / self.file_manager.sanitize_path(folder_name)
+                if not self.file_manager.ensure_directory(str(folder_path)):
+                    logging.error(f"Failed to create folder: {folder_name}")
+                    overall_success = False
+                    continue
+                
+                # Add folder to statistics
+                self.statistics_tracker.add_folder(str(folder_path))
+                logging.info(f"Created Level 1 folder: {folder_name}")
+                
+                # Create metadata file
+                metadata = {
+                    "name": folder_name,
+                    "description": folder_description,
+                    "level": 1,
+                    "industry": industry,
+                    "created_at": datetime.now().isoformat()
+                }
+                if role:
+                    metadata["role"] = role
+                
+                metadata_path = folder_path / ".metadata.json"
+                self.file_manager.write_json_file(str(metadata_path), metadata)
+                
+                # Generate Level 2 folders
+                self.statistics_tracker.start_tracking_item(f"level2_folder_generation_{folder_name}")
+                level2_structure = self._generate_level2_folders(
+                    folder_name, 
+                    folder_description, 
+                    industry, 
+                    language, 
+                    role
+                )
+                self.statistics_tracker.end_tracking_item()
+                
+                if not level2_structure or "folders" not in level2_structure:
+                    logging.error(f"Failed to generate valid level 2 folder structure for {folder_name}")
+                    continue
+                
+                # Process Level 2 folders
+                l2_folders = level2_structure.get("folders", {})
+                for l2_folder_name, l2_folder_data in l2_folders.items():
+                    # Check short mode folder limit
+                    if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER):
+                        raise ShortModeLimitReached()
+                    
+                    # Get folder description
+                    l2_folder_description = l2_folder_data.get("description", "")
+                    
+                    # Create the folder path
+                    l2_folder_path = folder_path / self.file_manager.sanitize_path(l2_folder_name)
+                    if not self.file_manager.ensure_directory(str(l2_folder_path)):
+                        logging.error(f"Failed to create folder: {folder_name}/{l2_folder_name}")
+                        continue
+                    
+                    # Add folder to statistics
+                    self.statistics_tracker.add_folder(str(l2_folder_path))
+                    logging.info(f"Created Level 2 folder: {folder_name}/{l2_folder_name}")
+                    
+                    # Create metadata file
+                    l2_metadata = {
+                        "name": l2_folder_name,
+                        "description": l2_folder_description,
+                        "level": 2,
+                        "parent": folder_name,
+                        "created_at": datetime.now().isoformat()
+                    }
+                    
+                    l2_metadata_path = l2_folder_path / ".metadata.json"
+                    self.file_manager.write_json_file(str(l2_metadata_path), l2_metadata)
+                    
+                    # Generate Level 3 folders
+                    self.statistics_tracker.start_tracking_item(f"level3_folder_generation_{l2_folder_name}")
+                    level3_structure = self._generate_level3_folders(
+                        folder_name,
+                        folder_description,
+                        l2_folder_name,
+                        l2_folder_description,
+                        industry,
+                        language,
+                        role
+                    )
+                    self.statistics_tracker.end_tracking_item()
+                    
+                    if not level3_structure or "folders" not in level3_structure:
+                        logging.error(f"Failed to generate valid level 3 folder structure for {folder_name}/{l2_folder_name}")
+                        continue
+                    
+                    # Process Level 3 folders
+                    l3_folders = level3_structure.get("folders", {})
+                    for l3_folder_name, l3_folder_data in l3_folders.items():
+                        # Check short mode folder limit
+                        if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER):
+                            raise ShortModeLimitReached()
+                        
+                        # Get folder description
+                        l3_folder_description = l3_folder_data.get("description", "")
+                        
+                        # Create the folder path
+                        l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
+                        if not self.file_manager.ensure_directory(str(l3_folder_path)):
+                            logging.error(f"Failed to create folder: {folder_name}/{l2_folder_name}/{l3_folder_name}")
+                            continue
+                        
+                        # Add folder to statistics
+                        self.statistics_tracker.add_folder(str(l3_folder_path))
+                        logging.info(f"Created Level 3 folder: {folder_name}/{l2_folder_name}/{l3_folder_name}")
+                        
+                        # Create metadata file
+                        l3_metadata = {
+                            "name": l3_folder_name,
+                            "description": l3_folder_description,
+                            "level": 3,
+                            "parent": l2_folder_name,
+                            "created_at": datetime.now().isoformat()
+                        }
+                        
+                        l3_metadata_path = l3_folder_path / ".metadata.json"
+                        self.file_manager.write_json_file(str(l3_metadata_path), l3_metadata)
+                        
+                        # Generate files in Level 3 folders
+                        self._generate_files_in_folder(
+                            l3_folder_path,
+                            f"{folder_name}/{l2_folder_name}/{l3_folder_name}",
+                            l3_folder_description,
+                            industry,
+                            language,
+                            role
+                        )
+                    
+                    # Also generate files in Level 2 folders (some files may belong directly in L2)
+                    self._generate_files_in_folder(
+                        l2_folder_path,
+                        f"{folder_name}/{l2_folder_name}",
+                        l2_folder_description,
+                        industry,
+                        language,
+                        role
+                    )
+            
+            return overall_success
+        except ShortModeLimitReached:
+            # This is expected in short mode, so it's not a failure
+            logging.info("Stopped processing folder structure due to short mode limit")
+            return True
+        except Exception as e:
+            logging.exception(f"Error processing folder structure: {e}")
+            return False
+    
+    def _process_structure_only(self, level1_structure: Dict[str, Any], target_dir: Path, 
+                               industry: str, language: str, role: Optional[str] = None) -> bool:
+        """
+        Process the folder structure only (no files).
+        
+        Args:
+            level1_structure: Dictionary containing the level 1 folder structure
+            target_dir: Target directory where folders will be created
+            industry: Industry context
+            language: Language to use for generation
+            role: Optional role context
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Create Level 1 folders
+            l1_folders = level1_structure.get("folders", {})
+            if not l1_folders:
+                logging.error("No level 1 folders found in structure")
+                return False
+            
+            # Track overall success
+            overall_success = True
+            
+            # Create each Level 1 folder
+            for folder_name, folder_data in l1_folders.items():
+                # Check short mode folder limit
+                if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER):
+                    raise ShortModeLimitReached()
+                
+                # Get folder description
+                folder_description = folder_data.get("description", "")
+                
+                # Create the folder path
+                folder_path = target_dir / self.file_manager.sanitize_path(folder_name)
+                if not self.file_manager.ensure_directory(str(folder_path)):
+                    logging.error(f"Failed to create folder: {folder_name}")
+                    overall_success = False
+                    continue
+                
+                # Add folder to statistics
+                self.statistics_tracker.add_folder(str(folder_path))
+                logging.info(f"Created Level 1 folder: {folder_name}")
+                
+                # Create metadata file
+                metadata = {
+                    "name": folder_name,
+                    "description": folder_description,
+                    "level": 1,
+                    "industry": industry,
+                    "created_at": datetime.now().isoformat()
+                }
+                if role:
+                    metadata["role"] = role
+                
+                metadata_path = folder_path / ".metadata.json"
+                self.file_manager.write_json_file(str(metadata_path), metadata)
+                
+                # Generate Level 2 folders
+                self.statistics_tracker.start_tracking_item(f"level2_folder_generation_{folder_name}")
+                level2_structure = self._generate_level2_folders(
+                    folder_name, 
+                    folder_description, 
+                    industry, 
+                    language, 
+                    role
+                )
+                self.statistics_tracker.end_tracking_item()
+                
+                if not level2_structure or "folders" not in level2_structure:
+                    logging.error(f"Failed to generate valid level 2 folder structure for {folder_name}")
+                    continue
+                
+                # Process Level 2 folders
+                l2_folders = level2_structure.get("folders", {})
+                for l2_folder_name, l2_folder_data in l2_folders.items():
+                    # Check short mode folder limit
+                    if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER):
+                        raise ShortModeLimitReached()
+                    
+                    # Get folder description
+                    l2_folder_description = l2_folder_data.get("description", "")
+                    
+                    # Create the folder path
+                    l2_folder_path = folder_path / self.file_manager.sanitize_path(l2_folder_name)
+                    if not self.file_manager.ensure_directory(str(l2_folder_path)):
+                        logging.error(f"Failed to create folder: {folder_name}/{l2_folder_name}")
+                        continue
+                    
+                    # Add folder to statistics
+                    self.statistics_tracker.add_folder(str(l2_folder_path))
+                    logging.info(f"Created Level 2 folder: {folder_name}/{l2_folder_name}")
+                    
+                    # Create metadata file
+                    l2_metadata = {
+                        "name": l2_folder_name,
+                        "description": l2_folder_description,
+                        "level": 2,
+                        "parent": folder_name,
+                        "created_at": datetime.now().isoformat()
+                    }
+                    
+                    l2_metadata_path = l2_folder_path / ".metadata.json"
+                    self.file_manager.write_json_file(str(l2_metadata_path), l2_metadata)
+                    
+                    # Generate Level 3 folders
+                    self.statistics_tracker.start_tracking_item(f"level3_folder_generation_{l2_folder_name}")
+                    level3_structure = self._generate_level3_folders(
+                        folder_name,
+                        folder_description,
+                        l2_folder_name,
+                        l2_folder_description,
+                        industry,
+                        language,
+                        role
+                    )
+                    self.statistics_tracker.end_tracking_item()
+                    
+                    if not level3_structure or "folders" not in level3_structure:
+                        logging.error(f"Failed to generate valid level 3 folder structure for {folder_name}/{l2_folder_name}")
+                        continue
+                    
+                    # Process Level 3 folders
+                    l3_folders = level3_structure.get("folders", {})
+                    for l3_folder_name, l3_folder_data in l3_folders.items():
+                        # Check short mode folder limit
+                        if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER):
+                            raise ShortModeLimitReached()
+                        
+                        # Get folder description
+                        l3_folder_description = l3_folder_data.get("description", "")
+                        
+                        # Create the folder path
+                        l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
+                        if not self.file_manager.ensure_directory(str(l3_folder_path)):
+                            logging.error(f"Failed to create folder: {folder_name}/{l2_folder_name}/{l3_folder_name}")
+                            continue
+                        
+                        # Add folder to statistics
+                        self.statistics_tracker.add_folder(str(l3_folder_path))
+                        logging.info(f"Created Level 3 folder: {folder_name}/{l2_folder_name}/{l3_folder_name}")
+                        
+                        # Create metadata file
+                        l3_metadata = {
+                            "name": l3_folder_name,
+                            "description": l3_folder_description,
+                            "level": 3,
+                            "parent": l2_folder_name,
+                            "created_at": datetime.now().isoformat()
+                        }
+                        
+                        l3_metadata_path = l3_folder_path / ".metadata.json"
+                        self.file_manager.write_json_file(str(l3_metadata_path), l3_metadata)
+            
+            return overall_success
+        except ShortModeLimitReached:
+            # This is expected in short mode, so it's not a failure
+            logging.info("Stopped processing folder structure due to short mode limit")
+            return True
+        except Exception as e:
+            logging.exception(f"Error processing folder structure: {e}")
+            return False
+    
+    def _generate_files_in_folder(self, folder_path: Path, folder_path_str: str, 
+                                folder_description: str, industry: str, language: str,
+                                role: Optional[str] = None) -> bool:
+        """
+        Generate files in a folder.
+        
+        Args:
+            folder_path: Path to the folder
+            folder_path_str: String representation of the folder path for logging
+            folder_description: Description of the folder
+            industry: Industry context
+            language: Language to use for generation
+            role: Optional role context
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Generate file structure for the folder
+            file_structure = self._generate_files_structure(
+                folder_path_str,
+                folder_description,
+                industry,
+                language,
+                role
+            )
+            
+            if not file_structure or "files" not in file_structure:
+                logging.error(f"Failed to generate valid file structure for {folder_path_str}")
+                return False
+            
+            # Process files
+            files = file_structure.get("files", [])
+            for file_data in files:
+                # Check short mode file limit
+                if self._check_short_mode_limit(self.ITEM_TYPE_FILE):
+                    raise ShortModeLimitReached()
+                
+                if not file_data or "name" not in file_data:
+                    continue
+                
+                file_name = file_data["name"]
+                file_description = file_data.get("description", "")
+                
+                # Get file type
+                file_type = file_data.get("type", "")
+                if not file_type and "." in file_name:
+                    file_type = file_name.split(".")[-1]
+                
+                # Create file
+                file_path = folder_path / self.file_manager.sanitize_path(file_name)
+                
+                # Generate content based on file type
+                success = self.content_generator.generate_file_content(
+                    str(file_path),
+                    file_type,
+                    file_description,
+                    industry,
+                    folder_path_str,
+                    language,
+                    role
+                )
+                
+                if success:
+                    self.statistics_tracker.add_file(str(file_path))
+                    logging.info(f"Created file: {folder_path_str}/{file_name}")
+                else:
+                    logging.error(f"Failed to create file: {folder_path_str}/{file_name}")
+            
+            return True
+        except ShortModeLimitReached:
+            # This is expected in short mode, so it's not a failure
+            raise
+        except Exception as e:
+            logging.exception(f"Error generating files in folder {folder_path_str}: {e}")
+            return False
+            
+    def _generate_level2_folders(self, l1_folder_name: str, l1_description: str, 
+                               industry: str, language: str, role: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Generate level 2 folder structure using the LLM client.
+        
+        Args:
+            l1_folder_name: Level 1 folder name
+            l1_description: Level 1 folder description
+            industry: Industry context
+            language: Language to use for generation
+            role: Optional role context
+            
+        Returns:
+            Dictionary containing the level 2 folder structure
+        """
+        try:
+            # Prepare the role context
+            role_text = f" as {role}" if role else ""
+            
+            # Get translations for the prompts
+            folder_naming = get_translation("folder_structure_prompt.level2.folder_naming", language)
+            folder_instruction = get_translation("folder_structure_prompt.level2.folder_instruction", language)
+            important_format = get_translation("folder_structure_prompt.level2.important_format", language)
+            important_language = get_translation("folder_structure_prompt.level2.important_language", language)
+            instruction = get_translation("folder_structure_prompt.level2.instruction", language)
+            context = get_translation("folder_structure_prompt.level2.context", language)
+            
+            # Create the prompt 
+            prompt = f"{instruction.format(industry=industry, role_text=role_text, l1_folder_name=l1_folder_name)}\n\n"
+            prompt += f"{context.format(l1_description=l1_description)}\n\n"
+            prompt += f"{folder_instruction}\n\n"
+            prompt += f"{folder_naming.format(industry=industry)}\n\n"
+            
+            # Add date range if available
+            if self.date_range_str:
+                prompt += f"{self.date_range_str}\n\n"
+            
+            # Add format instructions
+            prompt += f"{important_format}\n{important_language}"
+            
+            # Get the template for the structure
+            from src.structure.json_templates import JsonTemplates
+            template = JsonTemplates.LEVEL2_FOLDERS_TEMPLATE
+            
+            # Get localized template label
+            template_label = get_translation(
+                "json_format_instructions.json_template_label", 
+                language
+            )
+            
+            # Add JSON template and description template to the prompt
+            folder_description = get_translation("description_templates.folder_description", language) 
+            template = template.format(folder_description=folder_description)
+            prompt += f"\n\n{template_label}\n{template}"
+            
+            # Generate JSON using LLM
+            logging.info(f"Requesting level 2 folder structure using LLM for {l1_folder_name} in {language}")
+            level2_structure = self.llm_client.get_json_completion(
+                prompt=prompt,
+                max_attempts=3,
+                language=language
+            )
+            
+            if not level2_structure or "folders" not in level2_structure:
+                logging.error(f"Failed to get valid level 2 structure for {l1_folder_name}")
+                # Return empty structure as fallback
+                return {"folders": {}}
+                
+            return level2_structure
+            
+        except Exception as e:
+            logging.error(f"Error generating level 2 folders for {l1_folder_name}: {e}")
+            # Return empty structure as fallback
+            return {"folders": {}}
+    
+    def _generate_level3_folders(self, l1_folder_name: str, l1_description: str,
+                               l2_folder_name: str, l2_description: str,
+                               industry: str, language: str, role: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Generate level 3 folder structure using the LLM client.
+        
+        Args:
+            l1_folder_name: Level 1 folder name
+            l1_description: Level 1 folder description
+            l2_folder_name: Level 2 folder name
+            l2_description: Level 2 folder description
+            industry: Industry context
+            language: Language to use for generation
+            role: Optional role context
+            
+        Returns:
+            Dictionary containing the level 3 folder structure
+        """
+        try:
+            # Prepare the role context
+            role_text = f" as {role}" if role else ""
+            
+            # Get translations for the prompts
+            folder_naming = get_translation("folder_structure_prompt.level3.folder_naming", language)
+            folder_instruction = get_translation("folder_structure_prompt.level3.folder_instruction", language)
+            important_format = get_translation("folder_structure_prompt.level3.important_format", language)
+            important_language = get_translation("folder_structure_prompt.level3.important_language", language)
+            instruction = get_translation("folder_structure_prompt.level3.instruction", language)
+            context = get_translation("folder_structure_prompt.level3.context", language)
+            
+            # Create the prompt 
+            prompt = f"{instruction.format(industry=industry, role_text=role_text)}\n\n"
+            prompt += f"{context.format(l1_folder_name=l1_folder_name, l1_description=l1_description, l2_folder_name=l2_folder_name, l2_description=l2_description)}\n\n"
+            prompt += f"{folder_instruction}\n\n"
+            prompt += f"{folder_naming.format(industry=industry)}\n\n"
+            
+            # Add date range if available
+            if self.date_range_str:
+                prompt += f"{self.date_range_str}\n\n"
+            
+            # Add format instructions
+            prompt += f"{important_format}\n{important_language}"
+            
+            # Get the template for the structure
+            from src.structure.json_templates import JsonTemplates
+            template = JsonTemplates.LEVEL3_FOLDERS_TEMPLATE
+            
+            # Get localized template label
+            template_label = get_translation(
+                "json_format_instructions.json_template_label", 
+                language
+            )
+            
+            # Add JSON template and description template to the prompt
+            folder_description = get_translation("description_templates.folder_description", language) 
+            template = template.format(folder_description=folder_description)
+            prompt += f"\n\n{template_label}\n{template}"
+            
+            # Generate JSON using LLM
+            logging.info(f"Requesting level 3 folder structure using LLM for {l2_folder_name} in {language}")
+            level3_structure = self.llm_client.get_json_completion(
+                prompt=prompt,
+                max_attempts=3,
+                language=language
+            )
+            
+            if not level3_structure or "folders" not in level3_structure:
+                logging.error(f"Failed to get valid level 3 structure for {l2_folder_name}")
+                # Return empty structure as fallback
+                return {"folders": {}}
+                
+            return level3_structure
+            
+        except Exception as e:
+            logging.error(f"Error generating level 3 folders for {l2_folder_name}: {e}")
+            # Return empty structure as fallback
+            return {"folders": {}}
+    
+    def _generate_files_structure(self, folder_path: str, folder_description: str,
+                                industry: str, language: str, role: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Generate file structure for a folder using the LLM client.
+        
+        Args:
+            folder_path: Path to the folder
+            folder_description: Description of the folder
+            industry: Industry context
+            language: Language to use for generation
+            role: Optional role context
+            
+        Returns:
+            Dictionary containing the file structure
+        """
+        try:
+            # Prepare the role context
+            role_text = f" as {role}" if role else ""
+            
+            # Get translations for the prompts 
+            file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language)
+            file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language)
+            important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language)
+            important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language)
+            instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language)
+            
+            # Create the prompt 
+            prompt = f"{instruction.format(industry=industry, role_text=role_text)}\n\n"
+            prompt += f"Folder path: {folder_path}\n"
+            prompt += f"Folder description: {folder_description}\n\n"
+            prompt += f"{file_instruction}\n\n"
+            prompt += f"{file_naming.format(industry=industry)}\n\n"
+            
+            # Add date range if available
+            if self.date_range_str:
+                prompt += f"{self.date_range_str}\n\n"
+            
+            # Add format instructions
+            prompt += f"{important_format}\n{important_language}"
+            
+            # Get the template for the structure
+            from src.structure.json_templates import JsonTemplates
+            template = JsonTemplates.LEVEL3_FILES_TEMPLATE
+            
+            # Get localized template label
+            template_label = get_translation(
+                "json_format_instructions.json_template_label", 
+                language
+            )
+            
+            # Add JSON template and description template to the prompt
+            file_description = get_translation("description_templates.file_description", language) 
+            template = template.format(file_description=file_description)
+            prompt += f"\n\n{template_label}\n{template}"
+            
+            # Generate JSON using LLM
+            logging.info(f"Requesting file structure using LLM for {folder_path} in {language}")
+            file_structure = self.llm_client.get_json_completion(
+                prompt=prompt,
+                max_attempts=3,
+                language=language
+            )
+            
+            if not file_structure or "files" not in file_structure:
+                logging.error(f"Failed to get valid file structure for {folder_path}")
+                # Return empty structure as fallback
+                return {"files": []}
+                
+            return file_structure
+            
+        except Exception as e:
+            logging.error(f"Error generating files for {folder_path}: {e}")
+            # Return empty structure as fallback
+            return {"files": []}
+
+    def _regenerate_files(self, target_dir: Path, industry: str, language: str, role: Optional[str] = None) -> bool:
+        """
+        Regenerate all files in the folder structure without modifying folders.
+        
+        Args:
+            target_dir: Target directory containing the folder structure
+            industry: Industry context for content generation
+            language: Language to use for content generation
+            role: Optional role context
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Track overall success
+            overall_success = True
+            
+            # Get all folders in the structure
+            all_folders = [f for f in target_dir.glob("**/*") if f.is_dir() and not f.name.startswith('.')]
+            
+            # Add the root directory too
+            all_folders.append(target_dir)
+            
+            # Sort folders by level (shortest path first for deterministic processing)
+            all_folders.sort(key=lambda x: len(str(x)))
+            
+            logging.info(f"Found {len(all_folders)} folders to process for file generation")
+            
+            # Process each folder
+            for folder_path in all_folders:
+                # Read metadata if available
+                metadata_path = folder_path / ".metadata.json"
+                folder_description = ""
+                
+                if metadata_path.exists():
+                    metadata = self.file_manager.read_json_file(str(metadata_path))
+                    if metadata:
+                        folder_description = metadata.get("description", "")
+                
+                # Get folder path string for context
+                try:
+                    rel_path = folder_path.relative_to(target_dir)
+                    folder_path_str = str(rel_path)
+                except ValueError:
+                    # This is the root folder
+                    folder_path_str = ""
+                
+                # Skip root if it's empty (meaning we have no context)
+                if not folder_path_str and not folder_description:
+                    continue
+                
+                # Use folder name as fallback description
+                if not folder_description:
+                    folder_description = folder_path.name.replace("_", " ").replace("-", " ")
+                
+                # Generate files for this folder
+                logging.info(f"Generating files for folder: {folder_path_str or 'root'}")
+                
+                self._generate_files_in_folder(
+                    folder_path,
+                    folder_path_str or "root",
+                    folder_description,
+                    industry,
+                    language,
+                    role
+                )
+            
+            return overall_success
+        except ShortModeLimitReached:
+            # This is expected in short mode, so it's not a failure
+            logging.info("Stopped regenerating files due to short mode limit")
+            return True
+        except Exception as e:
+            logging.exception(f"Error regenerating files: {e}")
+            return False
