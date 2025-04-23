@@ -60,6 +60,7 @@
     "response_format": "Geben Sie nur das JSON zurück, keine zusätzliche Erklärung ist nötig."
   },
   "folder_structure_prompt": {
+    "folder_metadata_prompt": "Generieren Sie Metadaten für einen Ordner in der Branche {industry}.\n\nOrdnerinformationen:\n- Pfad: {folder_path}\n- Beschreibung: {folder_description}\n\nBerücksichtigen Sie den Zweck und Kontext des Ordners bei der Erstellung geeigneter Metadaten.\nWenn ein Datumsbereich relevant ist ({date_range}), integrieren Sie Daten entsprechend in den Metadaten.\n\nAntworten Sie mit einem einzelnen JSON-Objekt, das der folgenden Vorlagenstruktur für Ordnermetadaten mit Dateivorschlägen entspricht.",
     "level1": {
       "folder_naming": "Bitte erstellen Sie konkrete Ordnernamen für die Branche {industry} und fügen Sie detaillierte Beschreibungen für jeden Ordner hinzu.",
       "important_format": "Geben Sie nur das JSON zurück, keine zusätzliche Erklärung ist nötig.",
@@ -82,8 +83,6 @@
       "important_language": "Alle Ordnernamen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.",
       "instruction": "Erstellen Sie eine Ordnerstruktur der dritten Ebene für die Branche {industry}{role_text}."
     },
-    "single_file_metadata": "Generieren Sie Metadaten für eine einzelne Datei, die für einen Ordner in der Branche {industry} geeignet wäre.\n\nOrdnerinformationen:\n- Pfad: {folder_path}\n- Beschreibung: {folder_description}\n\nBerücksichtigen Sie den Zweck und Kontext des Ordners bei der Erstellung einer geeigneten Datei.\nWenn ein Datumsbereich relevant ist ({date_range}), integrieren Sie Daten entsprechend im Dateinamen.\n\nAntworten Sie mit einem einzelnen JSON-Objekt, das der folgenden Vorlagenstruktur für Dateimetadaten entspricht.",
-    "folder_metadata_prompt": "Generieren Sie Metadaten für einen Ordner in der Branche {industry}.\n\nOrdnerinformationen:\n- Pfad: {folder_path}\n- Beschreibung: {folder_description}\n\nBerücksichtigen Sie den Zweck und Kontext des Ordners bei der Erstellung geeigneter Metadaten.\nWenn ein Datumsbereich relevant ist ({date_range}), integrieren Sie Daten entsprechend in den Metadaten.\n\nAntworten Sie mit einem einzelnen JSON-Objekt, das der folgenden Vorlagenstruktur für Ordnermetadaten mit Dateivorschlägen entspricht.",
     "level3_files_prompt": {
       "context": "Ordner der ersten Ebene: {l1_folder_name} - {l1_description}\nOrdner der zweiten Ebene: {l2_folder_name} - {l2_description}",
       "file_instruction": "Bitte erstellen Sie geeignete Dateien, die logischerweise direkt in diesen Ordner der zweiten Ebene gehören würden. Dies sind Dateien direkt im Ordner der zweiten Ebene, nicht in seinen Unterordnern.",
@@ -102,6 +101,7 @@
       "important_note": "Geben Sie NUR Ordner zurück, keine Dateien. Dateien werden in einem separaten Schritt erstellt.",
       "instruction": "Erstellen Sie eine Ordnerstruktur der dritten Ebene für die Branche {industry}{role_text}."
     },
+    "single_file_metadata": "Generieren Sie Metadaten für eine einzelne Datei, die für einen Ordner in der Branche {industry} geeignet wäre.\n\nOrdnerinformationen:\n- Pfad: {folder_path}\n- Beschreibung: {folder_description}\n\nBerücksichtigen Sie den Zweck und Kontext des Ordners bei der Erstellung einer geeigneten Datei.\nWenn ein Datumsbereich relevant ist ({date_range}), integrieren Sie Daten entsprechend im Dateinamen.\n\nAntworten Sie mit einem einzelnen JSON-Objekt, das der folgenden Vorlagenstruktur für Dateimetadaten entspricht.",
     "system": "Sie sind ein KI-Assistent, der Ordnerstrukturen für Unternehmen erstellt. Geben Sie nur gültige JSON-Daten zurück, ohne zusätzlichen Text oder Erklärungen. Umhüllen Sie die Antwort nicht mit JSON- oder Code-Blöcken."
   },
   "json_fix_prompts": {

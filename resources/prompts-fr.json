@@ -38,6 +38,7 @@
     "response_format": "Retournez uniquement le JSON, aucune explication supplémentaire n'est nécessaire."
   },
   "folder_structure_prompt": {
+    "folder_metadata_prompt": "Générez des métadonnées pour un dossier dans l'industrie {industry}.\n\nInformations sur le dossier :\n- Chemin : {folder_path}\n- Description : {folder_description}\n\nTenez compte de l'objectif et du contexte du dossier lors de la création de métadonnées appropriées.\nSi une plage de dates est pertinente ({date_range}), incorporez les dates de manière appropriée dans les métadonnées.\n\nRépondez avec un seul objet JSON correspondant à la structure de modèle suivante pour les métadonnées de dossier avec des suggestions de fichiers.",
     "level1": {
       "folder_naming": "Créez des noms de dossiers spécifiques et appropriés pour l'industrie {industry}. Chaque dossier doit avoir une description détaillée expliquant son objectif commercial.",
       "important_format": "Retournez UNIQUEMENT l'objet JSON sans texte supplémentaire, remarques ou explications avant ou après. N'encadrez pas le JSON dans des blocs de code. N'incluez pas de phrases comme 'Voici le JSON' ou 'J'espère que cela vous aide'.",
@@ -60,8 +61,6 @@
       "important_language": "Tous les noms de dossiers doivent être en français. N'utilisez pas de noms de dossiers dans d'autres langues.",
       "instruction": "Créez une structure de dossiers de Niveau 3 pour l'industrie {industry}{role_text}."
     },
-    "single_file_metadata": "Générez des métadonnées pour un fichier unique qui conviendrait à un dossier dans l'industrie {industry}.\n\nInformations sur le dossier :\n- Chemin : {folder_path}\n- Description : {folder_description}\n\nTenez compte de l'objectif et du contexte du dossier lors de la création d'un fichier approprié.\nSi une plage de dates est pertinente ({date_range}), incorporez les dates de manière appropriée dans le nom du fichier.\n\nRépondez avec un seul objet JSON correspondant à la structure de modèle suivante pour les métadonnées de fichier.",
-    "folder_metadata_prompt": "Générez des métadonnées pour un dossier dans l'industrie {industry}.\n\nInformations sur le dossier :\n- Chemin : {folder_path}\n- Description : {folder_description}\n\nTenez compte de l'objectif et du contexte du dossier lors de la création de métadonnées appropriées.\nSi une plage de dates est pertinente ({date_range}), incorporez les dates de manière appropriée dans les métadonnées.\n\nRépondez avec un seul objet JSON correspondant à la structure de modèle suivante pour les métadonnées de dossier avec des suggestions de fichiers.",
     "level3_files_prompt": {
       "context": "Dossier de Niveau 1 : {l1_folder_name} - {l1_description}\nDossier de Niveau 2 : {l2_folder_name} - {l2_description}",
       "file_instruction": "Veuillez créer des fichiers appropriés qui appartiendraient logiquement à ce dossier de Niveau 2. Ce sont des fichiers directement dans le dossier de Niveau 2, pas dans ses sous-dossiers.",
@@ -80,6 +79,7 @@
       "important_note": "Retournez UNIQUEMENT des dossiers, pas de fichiers. Les fichiers seront générés dans une étape séparée.",
       "instruction": "Créez une structure de dossiers de Niveau 3 pour l'industrie {industry}{role_text}."
     },
+    "single_file_metadata": "Générez des métadonnées pour un fichier unique qui conviendrait à un dossier dans l'industrie {industry}.\n\nInformations sur le dossier :\n- Chemin : {folder_path}\n- Description : {folder_description}\n\nTenez compte de l'objectif et du contexte du dossier lors de la création d'un fichier approprié.\nSi une plage de dates est pertinente ({date_range}), incorporez les dates de manière appropriée dans le nom du fichier.\n\nRépondez avec un seul objet JSON correspondant à la structure de modèle suivante pour les métadonnées de fichier.",
     "system": "Vous êtes un assistant IA spécialisé dans la création de structures de dossiers bien organisées pour les entreprises. Tous les noms de dossiers et de fichiers doivent être en français. Vous devez répondre UNIQUEMENT avec des données JSON valides sans aucun autre texte avant ou après. N'incluez pas d'explications, de remarques ou de messages entourant le JSON. N'encadrez pas le JSON dans des blocs de code ou du formatage markdown."
   },
   "json_fix_prompts": {

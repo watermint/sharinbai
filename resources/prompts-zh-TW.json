@@ -38,6 +38,7 @@
     "response_format": "只返回JSON物件，不要包含額外說明或文字。"
   },
   "folder_structure_prompt": {
+    "folder_metadata_prompt": "為{industry}產業的資料夾產生詮釋資料。\n\n資料夾資訊：\n- 路徑：{folder_path}\n- 說明：{folder_description}\n\n建立適當詮釋資料時，請考慮資料夾的目的與上下文。\n如果日期範圍相關（{date_range}），請在詮釋資料中適當地包含日期。\n\n請以單一JSON物件回應，符合以下資料夾詮釋資料與檔案建議的模板結構。",
     "level1": {
       "folder_naming": "請為{industry}產業建立具體的中文資料夾名稱，並為每個資料夾添加詳細說明。",
       "important_format": "只返回JSON物件，不要包含額外說明或文字。不要用JSON或程式碼區塊包裹。",
@@ -60,8 +61,6 @@
       "important_language": "全部用中文。不要用其他語言。",
       "instruction": "請為{industry}產業{role_text}建立第三層資料夾結構。"
     },
-    "single_file_metadata": "為{industry}產業的資料夾中適合的單一檔案產生詮釋資料。\n\n資料夾資訊：\n- 路徑：{folder_path}\n- 說明：{folder_description}\n\n建立適當檔案時，請考慮資料夾的目的與上下文。\n如果日期範圍相關（{date_range}），請在檔案名稱中適當地包含日期。\n\n請以單一JSON物件回應，符合以下檔案詮釋資料的模板結構。",
-    "folder_metadata_prompt": "為{industry}產業的資料夾產生詮釋資料。\n\n資料夾資訊：\n- 路徑：{folder_path}\n- 說明：{folder_description}\n\n建立適當詮釋資料時，請考慮資料夾的目的與上下文。\n如果日期範圍相關（{date_range}），請在詮釋資料中適當地包含日期。\n\n請以單一JSON物件回應，符合以下資料夾詮釋資料與檔案建議的模板結構。",
     "level3_files_prompt": {
       "context": "第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}",
       "file_instruction": "請為該第二層資料夾（非子資料夾）直接建立合適的檔案。",
@@ -80,6 +79,7 @@
       "important_note": "只返回資料夾，不要返回檔案。檔案將在單獨的步驟中生成。",
       "instruction": "請為{industry}產業{role_text}的第三層資料夾結構。"
     },
+    "single_file_metadata": "為{industry}產業的資料夾中適合的單一檔案產生詮釋資料。\n\n資料夾資訊：\n- 路徑：{folder_path}\n- 說明：{folder_description}\n\n建立適當檔案時，請考慮資料夾的目的與上下文。\n如果日期範圍相關（{date_range}），請在檔案名稱中適當地包含日期。\n\n請以單一JSON物件回應，符合以下檔案詮釋資料的模板結構。",
     "system": "您是為企業建立資料夾結構的AI助理。所有資料夾名稱和檔案名稱請用中文。只返回有效JSON資料，不要包含額外文字或說明。不要用JSON或程式碼區塊包裹。"
   },
   "json_fix_prompts": {

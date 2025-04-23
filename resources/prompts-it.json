@@ -60,6 +60,7 @@
     "response_format": "Restituisci solo il JSON, non è necessaria alcuna spiegazione aggiuntiva."
   },
   "folder_structure_prompt": {
+    "folder_metadata_prompt": "Genera metadati per una cartella nel settore {industry}.\n\nInformazioni sulla cartella:\n- Percorso: {folder_path}\n- Descrizione: {folder_description}\n\nConsidera lo scopo e il contesto della cartella quando crei metadati appropriati.\nSe un intervallo di date è rilevante ({date_range}), incorpora le date in modo appropriato nei metadati.\n\nRispondi con un singolo oggetto JSON che corrisponda alla seguente struttura template per i metadati di una cartella con suggerimenti di file.",
     "level1": {
       "folder_naming": "Si prega di creare nomi di cartelle concreti per il settore {industry} e aggiungere descrizioni dettagliate per ogni cartella.",
       "important_format": "Restituisci SOLO l'oggetto JSON senza testo aggiuntivo, note o spiegazioni prima o dopo. Non racchiudere il JSON in blocchi di codice. Non includere frasi come 'Ecco il JSON' o 'Spero che questo aiuti'.",
@@ -82,8 +83,6 @@
       "important_language": "Tutti i nomi delle cartelle devono essere in italiano. Non utilizzare nomi di cartelle in altre lingue.",
       "instruction": "Si prega di creare una struttura di cartelle di terzo livello per il settore {industry}{role_text}."
     },
-    "single_file_metadata": "Genera metadati per un singolo file che sarebbe appropriato per una cartella nel settore {industry}.\n\nInformazioni sulla cartella:\n- Percorso: {folder_path}\n- Descrizione: {folder_description}\n\nConsidera lo scopo e il contesto della cartella quando crei un file appropriato.\nSe un intervallo di date è rilevante ({date_range}), incorpora le date in modo appropriato nel nome del file.\n\nRispondi con un singolo oggetto JSON che corrisponda alla seguente struttura template per i metadati di un file.",
-    "folder_metadata_prompt": "Genera metadati per una cartella nel settore {industry}.\n\nInformazioni sulla cartella:\n- Percorso: {folder_path}\n- Descrizione: {folder_description}\n\nConsidera lo scopo e il contesto della cartella quando crei metadati appropriati.\nSe un intervallo di date è rilevante ({date_range}), incorpora le date in modo appropriato nei metadati.\n\nRispondi con un singolo oggetto JSON che corrisponda alla seguente struttura template per i metadati di una cartella con suggerimenti di file.",
     "level3_files_prompt": {
       "context": "Cartella di primo livello: {l1_folder_name} - {l1_description}\nCartella di secondo livello: {l2_folder_name} - {l2_description}",
       "file_instruction": "Si prega di creare file appropriati che logicamente apparterrebbero a questa cartella di secondo livello. Questi sono file direttamente nella cartella di secondo livello, non nelle sue sottocartelle.",
@@ -102,6 +101,7 @@
       "important_note": "Restituisci SOLO cartelle, non file. I file saranno generati in una fase separata.",
       "instruction": "Si prega di creare una struttura di cartelle di terzo livello per il settore {industry}{role_text}."
     },
+    "single_file_metadata": "Genera metadati per un singolo file che sarebbe appropriato per una cartella nel settore {industry}.\n\nInformazioni sulla cartella:\n- Percorso: {folder_path}\n- Descrizione: {folder_description}\n\nConsidera lo scopo e il contesto della cartella quando crei un file appropriato.\nSe un intervallo di date è rilevante ({date_range}), incorpora le date in modo appropriato nel nome del file.\n\nRispondi con un singolo oggetto JSON che corrisponda alla seguente struttura template per i metadati di un file.",
     "system": "Sei un assistente AI che crea strutture di cartelle per le aziende. Restituisci solo dati JSON validi, senza testo o spiegazioni aggiuntive. Non avvolgere la risposta con blocchi JSON o di codice."
   },
   "json_fix_prompts": {

@@ -38,6 +38,7 @@
     "response_format": "JSON만 반환하세요. 추가 설명은 필요하지 않습니다."
   },
   "folder_structure_prompt": {
+    "folder_metadata_prompt": "{industry} 업계의 폴더에 대한 메타데이터를 생성하세요.\n\n폴더 정보:\n- 경로: {folder_path}\n- 설명: {folder_description}\n\n적절한 메타데이터를 생성할 때 폴더의 목적과 컨텍스트를 고려하세요.\n날짜 범위가 관련 있는 경우({date_range}), 메타데이터에 적절히 날짜를 포함하세요.\n\n파일 제안이 포함된 폴더 메타데이터의 다음 템플릿 구조와 일치하는 단일 JSON 객체로 응답하세요.",
     "level1": {
       "folder_naming": "{industry} 업계에 적합한 구체적인 폴더명을 생성하고, 각 폴더에는 비즈니스 목적을 설명하는 자세한 설명을 추가하세요.",
       "important_format": "JSON 객체만 반환하고 그 전후에 어떤 추가 텍스트, 설명 또는 주석도 포함하지 마세요. JSON을 코드 블록으로 감싸지 마세요. '여기 JSON이 있습니다' 또는 '도움이 되길 바랍니다'와 같은 문구를 포함하지 마세요.",
@@ -60,8 +61,6 @@
       "important_language": "모든 폴더명은 반드시 한국어로 작성하세요. 다른 언어로 폴더명을 사용하지 마세요.",
       "instruction": "{industry} 업계{role_text}의 3단계 폴더 구조를 생성하세요."
     },
-    "single_file_metadata": "{industry} 업계의 폴더에 적합한 단일 파일의 메타데이터를 생성하세요.\n\n폴더 정보:\n- 경로: {folder_path}\n- 설명: {folder_description}\n\n적절한 파일을 생성할 때 폴더의 목적과 컨텍스트를 고려하세요.\n날짜 범위가 관련 있는 경우({date_range}), 파일명에 적절히 날짜를 포함하세요.\n\n파일 메타데이터에 대한 다음 템플릿 구조와 일치하는 단일 JSON 객체로 응답하세요.",
-    "folder_metadata_prompt": "{industry} 업계의 폴더에 대한 메타데이터를 생성하세요.\n\n폴더 정보:\n- 경로: {folder_path}\n- 설명: {folder_description}\n\n적절한 메타데이터를 생성할 때 폴더의 목적과 컨텍스트를 고려하세요.\n날짜 범위가 관련 있는 경우({date_range}), 메타데이터에 적절히 날짜를 포함하세요.\n\n파일 제안이 포함된 폴더 메타데이터의 다음 템플릿 구조와 일치하는 단일 JSON 객체로 응답하세요.",
     "level3_files_prompt": {
       "context": "1단계 폴더: {l1_folder_name} - {l1_description}\n2단계 폴더: {l2_folder_name} - {l2_description}",
       "file_instruction": "이 2단계 폴더에 직접 속하는 적절한 파일을 생성하세요. 이는 하위 폴더 내부가 아닌, 2단계 폴더에 직접 있는 파일입니다.",
@@ -80,6 +79,7 @@
       "important_note": "폴더만 반환하고 파일은 반환하지 마세요. 파일은 별도의 단계에서 생성될 것입니다.",
       "instruction": "{industry} 업계{role_text}의 3단계 폴더 구조를 생성하세요."
     },
+    "single_file_metadata": "{industry} 업계의 폴더에 적합한 단일 파일의 메타데이터를 생성하세요.\n\n폴더 정보:\n- 경로: {folder_path}\n- 설명: {folder_description}\n\n적절한 파일을 생성할 때 폴더의 목적과 컨텍스트를 고려하세요.\n날짜 범위가 관련 있는 경우({date_range}), 파일명에 적절히 날짜를 포함하세요.\n\n파일 메타데이터에 대한 다음 템플릿 구조와 일치하는 단일 JSON 객체로 응답하세요.",
     "system": "당신은 기업용 폴더 구조를 생성하는 AI 어시스턴트입니다. 모든 폴더명과 파일명은 한국어로 작성하세요. 응답은 유효한 JSON 데이터만으로, 추가 텍스트나 설명을 포함하지 마세요. JSON이나 코드 블록으로 감싸지 마세요."
   },
   "json_fix_prompts": {

@@ -38,6 +38,7 @@
     "response_format": "Chỉ trả về JSON, không cần giải thích thêm."
   },
   "folder_structure_prompt": {
+    "folder_metadata_prompt": "Tạo metadata cho một thư mục trong ngành {industry}.\n\nThông tin về thư mục:\n- Đường dẫn: {folder_path}\n- Mô tả: {folder_description}\n\nXem xét mục đích và bối cảnh của thư mục khi tạo metadata phù hợp.\nNếu phạm vi ngày tháng có liên quan ({date_range}), hãy đưa ngày tháng vào metadata một cách phù hợp.\n\nTrả lời bằng một đối tượng JSON duy nhất phù hợp với cấu trúc mẫu sau đây cho metadata thư mục với gợi ý tệp.",
     "level1": {
       "folder_naming": "Tạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Mỗi thư mục nên có mô tả chi tiết giải thích mục đích kinh doanh của nó.",
       "important_format": "Chỉ trả về đối tượng JSON mà không có bất kỳ văn bản, nhận xét hoặc giải thích bổ sung nào trước hoặc sau nó. Không gói JSON trong các khối mã. Không bao gồm các cụm từ như 'Đây là JSON' hoặc 'Tôi hy vọng điều này hữu ích'.",
@@ -60,8 +61,6 @@
       "important_language": "Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.",
       "instruction": "Tạo cấu trúc thư mục Cấp 3 cho ngành {industry}{role_text}."
     },
-    "single_file_metadata": "Tạo metadata cho một tệp đơn lẻ phù hợp với thư mục trong ngành {industry}.\n\nThông tin về thư mục:\n- Đường dẫn: {folder_path}\n- Mô tả: {folder_description}\n\nXem xét mục đích và bối cảnh của thư mục khi tạo tệp phù hợp.\nNếu phạm vi ngày tháng có liên quan ({date_range}), hãy đưa ngày tháng vào tên tệp một cách phù hợp.\n\nTrả lời bằng một đối tượng JSON duy nhất phù hợp với cấu trúc mẫu sau đây cho metadata tệp.",
-    "folder_metadata_prompt": "Tạo metadata cho một thư mục trong ngành {industry}.\n\nThông tin về thư mục:\n- Đường dẫn: {folder_path}\n- Mô tả: {folder_description}\n\nXem xét mục đích và bối cảnh của thư mục khi tạo metadata phù hợp.\nNếu phạm vi ngày tháng có liên quan ({date_range}), hãy đưa ngày tháng vào metadata một cách phù hợp.\n\nTrả lời bằng một đối tượng JSON duy nhất phù hợp với cấu trúc mẫu sau đây cho metadata thư mục với gợi ý tệp.",
     "level3_files_prompt": {
       "context": "Thư mục Cấp 1: {l1_folder_name} - {l1_description}\nThư mục Cấp 2: {l2_folder_name} - {l2_description}",
       "file_instruction": "Vui lòng tạo các tệp phù hợp thuộc về logic bên trong thư mục Cấp 2 này. Đây là các tệp trực tiếp trong thư mục Cấp 2, không phải bên trong các thư mục con của nó.",
@@ -80,6 +79,7 @@
       "important_note": "Chỉ trả về thư mục, không phải tệp. Tệp sẽ được tạo trong một bước riêng biệt.",
       "instruction": "Tạo cấu trúc thư mục Cấp 3 cho ngành {industry}{role_text}."
     },
+    "single_file_metadata": "Tạo metadata cho một tệp đơn lẻ phù hợp với thư mục trong ngành {industry}.\n\nThông tin về thư mục:\n- Đường dẫn: {folder_path}\n- Mô tả: {folder_description}\n\nXem xét mục đích và bối cảnh của thư mục khi tạo tệp phù hợp.\nNếu phạm vi ngày tháng có liên quan ({date_range}), hãy đưa ngày tháng vào tên tệp một cách phù hợp.\n\nTrả lời bằng một đối tượng JSON duy nhất phù hợp với cấu trúc mẫu sau đây cho metadata tệp.",
     "system": "Bạn là một trợ lý AI chuyên tạo cấu trúc thư mục được tổ chức tốt cho các doanh nghiệp. Tất cả tên thư mục và tên tệp phải bằng tiếng Anh. Bạn phải phản hồi CHỈ bằng dữ liệu JSON hợp lệ mà không có bất kỳ văn bản nào khác trước hoặc sau đó. Không bao gồm bất kỳ giải thích, nhận xét hoặc tin nhắn nào xung quanh JSON. Không gói JSON trong các khối mã hoặc định dạng markdown."
   },
   "json_fix_prompts": {

@@ -38,6 +38,7 @@
     "response_format": "只返回JSON对象，不要包含额外说明或文本。"
   },
   "folder_structure_prompt": {
+    "folder_metadata_prompt": "为{industry}行业的文件夹生成元数据。\n\n文件夹信息：\n- 路径：{folder_path}\n- 说明：{folder_description}\n\n创建合适的元数据时，请考虑文件夹的用途和上下文。\n如果日期范围相关（{date_range}），请在元数据中适当包含日期。\n\n请以包含文件建议的文件夹元数据模板结构返回单个JSON对象。",
     "level1": {
       "folder_naming": "请为{industry}行业创建具体的中文文件夹名，并为每个文件夹添加详细说明。",
       "important_format": "只返回JSON对象，不要包含额外说明或文本。不要用JSON或代码块包裹。",
@@ -60,8 +61,6 @@
       "important_language": "全部用中文。不要用其他语言。",
       "instruction": "请为{industry}行业{role_text}创建三级文件夹结构。"
     },
-    "single_file_metadata": "为{industry}行业的文件夹生成单个文件的元数据。\n\n文件夹信息：\n- 路径：{folder_path}\n- 说明：{folder_description}\n\n创建合适的文件时，请考虑文件夹的用途和上下文。\n如果日期范围相关（{date_range}），请在文件名中适当包含日期。\n\n请以文件元数据的模板结构返回单个JSON对象。",
-    "folder_metadata_prompt": "为{industry}行业的文件夹生成元数据。\n\n文件夹信息：\n- 路径：{folder_path}\n- 说明：{folder_description}\n\n创建合适的元数据时，请考虑文件夹的用途和上下文。\n如果日期范围相关（{date_range}），请在元数据中适当包含日期。\n\n请以包含文件建议的文件夹元数据模板结构返回单个JSON对象。",
     "level3_files_prompt": {
       "context": "一级文件夹: {l1_folder_name} - {l1_description}\n二级文件夹: {l2_folder_name} - {l2_description}",
       "file_instruction": "请为该二级文件夹（非子文件夹）直接创建合适的文件。",
@@ -80,6 +79,7 @@
       "important_note": "只返回文件夹，不要返回文件。文件将在单独的步骤中生成。",
       "instruction": "请为{industry}行业{role_text}的三级文件夹结构。"
     },
+    "single_file_metadata": "为{industry}行业的文件夹生成单个文件的元数据。\n\n文件夹信息：\n- 路径：{folder_path}\n- 说明：{folder_description}\n\n创建合适的文件时，请考虑文件夹的用途和上下文。\n如果日期范围相关（{date_range}），请在文件名中适当包含日期。\n\n请以文件元数据的模板结构返回单个JSON对象。",
     "system": "您是为企业创建文件夹结构的AI助手。所有文件夹名和文件名请用中文。只返回有效JSON数据，不要包含额外文本或说明。不要用JSON或代码块包裹。"
   },
   "json_fix_prompts": {

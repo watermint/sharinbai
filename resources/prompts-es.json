@@ -38,6 +38,7 @@
     "response_format": "Devuelva solo el JSON, no se necesita explicación adicional."
   },
   "folder_structure_prompt": {
+    "folder_metadata_prompt": "Genera metadatos para una carpeta en la industria {industry}.\n\nInformación de la carpeta:\n- Ruta: {folder_path}\n- Descripción: {folder_description}\n\nConsidera el propósito y contexto de la carpeta al crear metadatos apropiados.\nSi un rango de fechas es relevante ({date_range}), incorpora las fechas apropiadamente en los metadatos.\n\nResponde con un solo objeto JSON que coincida con la siguiente estructura de plantilla para metadatos de carpeta con sugerencias de archivos.",
     "level1": {
       "folder_naming": "Crea nombres de carpetas específicos y apropiados para la industria {industry}. Cada carpeta debe tener una descripción detallada que explique su propósito empresarial.",
       "important_format": "Devuelve SOLO el objeto JSON sin texto adicional, comentarios o explicaciones antes o después. No envuelvas el JSON en bloques de código. No incluyas frases como 'Aquí está el JSON' o 'Espero que esto ayude'.",
@@ -60,8 +61,6 @@
       "important_language": "Todos los nombres de carpetas deben estar en español. No utilices nombres de carpetas en otros idiomas.",
       "instruction": "Crea una estructura de carpetas de Nivel 3 para la industria {industry}{role_text}."
     },
-    "single_file_metadata": "Genera metadatos para un archivo único que sería apropiado para una carpeta en la industria {industry}.\n\nInformación de la carpeta:\n- Ruta: {folder_path}\n- Descripción: {folder_description}\n\nConsidera el propósito y contexto de la carpeta al crear un archivo apropiado.\nSi un rango de fechas es relevante ({date_range}), incorpora las fechas apropiadamente en el nombre del archivo.\n\nResponde con un solo objeto JSON que coincida con la siguiente estructura de plantilla para metadatos de archivo.",
-    "folder_metadata_prompt": "Genera metadatos para una carpeta en la industria {industry}.\n\nInformación de la carpeta:\n- Ruta: {folder_path}\n- Descripción: {folder_description}\n\nConsidera el propósito y contexto de la carpeta al crear metadatos apropiados.\nSi un rango de fechas es relevante ({date_range}), incorpora las fechas apropiadamente en los metadatos.\n\nResponde con un solo objeto JSON que coincida con la siguiente estructura de plantilla para metadatos de carpeta con sugerencias de archivos.",
     "level3_files_prompt": {
       "context": "Carpeta de Nivel 1: {l1_folder_name} - {l1_description}\nCarpeta de Nivel 2: {l2_folder_name} - {l2_description}",
       "file_instruction": "Por favor, crea archivos apropiados que lógicamente pertenecerían a esta carpeta de Nivel 2. Estos son archivos directamente en la carpeta de Nivel 2, no dentro de sus subcarpetas.",
@@ -80,6 +79,7 @@
       "important_note": "Devuelve SOLO carpetas, no archivos. Los archivos se generarán en un paso separado.",
       "instruction": "Crea una estructura de carpetas de Nivel 3 para la industria {industry}{role_text}."
     },
+    "single_file_metadata": "Genera metadatos para un archivo único que sería apropiado para una carpeta en la industria {industry}.\n\nInformación de la carpeta:\n- Ruta: {folder_path}\n- Descripción: {folder_description}\n\nConsidera el propósito y contexto de la carpeta al crear un archivo apropiado.\nSi un rango de fechas es relevante ({date_range}), incorpora las fechas apropiadamente en el nombre del archivo.\n\nResponde con un solo objeto JSON que coincida con la siguiente estructura de plantilla para metadatos de archivo.",
     "system": "Eres un asistente de IA especializado en crear estructuras de carpetas bien organizadas para empresas. Todos los nombres de carpetas y archivos deben estar en español. Debes responder SOLO con datos JSON válidos sin ningún otro texto antes o después. No incluyas explicaciones, comentarios o mensajes que rodeen el JSON. No envuelvas el JSON en bloques de código o formato markdown."
   },
   "json_fix_prompts": {
