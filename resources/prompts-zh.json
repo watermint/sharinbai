@@ -1,8 +1,8 @@
 {
   "content_generation": {
-    "excel_prompt_template": "Generate a realistic Excel spreadsheet {file_description} for the {industry} industry{role_context}{folder_context}. The output should be in {language}.",
-    "excel_style_prompt": "\n\nFocus on realistic {style_type}, including appropriate headers, columns, and data types.",
-    "excel_time_prompt": "\n\nGenerate content appropriate for the current time period.",
+    "excel_prompt_template": "为{industry}行业生成一个实际的Excel电子表格{file_description}{role_context}{folder_context}。输出应该使用{language}。",
+    "excel_style_prompt": "\n\n专注于实际的{style_type}，包括适当的标题、列和数据类型。",
+    "excel_time_prompt": "\n\n生成适合当前时期的内容。",
     "xlsx_generation": "为Excel电子表格生成内容。请以下列JSON对象结构回应：\n{\n  \"sheets\": [\n    {\n      \"name\": \"工作表名称\",\n      \"headers\": [\"标题1\", \"标题2\", ...],\n      \"data\": [\n        [\"行1单元格1\", \"行1单元格2\", ...],\n        [\"行2单元格1\", \"行2单元格2\", ...]\n      ]\n    }\n  ]\n}"
   },
   "date_formats": {
