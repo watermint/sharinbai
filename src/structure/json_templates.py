@@ -78,6 +78,35 @@ class JsonTemplates:
 }}
 """
 
+    # Template for single file metadata
+    SINGLE_FILE_METADATA_TEMPLATE = """
+{{
+  "name": "example_file_name.ext",
+  "type": "ext",
+  "description": "{file_description}"
+}}
+"""
+
+    # Template for folder metadata with files
+    FOLDER_METADATA_TEMPLATE = """
+{{
+  "description": "{folder_description}",
+  "purpose": "general",
+  "files": [
+    {{
+      "name": "example_file1.ext",
+      "type": "ext",
+      "description": "{file_description}"
+    }},
+    {{
+      "name": "example_file2.ext",
+      "type": "ext",
+      "description": "{file_description}"
+    }}
+  ]
+}}
+"""
+
     # Templates for the complete folder structure
     COMPLETE_STRUCTURE_TEMPLATE = """
 {{
@@ -113,7 +142,9 @@ class JsonTemplates:
             'level2_folders': cls.LEVEL2_FOLDERS_TEMPLATE,
             'level3_folders': cls.LEVEL3_FOLDERS_TEMPLATE,
             'level3_files': cls.LEVEL3_FILES_TEMPLATE,
-            'complete_structure': cls.COMPLETE_STRUCTURE_TEMPLATE
+            'complete_structure': cls.COMPLETE_STRUCTURE_TEMPLATE,
+            'single_file_metadata': cls.SINGLE_FILE_METADATA_TEMPLATE,
+            'folder_metadata': cls.FOLDER_METADATA_TEMPLATE
         }
         
         return template_mapping.get(template_name, "") 

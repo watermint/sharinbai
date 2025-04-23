@@ -509,6 +509,9 @@ def main():
     add_common_args(edit_parser)
     edit_parser.add_argument('--max-files', type=int, default=10, help='Maximum number of files to edit (default: 10)')
     
+    # Update the file command to support random file selection
+    file_parser.add_argument('--max-files', type=int, default=10, help='Maximum number of files to generate (default: 10)')
+    
     # Add the batch command
     batch_parser = subparsers.add_parser('batch', help='Execute multiple tasks from a YAML file')
     batch_parser.add_argument('--file', '-f', type=str, required=True, help='Path to the batch YAML file')
@@ -773,12 +776,49 @@ def main():
                          f"model: {settings.model}, short: {args.short}"
                          f"{', role: ' + settings.role if settings.role else ''}"
                          f"{date_range_info})")
-            success = folder_generator.generate_files_only(
+            
+            # Scan existing folder structure
+            target_dir = Path(settings.output_path)
+            if not target_dir.exists():
+                logging.error(f"Target directory {target_dir} does not exist.")
+                sys.exit(1)
+                
+            # Find all folders in level 2 and 3
+            level_2_3_folders = []
+            for root, dirs, files in os.walk(str(target_dir)):
+                root_path = Path(root)
+                rel_path = root_path.relative_to(target_dir)
+                
+                # Skip root directory and hidden directories
+                if str(rel_path) == '.' or any(part.startswith('.') for part in rel_path.parts):
+                    continue
+                
+                # Count the depth (number of parts)
+                depth = len(rel_path.parts)
+                
+                # Include folders at level 2 or 3
+                if depth == 1 or depth == 2:
+                    level_2_3_folders.append(root_path)
+            
+            if not level_2_3_folders:
+                logging.error("No suitable folders found in the directory structure.")
+                sys.exit(1)
+                
+            # Select random folders to place files in
+            max_files = min(args.max_files, len(level_2_3_folders) * 2)
+            folders_to_use = random.sample(level_2_3_folders, min(len(level_2_3_folders), max_files))
+            
+            logging.info(f"Found {len(level_2_3_folders)} folders at levels 2-3, generating {max_files} files in {len(folders_to_use)} folders")
+            
+            # Generate files in selected folders
+            success = folder_generator.generate_files_in_folders(
                 settings.output_path,
                 settings.industry,
                 settings.language,
                 settings.role,
                 args.short,
+                folders_to_use,
+                max_files,
                 date_start=date_start,
                 date_end=date_end
             )

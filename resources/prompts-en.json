@@ -60,6 +60,8 @@
       "important_language": "All folder names must be in English. Do not use folder names in other languages.",
       "instruction": "Create a Level 3 folder structure for the {industry} industry{role_text}."
     },
+    "single_file_metadata": "Generate metadata for a single file that would be appropriate for a folder in the {industry} industry.\n\nFolder information:\n- Path: {folder_path}\n- Description: {folder_description}\n\nConsider the folder's purpose and context when creating an appropriate file.\nIf a date range is relevant ({date_range}), incorporate dates appropriately in the filename.\n\nRespond with a single JSON object matching the following template structure for a file metadata.",
+    "folder_metadata_prompt": "Generate metadata for a folder in the {industry} industry.\n\nFolder information:\n- Path: {folder_path}\n- Description: {folder_description}\n\nConsider the folder's purpose and context when creating appropriate metadata.\nIf a date range is relevant ({date_range}), incorporate dates appropriately in the metadata.\n\nRespond with a single JSON object matching the following template structure for folder metadata with file suggestions.",
     "level3_files_prompt": {
       "context": "Level 1 folder: {l1_folder_name} - {l1_description}\nLevel 2 folder: {l2_folder_name} - {l2_description}",
       "file_instruction": "Please create appropriate files that would logically belong inside this Level 2 folder. These are files directly in the Level 2 folder, not inside its sub-folders.",
@@ -89,6 +91,7 @@
     "json_format_instruction": "Please format your response as a valid JSON object with correct braces and quotes. All folder names should be in English.",
     "json_object_instruction": "Please return only {key} as a JSON object. Return only the {key} data.",
     "json_response_format_instruction": "Please respond with a JSON structure in the following format:\\n\\n{json_template}",
+    "json_template_label": "JSON Template:",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Create specific and appropriate folder names for the {industry} industry. Provide detailed descriptions explaining the business purpose of each folder.",

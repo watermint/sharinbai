@@ -165,9 +165,6 @@ class TestContentGenerator(unittest.TestCase):
             
     def test_generate_file_with_unknown_extension(self):
         """Test generate_file method with unknown extension"""
-        # Configure mocks
-        self.mock_text_generator.generate.return_value = True
-        
         # Call method with unknown extension
         result = self.content_generator.generate_file(
             self.temp_dir, "test.xyz", "Test file with unknown extension", "healthcare", "en", "doctor"
@@ -178,8 +175,8 @@ class TestContentGenerator(unittest.TestCase):
         self.mock_file_manager.ensure_directory.assert_called_once_with(self.temp_dir)
         self.mock_file_manager.write_json_file.assert_called_once()
         
-        # Check that text generator was used as fallback
-        self.mock_text_generator.generate.assert_called_once()
+        # Check that text generator was NOT used as fallback
+        self.mock_text_generator.generate.assert_not_called()
         
     def test_generate_file_with_image_extension(self):
         """Test generate_file method with image extension"""

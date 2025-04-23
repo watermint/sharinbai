@@ -60,6 +60,8 @@
       "important_language": "全部用中文。不要用其他語言。",
       "instruction": "請為{industry}產業{role_text}建立第三層資料夾結構。"
     },
+    "single_file_metadata": "為{industry}產業的資料夾中適合的單一檔案產生詮釋資料。\n\n資料夾資訊：\n- 路徑：{folder_path}\n- 說明：{folder_description}\n\n建立適當檔案時，請考慮資料夾的目的與上下文。\n如果日期範圍相關（{date_range}），請在檔案名稱中適當地包含日期。\n\n請以單一JSON物件回應，符合以下檔案詮釋資料的模板結構。",
+    "folder_metadata_prompt": "為{industry}產業的資料夾產生詮釋資料。\n\n資料夾資訊：\n- 路徑：{folder_path}\n- 說明：{folder_description}\n\n建立適當詮釋資料時，請考慮資料夾的目的與上下文。\n如果日期範圍相關（{date_range}），請在詮釋資料中適當地包含日期。\n\n請以單一JSON物件回應，符合以下資料夾詮釋資料與檔案建議的模板結構。",
     "level3_files_prompt": {
       "context": "第一層資料夾: {l1_folder_name} - {l1_description}\n第二層資料夾: {l2_folder_name} - {l2_description}",
       "file_instruction": "請為該第二層資料夾（非子資料夾）直接建立合適的檔案。",
@@ -89,6 +91,7 @@
     "json_format_instruction": "請將您的回答格式化為有效的JSON物件，帶有正確的括號和引號。所有資料夾名稱應該用中文。",
     "json_object_instruction": "請只返回{key}作為JSON物件。只返回{key}資料。",
     "json_response_format_instruction": "請按以下JSON結構格式回應：\\n\\n{json_template}",
+    "json_template_label": "JSON模板：",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "為{industry}產業創建具體和適當的資料夾名稱。提供詳細描述解釋每個資料夾的業務用途。",

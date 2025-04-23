@@ -78,7 +78,7 @@ class ContentGenerator:
         end_date_str = end_date.strftime('%Y-%m-%d')
             
         # Use translation resource for date range format
-        date_format_template = get_translation("date_range_format", language, None)
+        date_format_template = get_translation("date_range_format", language)
         
         # Check if translation was not found
         if date_format_template == "date_range_format":
@@ -169,12 +169,9 @@ class ContentGenerator:
                     date_range_str=self.date_range_str
                 )
             else:
-                # Default to text generator for unknown extensions
-                logging.info(f"Using text generator for unknown file extension '{ext}': {filename}")
-                return self.generators["txt"].generate(
-                    directory, filename, description, industry, language, role,
-                    date_range_str=self.date_range_str
-                )
+                # Ignore unknown extensions
+                logging.warning(f"Ignoring unknown file extension '{ext}': {filename}")
+                return True
         except Exception as e:
             logging.error(f"Error generating file content for {file_path}: {e}")
             return False

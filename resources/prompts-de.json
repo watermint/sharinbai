@@ -82,6 +82,8 @@
       "important_language": "Alle Ordnernamen müssen auf Deutsch sein. Verwenden Sie keine Ordnernamen in anderen Sprachen.",
       "instruction": "Erstellen Sie eine Ordnerstruktur der dritten Ebene für die Branche {industry}{role_text}."
     },
+    "single_file_metadata": "Generieren Sie Metadaten für eine einzelne Datei, die für einen Ordner in der Branche {industry} geeignet wäre.\n\nOrdnerinformationen:\n- Pfad: {folder_path}\n- Beschreibung: {folder_description}\n\nBerücksichtigen Sie den Zweck und Kontext des Ordners bei der Erstellung einer geeigneten Datei.\nWenn ein Datumsbereich relevant ist ({date_range}), integrieren Sie Daten entsprechend im Dateinamen.\n\nAntworten Sie mit einem einzelnen JSON-Objekt, das der folgenden Vorlagenstruktur für Dateimetadaten entspricht.",
+    "folder_metadata_prompt": "Generieren Sie Metadaten für einen Ordner in der Branche {industry}.\n\nOrdnerinformationen:\n- Pfad: {folder_path}\n- Beschreibung: {folder_description}\n\nBerücksichtigen Sie den Zweck und Kontext des Ordners bei der Erstellung geeigneter Metadaten.\nWenn ein Datumsbereich relevant ist ({date_range}), integrieren Sie Daten entsprechend in den Metadaten.\n\nAntworten Sie mit einem einzelnen JSON-Objekt, das der folgenden Vorlagenstruktur für Ordnermetadaten mit Dateivorschlägen entspricht.",
     "level3_files_prompt": {
       "context": "Ordner der ersten Ebene: {l1_folder_name} - {l1_description}\nOrdner der zweiten Ebene: {l2_folder_name} - {l2_description}",
       "file_instruction": "Bitte erstellen Sie geeignete Dateien, die logischerweise direkt in diesen Ordner der zweiten Ebene gehören würden. Dies sind Dateien direkt im Ordner der zweiten Ebene, nicht in seinen Unterordnern.",
@@ -111,6 +113,7 @@
     "json_format_instruction": "Bitte formatieren Sie Ihre Antwort als gültiges JSON-Objekt mit korrekten Klammern und Anführungszeichen. Alle Ordnernamen sollten auf Deutsch sein.",
     "json_object_instruction": "Bitte geben Sie nur {key} als JSON-Objekt zurück. Geben Sie nur die {key}-Daten zurück.",
     "json_response_format_instruction": "Bitte antworten Sie mit einer JSON-Struktur im folgenden Format:\\n\\n{json_template}",
+    "json_template_label": "JSON-Vorlage:",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Erstellen Sie konkrete und geeignete Ordnernamen für die Branche {industry}. Geben Sie detaillierte Beschreibungen an, die den Geschäftszweck jedes Ordners erklären.",

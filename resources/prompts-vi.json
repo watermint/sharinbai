@@ -60,6 +60,8 @@
       "important_language": "Tất cả tên thư mục phải bằng tiếng Anh. Không sử dụng tên thư mục bằng các ngôn ngữ khác.",
       "instruction": "Tạo cấu trúc thư mục Cấp 3 cho ngành {industry}{role_text}."
     },
+    "single_file_metadata": "Tạo metadata cho một tệp đơn lẻ phù hợp với thư mục trong ngành {industry}.\n\nThông tin về thư mục:\n- Đường dẫn: {folder_path}\n- Mô tả: {folder_description}\n\nXem xét mục đích và bối cảnh của thư mục khi tạo tệp phù hợp.\nNếu phạm vi ngày tháng có liên quan ({date_range}), hãy đưa ngày tháng vào tên tệp một cách phù hợp.\n\nTrả lời bằng một đối tượng JSON duy nhất phù hợp với cấu trúc mẫu sau đây cho metadata tệp.",
+    "folder_metadata_prompt": "Tạo metadata cho một thư mục trong ngành {industry}.\n\nThông tin về thư mục:\n- Đường dẫn: {folder_path}\n- Mô tả: {folder_description}\n\nXem xét mục đích và bối cảnh của thư mục khi tạo metadata phù hợp.\nNếu phạm vi ngày tháng có liên quan ({date_range}), hãy đưa ngày tháng vào metadata một cách phù hợp.\n\nTrả lời bằng một đối tượng JSON duy nhất phù hợp với cấu trúc mẫu sau đây cho metadata thư mục với gợi ý tệp.",
     "level3_files_prompt": {
       "context": "Thư mục Cấp 1: {l1_folder_name} - {l1_description}\nThư mục Cấp 2: {l2_folder_name} - {l2_description}",
       "file_instruction": "Vui lòng tạo các tệp phù hợp thuộc về logic bên trong thư mục Cấp 2 này. Đây là các tệp trực tiếp trong thư mục Cấp 2, không phải bên trong các thư mục con của nó.",
@@ -89,6 +91,7 @@
     "json_format_instruction": "Vui lòng định dạng phản hồi của bạn như một đối tượng JSON hợp lệ với dấu ngoặc nhọn và dấu ngoặc kép chính xác. Tất cả tên thư mục nên dùng tiếng Anh.",
     "json_object_instruction": "Vui lòng chỉ trả về {key} dưới dạng đối tượng JSON. Chỉ trả về dữ liệu {key}.",
     "json_response_format_instruction": "Vui lòng phản hồi bằng cấu trúc JSON theo định dạng sau:\\n\\n{json_template}",
+    "json_template_label": "Mẫu JSON:",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Tạo tên thư mục cụ thể và phù hợp cho ngành {industry}. Cung cấp mô tả chi tiết giải thích mục đích kinh doanh của mỗi thư mục.",

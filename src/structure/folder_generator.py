@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Union, Tuple
 from datetime import datetime, timedelta
+import random
 
 from ..config.language_utils import get_translation
 from ..content.content_generator import ContentGenerator
@@ -103,7 +104,7 @@ class FolderGenerator:
             raise ValueError(error_msg)
             
         # Validate translation for date_range_format exists
-        date_format_template = get_translation("date_range_format", language, None)
+        date_format_template = get_translation("date_range_format", language)
         if date_format_template == "date_range_format":
             error_msg = f"No localized template found for '{language}' language (date_range_format)"
             logging.error(error_msg)
@@ -311,27 +312,13 @@ class FolderGenerator:
         except Exception as e:
             logging.exception(f"Error during file only generation: {e}")
             return False
-
-    def generate_specific_files(self, output_path: str, industry: str, language: str,
+            
+    def generate_files_in_folders(self, output_path: str, industry: str, language: str,
                                role: Optional[str] = None, short_mode: bool = False,
-                               target_files: List[Path] = None,
+                               target_folders: List[Path] = None, max_files: int = 10,
                                date_start: Optional[datetime] = None, 
                                date_end: Optional[datetime] = None) -> bool:
-        """Generate or update specific files in the existing folder structure.
-        
-        Args:
-            output_path: Path to the root of the folder structure
-            industry: Industry context
-            language: Language to use
-            role: Specific role within the industry (optional)
-            short_mode: Whether to limit the number of items
-            target_files: List of Path objects representing specific files to regenerate
-            date_start: Optional start date for time-based content
-            date_end: Optional end date for time-based content
-            
-        Returns:
-            True if successful, False otherwise
-        """
+        """Generate files in selected random folders without modifying folder structure."""
         # Update date range if provided
         if date_start or date_end:
             self.date_start = date_start or self.date_start
@@ -351,1668 +338,139 @@ class FolderGenerator:
             target_dir = base_dir
             
             if not target_dir.exists():
-                 logging.error(f"Target directory {target_dir} does not exist.")
-                 return False
-            
-            if not target_files or len(target_files) == 0:
-                logging.error("No target files provided.")
+                logging.error(f"Target directory {target_dir} does not exist. Run 'all' or 'structure' first.")
                 return False
                 
-            logging.info(f"Processing {len(target_files)} specific files for regeneration")
+            if not target_folders or len(target_folders) == 0:
+                logging.error("No target folders provided for file generation.")
+                return False
             
-            # Collect existing metadata
-            root_metadata = None
-            if (target_dir / ".metadata.json").exists():
-                root_metadata = self.file_manager.read_json_file(str(target_dir / ".metadata.json"))
-                if root_metadata:
-                    logging.info("Found root metadata file")
-                    # We use the provided parameters instead of metadata values for 'edit' command
-            else:
-                logging.warning("Root metadata file not found, using provided parameters")
-                
-            success = True
-            files_processed = 0
+            # Track success across all folders
+            overall_success = True
+            files_generated = 0
+            target_folders = list(target_folders)  # Convert to list if it's not already
             
-            # Filter out .metadata files and other specific files we don't want to process
-            valid_target_files = []
-            for file_path in target_files:
-                # Skip .metadata directory files or .metadata.json files
-                if ".metadata" in str(file_path) or str(file_path).endswith(".metadata.json"):
-                    logging.info(f"Skipping metadata file: {file_path}")
+            # Shuffle the folders to ensure randomness
+            random.shuffle(target_folders)
+            
+            # Keep track of files to generate per folder to distribute evenly
+            files_per_folder = max(1, max_files // len(target_folders))
+            remaining_files = max_files
+            
+            logging.info(f"Planning to generate approximately {files_per_folder} files per folder in {len(target_folders)} folders")
+            
+            # Process each target folder
+            for folder_path in target_folders:
+                if remaining_files <= 0:
+                    logging.info(f"Reached target of {max_files} files generated, stopping.")
+                    break
+                    
+                if not folder_path.exists():
+                    logging.warning(f"Folder {folder_path} does not exist, skipping.")
                     continue
-                valid_target_files.append(file_path)
-            
-            if not valid_target_files:
-                logging.warning("No valid files to process after filtering metadata files")
-                return False
                 
-            logging.info(f"Processing {len(valid_target_files)} valid files after filtering")
-            
-            # Process each target file
-            for file_path in valid_target_files:
+                # Read folder metadata for context
+                folder_metadata = None
+                folder_description = ""
+                metadata_path = folder_path / ".metadata.json"
+                
+                if metadata_path.exists():
+                    folder_metadata = self.file_manager.read_json_file(str(metadata_path))
+                    if folder_metadata:
+                        folder_description = folder_metadata.get("description", "")
+                
+                # Get folder path for context
                 try:
-                    # Get relative path from the root directory for logging
-                    try:
-                        rel_path = file_path.relative_to(target_dir)
-                        logging.info(f"Processing file: {rel_path}")
-                    except ValueError:
-                        logging.info(f"Processing file: {file_path}")
-                    
-                    # Ensure the file path is absolute
-                    if not file_path.is_absolute():
-                        file_path = target_dir / file_path
-                    
-                    # Get parent folder for context
-                    parent_folder = file_path.parent
-                    
-                    # Ensure parent directory exists
-                    if not parent_folder.exists():
-                        logging.info(f"Creating parent directory: {parent_folder}")
-                        os.makedirs(parent_folder, exist_ok=True)
-                    
-                    # Try to read parent folder metadata for better context
-                    parent_metadata = None
-                    parent_description = ""
-                    parent_metadata_path = parent_folder / ".metadata.json"
-                    
-                    if parent_metadata_path.exists():
-                        parent_metadata = self.file_manager.read_json_file(str(parent_metadata_path))
-                        if parent_metadata:
-                            parent_description = parent_metadata.get("description", "")
-                    
-                    # Get file type from extension
-                    file_type = ""
-                    if "." in file_path.name:
-                        file_type = file_path.name.split(".")[-1]
-                    
-                    logging.info(f"Generating content for {file_path.name} (type: {file_type})")
-                    
-                    # Get folder path for context
-                    try:
-                        folder_rel_path = parent_folder.relative_to(target_dir)
-                        folder_path_str = str(folder_rel_path)
-                    except ValueError:
-                        folder_path_str = parent_folder.name
-                    
-                    # Generate content for the file
-                    file_content = self.content_generator.generate_file_content(
-                        str(file_path),
-                        file_type,
-                        parent_description,
-                        industry,
-                        folder_path_str,
-                        language,
-                        role
-                    )
-                    
-                    if file_content:
-                        # Successfully generated content
-                        logging.info(f"Successfully regenerated content for {file_path.name}")
-                        files_processed += 1
-                        
-                        # Add to statistics
-                        self.statistics_tracker.add_file(str(file_path))
-                    else:
-                        logging.error(f"Failed to generate content for {file_path.name}")
-                        success = False
-                        
-                except Exception as e:
-                    logging.error(f"Error processing file {file_path}: {e}")
-                    success = False
-            
-            logging.info(f"Completed processing {files_processed} out of {len(valid_target_files)} files")
-            
-            # Print statistics at the end
-            self.statistics_tracker.print_statistics(language)
-            
-            return success
-        except LocalizedTemplateNotFoundError as e:
-            logging.error(f"Language resource error: {e}")
-            return False
-        except Exception as e:
-            logging.exception(f"Error during specific file generation: {e}")
-            return False
-
-    # --- Internal Processing Methods --- 
-    # (These remain, with short mode checks already integrated)
-    def _process_structure_only(self, level1_structure: Dict[str, Any], target_dir: Path,
-                               industry: str, language: str, role: Optional[str] = None) -> bool:
-        """
-        Process the folder structure without files.
-        
-        Args:
-            level1_structure: Level 1 folder structure data
-            target_dir: Target directory
-            industry: Industry context
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        success = True
-        # Store root level metadata
-        root_metadata = {
-            "industry": industry,
-            "language": language,
-            "role": role,
-            "date_range": self.date_range_str,
-            "date_start": self.date_start.strftime("%Y-%m-%d"),
-            "date_end": self.date_end.strftime("%Y-%m-%d"),
-            "folders": level1_structure["folders"]
-        }
-        self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
-        self.statistics_tracker.add_file(str(target_dir / ".metadata.json"))
-        
-        # Get parent folder names to check for conflicts
-        parent_dirs = [p.name for p in target_dir.parents]
-        
-        for l1_folder_name, l1_folder_data in level1_structure["folders"].items():
-            if not isinstance(l1_folder_data, dict) or "description" not in l1_folder_data:
-                logging.warning(f"Invalid data for folder {l1_folder_name}, skipping")
-                continue
+                    rel_path = folder_path.relative_to(target_dir)
+                    folder_path_str = str(rel_path)
+                except ValueError:
+                    folder_path_str = folder_path.name
                 
-            # Check if folder name conflicts with parent folder name
-            if l1_folder_name in parent_dirs:
-                logging.warning(f"Folder name '{l1_folder_name}' conflicts with parent folder name, skipping")
-                continue
+                logging.info(f"Generating files in folder: {folder_path_str}")
                 
-            # Create level 1 folder
-            l1_folder_path = target_dir / self.file_manager.sanitize_path(l1_folder_name)
-            if not self.file_manager.ensure_directory(str(l1_folder_path)):
-                success = False
-                continue
+                # Determine how many files to generate in this folder
+                files_to_generate = min(files_per_folder, remaining_files)
                 
-                
-            # If folder already exists, proceed with content generation
-            if l1_folder_path.exists():
-                # Check limit after successfully creating L1 folder
-                if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER): raise ShortModeLimitReached()
-                
-            # Track folder
-            self.statistics_tracker.add_folder(str(l1_folder_path))
-                
-            logging.info(f"Created level 1 folder: {l1_folder_name}")
-            
-            # Get folder purpose if specified
-            folder_purpose = l1_folder_data.get("purpose")
-            
-            # Store level 1 folder metadata
-            l1_metadata = {
-                "name": l1_folder_name,
-                "description": l1_folder_data.get("description", ""),
-                "industry": industry,
-                "purpose": folder_purpose
-            }
-            
-            # Skip subfolder creation for timeseries folders
-            if folder_purpose == "timeseries":
-                logging.info(f"Folder {l1_folder_name} is marked as timeseries, skipping subfolders")
-                self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
-                self.statistics_tracker.add_file(str(l1_folder_path / ".metadata.json"))
-                
-                # Generate timeseries files for this folder
-                self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}")
-                self._generate_timeseries_files(
-                    l1_folder_path, l1_folder_name, l1_folder_data.get("description", ""),
-                    industry, language, role
-                )
-                self.statistics_tracker.end_tracking_item()
-                continue
-            
-            # Generate level 2 folder structure
-            self.statistics_tracker.start_tracking_item(f"level2_folders_for_{l1_folder_name}")
-            level2_structure = self._generate_level2_folders(
-                industry, l1_folder_name, l1_folder_data.get("description", ""), language, role
-            )
-            self.statistics_tracker.end_tracking_item()
-            
-            if not level2_structure or "folders" not in level2_structure:
-                logging.error(f"Failed to get valid level 2 structure for {l1_folder_name}, skipping")
-                continue
-            
-            # Add folders to level 1 metadata
-            l1_metadata["folders"] = level2_structure["folders"]
-            self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
-            self.statistics_tracker.add_file(str(l1_folder_path / ".metadata.json"))
-            
-            # Track timeseries folders at level 2
-            if self.content_generator.is_timeseries_limit_reached(str(l1_folder_path)):
-                logging.warning(f"Maximum number of timeseries folders in {l1_folder_name} reached")
-            
-            # Update parent directories list for level 2 folder check
-            l2_parent_dirs = parent_dirs + [l1_folder_name]
-                
-            # Process level 2 folders
-            for l2_folder_name, l2_folder_data in level2_structure["folders"].items():
-                if not isinstance(l2_folder_data, dict) or "description" not in l2_folder_data:
-                    logging.warning(f"Invalid data for level 2 folder {l2_folder_name}, skipping")
-                    continue
-                    
-                # Create level 2 folder
-                l2_folder_path = l1_folder_path / self.file_manager.sanitize_path(l2_folder_name)
-                if not self.file_manager.ensure_directory(str(l2_folder_path)):
-                    success = False
-                    continue
-                    
-                # Check limit after successfully creating L2 folder
-                if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER): raise ShortModeLimitReached()
-                
-                logging.info(f"Created level 2 folder: {l1_folder_name}/{l2_folder_name}")
-                
-                # Get folder purpose if specified
-                l2_folder_purpose = l2_folder_data.get("purpose")
-                
-                # Store level 2 folder metadata
-                l2_metadata = {
-                    "name": l2_folder_name,
-                    "description": l2_folder_data.get("description", ""),
-                    "parent_folder": l1_folder_name,
-                    "industry": industry,
-                    "purpose": l2_folder_purpose
-                }
-                
-                # Skip subfolder creation for timeseries folders
-                if l2_folder_purpose == "timeseries":
-                    logging.info(f"Folder {l1_folder_name}/{l2_folder_name} is marked as timeseries, skipping subfolders")
-                    self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
-                    
-                    # Generate timeseries files for this folder
-                    self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}_{l2_folder_name}")
-                    self._generate_timeseries_files(
-                        l2_folder_path, l2_folder_name, l2_folder_data.get("description", ""),
-                        industry, language, role
-                    )
-                    self.statistics_tracker.end_tracking_item()
-                
-                # Generate level 3 folder structure
-                level3_structure = self._generate_level3_folders(
-                    industry, l2_folder_name, l2_folder_data, 
-                    l1_folder_data.get("description", ""), l1_folder_name, language, role
+                # Ask LLM to update folder metadata with file suggestions
+                folder_metadata_updated = self._update_folder_metadata_with_llm(
+                    folder_path_str, 
+                    folder_description, 
+                    folder_metadata, 
+                    industry, 
+                    files_to_generate
                 )
                 
-                if not level3_structure or "folders" not in level3_structure:
-                    logging.warning(f"Failed to get valid level 3 structure for {l1_folder_name}/{l2_folder_name}, skipping")
-                    continue
+                # Extract file definitions from updated metadata
+                files_to_create = []
                 
-                # Add folders to level 2 metadata
-                l2_metadata["folders"] = level3_structure["folders"]
-                self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
-                self.statistics_tracker.add_file(str(l2_folder_path / ".metadata.json"))
-                
-                # Track timeseries folders at level 3
-                if self.content_generator.is_timeseries_limit_reached(str(l2_folder_path)):
-                    logging.warning(f"Maximum number of timeseries folders in {l1_folder_name}/{l2_folder_name} reached")
-                
-                # Update parent directories list for level 3 folder check
-                l3_parent_dirs = l2_parent_dirs + [l2_folder_name]
-                
-                # Process level 3 folders
-                for l3_folder_name, l3_folder_data in level3_structure["folders"].items():
-                    if not isinstance(l3_folder_data, dict) or "description" not in l3_folder_data:
-                        logging.warning(f"Invalid data for folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name}, skipping")
-                        continue
-                        
-                    # Create level 3 folder
-                    l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
-                    if not self.file_manager.ensure_directory(str(l3_folder_path)):
-                        success = False
-                        continue
-                        
-                    # Check limit after successfully creating L3 folder
-                    if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER): raise ShortModeLimitReached()
+                if folder_metadata_updated and "files" in folder_metadata_updated:
+                    files_part = folder_metadata_updated["files"]
                     
-                    logging.info(f"Created level 3 folder: {l1_folder_name}/{l2_folder_name}/{l3_folder_name}")
-                    
-                    # Store level 3 folder metadata
-                    l3_metadata = {
-                        "name": l3_folder_name,
-                        "description": l3_folder_data.get("description", ""),
-                        "parent_folder": l2_folder_name,
-                        "grandparent_folder": l1_folder_name,
-                        "industry": industry,
-                        "purpose": l3_folder_data.get("purpose")
-                    }
-                    self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
-                    self.statistics_tracker.add_file(str(l3_folder_path / ".metadata.json"))
-                    
-                    # Generate timeseries files for timeseries folders
-                    if l3_folder_data.get("purpose") == "timeseries":
-                        logging.info(f"Folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name} is marked as timeseries")
-                        self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}_{l2_folder_name}_{l3_folder_name}")
-                        try:
-                            self._generate_timeseries_files(
-                                l3_folder_path, l3_folder_name, l3_folder_data.get("description", ""),
-                                industry, language, role
-                            )
-                        except ShortModeLimitReached:
-                            # Re-raise to handle at the generate_files_only level
-                            raise
-                        finally:
-                            self.statistics_tracker.end_tracking_item()
-        
-        logging.info("Folder structure creation completed (or stopped by short mode).")
-        return success
-    
-    def _regenerate_files(self, target_dir: Path, industry: str, language: str, 
-                        role: Optional[str] = None) -> bool:
-        """
-        Regenerate files for existing folder structure.
-        
-        Args:
-            target_dir: Target directory
-            industry: Industry context
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        success = True
-        files_generated = 0
-        
-        # Get parent folder names to check for conflicts
-        parent_dirs = [p.name for p in target_dir.parents]
-        
-        # Check for root metadata but don't fail if missing in file mode
-        root_metadata = None
-        if (target_dir / ".metadata.json").exists():
-            root_metadata = self.file_manager.read_json_file(str(target_dir / ".metadata.json"))
-            if root_metadata:
-                logging.info("Found root metadata file")
-                # Update with values from metadata if available
-                if "industry" in root_metadata:
-                    industry = root_metadata["industry"]
-                if "language" in root_metadata:
-                    language = root_metadata["language"]
-                if "role" in root_metadata:
-                    role = root_metadata["role"]
-                
-                # Update date range information if present in metadata
-                if "date_range" in root_metadata:
-                    logging.info(f"Using date range from metadata: {root_metadata['date_range']}")
-                    self.date_range_str = root_metadata["date_range"]
-                    
-                    # Try to parse date range from metadata if available
-                    if "date_start" in root_metadata and "date_end" in root_metadata:
-                        try:
-                            self.date_start = datetime.strptime(root_metadata["date_start"], "%Y-%m-%d")
-                            self.date_end = datetime.strptime(root_metadata["date_end"], "%Y-%m-%d")
-                            logging.info(f"Parsed date range: {self.date_start.strftime('%Y-%m-%d')} to {self.date_end.strftime('%Y-%m-%d')}")
-                        except ValueError:
-                            logging.warning("Could not parse dates from metadata, using default date range")
-        else:
-            logging.warning("Root metadata file not found, using provided parameters")
-            
-        try:
-            # Keep track of total files generated across all folders
-            total_files_generated = 0
-            
-            # Process level 1 folders
-            for level1_item in target_dir.iterdir():
-                if not level1_item.is_dir() or level1_item.name.startswith('.'):
-                    continue
-                    
-                # Process this folder even if no metadata, since we're in file mode
-                logging.info(f"Processing folder: {level1_item.name}")
-                
-                # Try to read metadata if available, but continue even if missing
-                l1_metadata = None
-                l1_description = ""
-                l1_purpose = None
-                
-                l1_metadata_path = level1_item / ".metadata.json"
-                if l1_metadata_path.exists():
-                    l1_metadata = self.file_manager.read_json_file(str(l1_metadata_path))
-                    if l1_metadata:
-                        l1_description = l1_metadata.get("description", "")
-                        l1_purpose = l1_metadata.get("purpose")
-                else:
-                    logging.info(f"No metadata for {level1_item.name}, using defaults")
-                    # Provide default description based on folder name
-                    l1_description = f"Files for {level1_item.name} folder"
-                
-                # Generate simple document files for this folder
-                if not l1_purpose == "timeseries":
-                    logging.info(f"Generating files for {level1_item.name}")
-                    try:
-                        # Generate files using the LLM instead of fixed defaults
-                        # Use the level3_files_prompt which is designed for file generation
-                        instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language, None)
-                        context = get_translation("folder_structure_prompt.level3_files_prompt.context", language, None)
-                        folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language, None)
-                        file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language, None)
-                        file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language, None)
-                        important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language, None)
-                        important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language, None)
-                        
-                        # Get translated description template
-                        file_description = get_translation("description_templates.file_description", language, "Clear description of the file's purpose")
-                        
-                        # Check if essential components are missing
-                        if not instruction or not file_instruction:
-                            error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt.*)"
-                            logging.error(error_msg)
-                            continue
-                            
-                        # Role placeholder might be formatted differently in localized templates
-                        role_text = f" for a {role}" if role else ""
-                        
-                        # Get the JSON template and apply translated descriptions
-                        json_template = JsonTemplates.get_template("level3_files")
-                        json_template = json_template.format(file_description=file_description)
-                        
-                        # Construct the full prompt
-                        prompt_parts = [
-                            instruction.format(industry=industry, role_text=role_text),
-                            context.format(
-                                l1_folder_name=level1_item.name,
-                                l1_description=l1_description,
-                                l2_folder_name="",  # No L2 folder in this context
-                                l2_description=""   # No L2 folder in this context
-                            ),
-                            folder_context.format(folder_structure="") if folder_context else "",
-                            file_instruction,
-                            f"Respond in the following JSON format:\n\n{json_template}",
-                            file_naming.format(industry=industry),
-                            f"IMPORTANT: {important_language}",
-                            f"IMPORTANT: {important_format}"
-                        ]
-                        
-                        # Join all prompt parts, filtering empty ones
-                        prompt = "\n\n".join([part for part in prompt_parts if part])
-                        
-                        # Generate files structure using LLM
-                        logging.info(f"Requesting file structure for {level1_item.name} using LLM")
-                        file_structure = self.llm_client.get_json_completion(
-                            prompt=prompt,
-                            max_attempts=3,
-                            language=language
-                        )
-                        
-                        # Process the file structure
-                        if not file_structure or "files" not in file_structure:
-                            logging.warning(f"Failed to get valid file structure for {level1_item.name}")
-                            continue
-                            
-                        # Handle both list and dict format for files
-                        default_files = []
-                        if isinstance(file_structure["files"], list):
-                            default_files = file_structure["files"]
-                        elif isinstance(file_structure["files"], dict):
-                            for file_name, file_data in file_structure["files"].items():
-                                if isinstance(file_data, dict):
-                                    file_data["name"] = file_name
-                                    default_files.append(file_data)
-                        
-                        logging.info(f"Generated {len(default_files)} files for {level1_item.name}")
-                        
-                        # Update metadata with new files
-                        if l1_metadata and isinstance(l1_metadata, dict):
-                            if "files" not in l1_metadata:
-                                l1_metadata["files"] = {}
-                                
-                            # Add generated files to metadata
-                            for file_data in default_files:
-                                if isinstance(file_data, dict) and "name" in file_data:
-                                    file_name = file_data["name"]
-                                    l1_metadata["files"][file_name] = {k: v for k, v in file_data.items() if k != "name"}
-                            
-                            # Write updated metadata
-                            self.file_manager.write_json_file(str(l1_metadata_path), l1_metadata)
-                            logging.info(f"Updated metadata for {level1_item.name} with new files")
-                        
-                        if not default_files:
-                            logging.warning(f"No valid files were generated for folder '{level1_item.name}'")
-                            continue
-                            
-                        # Now create the actual files
-                        for file_data in default_files:
-                            if not isinstance(file_data, dict) or "name" not in file_data:
-                                continue
-                                
-                            file_path = level1_item / file_data["name"]
-                            
-                            # Skip if file already exists
-                            if file_path.exists():
-                                logging.info(f"File {file_data['name']} already exists, skipping")
-                                continue
-                            
-                            # Get file type from extension or explicit type field
-                            file_type = file_data.get("type", "")
-                            if not file_type and "." in file_data["name"]:
-                                file_type = file_data["name"].split(".")[-1]
-                            
-                            # Generate file content
-                            success = self.content_generator.generate_file_content(
-                                str(file_path),
-                                file_type,
-                                file_data.get("description", ""),
-                                industry,
-                                level1_item.name,
-                                language,
-                                role
-                            )
-                            
-                            if success:
-                                total_files_generated += 1
-                                self.statistics_tracker.add_file(str(file_path))
-                                logging.info(f"Created file: {level1_item.name}/{file_data['name']} (total: {total_files_generated})")
-                                
-                                # Check file limit after successfully creating a file
-                                if self._check_short_mode_limit(self.ITEM_TYPE_FILE): 
-                                    logging.info(f"Short mode file limit reached after creating {total_files_generated} files")
-                                    return True
-                    except ShortModeLimitReached:
-                        # Limit reached, exit successfully
-                        return True
-                else:
-                    # Handle timeseries folders
-                    logging.info(f"Generating timeseries files for {level1_item.name}")
-                    try:
-                        self._generate_timeseries_files(
-                            level1_item, level1_item.name, l1_description,
-                            industry, language, role
-                        )
-                    except ShortModeLimitReached:
-                        # Re-raise to handle at the generate_files_only level
-                        return True
-                
-                # Process level 2 folders if this folder doesn't have enough files yet
-                if self._short_mode_enabled and total_files_generated >= self.SHORT_MODE_LIMITS[self.ITEM_TYPE_FILE]:
-                    logging.info(f"File limit reached ({total_files_generated} files), stopping")
-                    return True
-                    
-                for level2_item in level1_item.iterdir():
-                    if not level2_item.is_dir() or level2_item.name.startswith('.'):
-                        continue
-                    
-                    logging.info(f"Processing subfolder: {level1_item.name}/{level2_item.name}")
-                    
-                    # Try to read metadata but continue even if missing
-                    l2_metadata = None
-                    l2_description = ""
-                    l2_purpose = None
-                    
-                    l2_metadata_path = level2_item / ".metadata.json"
-                    if l2_metadata_path.exists():
-                        l2_metadata = self.file_manager.read_json_file(str(l2_metadata_path))
-                        if l2_metadata:
-                            l2_description = l2_metadata.get("description", "")
-                            l2_purpose = l2_metadata.get("purpose")
-                    else:
-                        logging.info(f"No metadata for {level1_item.name}/{level2_item.name}, using defaults")
-                        l2_description = f"Files for {level2_item.name} folder"
-
-                    # Generate files for this level 2 folder
-                    if not l2_purpose == "timeseries":
-                        logging.info(f"Generating files for {level1_item.name}/{level2_item.name}")
-                        try:
-                            # Use the level3_files_prompt which is designed for file generation
-                            instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language, None)
-                            context = get_translation("folder_structure_prompt.level3_files_prompt.context", language, None)
-                            folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language, None)
-                            file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language, None)
-                            file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language, None)
-                            important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language, None)
-                            important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language, None)
-                            
-                            # Get translated description template
-                            file_description = get_translation("description_templates.file_description", language, "Clear description of the file's purpose")
-                            
-                            # Check if essential components are missing
-                            if not instruction or not file_instruction:
-                                error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt.*)"
-                                logging.error(error_msg)
-                                continue
-                                
-                            # Role placeholder might be formatted differently in localized templates
-                            role_text = f" for a {role}" if role else ""
-                            
-                            # Get the JSON template and apply translated descriptions
-                            json_template = JsonTemplates.get_template("level3_files")
-                            json_template = json_template.format(file_description=file_description)
-                            
-                            # Construct the full prompt
-                            prompt_parts = [
-                                instruction.format(industry=industry, role_text=role_text),
-                                context.format(
-                                    l1_folder_name=level1_item.name,
-                                    l1_description=l1_description,
-                                    l2_folder_name=level2_item.name,
-                                    l2_description=l2_description
-                                ),
-                                folder_context.format(folder_structure="") if folder_context else "",
-                                file_instruction,
-                                f"Respond in the following JSON format:\n\n{json_template}",
-                                file_naming.format(industry=industry),
-                                f"IMPORTANT: {important_language}",
-                                f"IMPORTANT: {important_format}"
-                            ]
-                            
-                            # Join all prompt parts, filtering empty ones
-                            prompt = "\n\n".join([part for part in prompt_parts if part])
-                            
-                            # Generate files structure using LLM
-                            logging.info(f"Requesting file structure for {level1_item.name}/{level2_item.name} using LLM")
-                            file_structure = self.llm_client.get_json_completion(
-                                prompt=prompt,
-                                max_attempts=3,
-                                language=language
-                            )
-                            
-                            # Process the file structure
-                            if not file_structure or "files" not in file_structure:
-                                logging.warning(f"Failed to get valid file structure for {level1_item.name}/{level2_item.name}")
-                                continue
-                                
-                            # Handle both list and dict format for files
-                            default_files = []
-                            if isinstance(file_structure["files"], list):
-                                default_files = file_structure["files"]
-                            elif isinstance(file_structure["files"], dict):
-                                for file_name, file_data in file_structure["files"].items():
-                                    if isinstance(file_data, dict):
-                                        file_data["name"] = file_name
-                                        default_files.append(file_data)
-                            
-                            logging.info(f"Generated {len(default_files)} files for {level1_item.name}/{level2_item.name}")
-                            
-                            # Update metadata with new files
-                            if l2_metadata and isinstance(l2_metadata, dict):
-                                if "files" not in l2_metadata:
-                                    l2_metadata["files"] = {}
-                                    
-                                # Add generated files to metadata
-                                for file_data in default_files:
-                                    if isinstance(file_data, dict) and "name" in file_data:
-                                        file_name = file_data["name"]
-                                        l2_metadata["files"][file_name] = {k: v for k, v in file_data.items() if k != "name"}
-                                
-                                # Write updated metadata
-                                self.file_manager.write_json_file(str(l2_metadata_path), l2_metadata)
-                                logging.info(f"Updated metadata for {level1_item.name}/{level2_item.name} with new files")
-                            
-                            if not default_files:
-                                logging.warning(f"No valid files were generated for folder '{level1_item.name}/{level2_item.name}'")
-                                continue
-                                
-                            # Now create the actual files
-                            for file_data in default_files:
-                                if not isinstance(file_data, dict) or "name" not in file_data:
-                                    continue
-                                    
-                                file_path = level2_item / file_data["name"]
-                                
-                                # Skip if file already exists
-                                if file_path.exists():
-                                    logging.info(f"File {file_data['name']} already exists, skipping")
-                                    continue
-                                
-                                # Get file type from extension or explicit type field
-                                file_type = file_data.get("type", "")
-                                if not file_type and "." in file_data["name"]:
-                                    file_type = file_data["name"].split(".")[-1]
-                                
-                                # Generate file content
-                                success = self.content_generator.generate_file_content(
-                                    str(file_path),
-                                    file_type,
-                                    file_data.get("description", ""),
-                                    industry,
-                                    f"{level1_item.name}/{level2_item.name}",
-                                    language,
-                                    role
-                                )
-                                
-                                if success:
-                                    total_files_generated += 1
-                                    self.statistics_tracker.add_file(str(file_path))
-                                    logging.info(f"Created file: {level1_item.name}/{level2_item.name}/{file_data['name']} (total: {total_files_generated})")
-                                    
-                                    # Check file limit after successfully creating a file
-                                    if self._check_short_mode_limit(self.ITEM_TYPE_FILE): 
-                                        logging.info(f"Short mode file limit reached after creating {total_files_generated} files")
-                                        return True
-                        except ShortModeLimitReached:
-                            return True
-                        except Exception as e:
-                            logging.error(f"Error generating files for {level1_item.name}/{level2_item.name}: {e}")
-                    else:
-                        # Handle timeseries folders
-                        logging.info(f"Generating timeseries files for {level1_item.name}/{level2_item.name}")
-                        try:
-                            self._generate_timeseries_files(
-                                level2_item, level2_item.name, l2_description,
-                                industry, language, role
-                            )
-                        except ShortModeLimitReached:
-                            # Re-raise to handle at the generate_files_only level
-                            return True
-                    
-                    # Process level 3 folders if we haven't reached file limit
-                    if self._short_mode_enabled and total_files_generated >= self.SHORT_MODE_LIMITS[self.ITEM_TYPE_FILE]:
-                        logging.info(f"File limit reached ({total_files_generated} files), stopping")
-                        break
-                    
-                    # Iterate through level 3 folders
-                    for level3_item in level2_item.iterdir():
-                        if not level3_item.is_dir() or level3_item.name.startswith('.'):
-                            continue
-                        
-                        logging.info(f"Processing level 3 folder: {level1_item.name}/{level2_item.name}/{level3_item.name}")
-                        
-                        # Try to read metadata but continue even if missing
-                        l3_metadata = None
-                        l3_description = ""
-                        l3_purpose = None
-                        
-                        l3_metadata_path = level3_item / ".metadata.json"
-                        if l3_metadata_path.exists():
-                            l3_metadata = self.file_manager.read_json_file(str(l3_metadata_path))
-                            if l3_metadata:
-                                l3_description = l3_metadata.get("description", "")
-                                l3_purpose = l3_metadata.get("purpose")
-                        else:
-                            logging.info(f"No metadata for {level1_item.name}/{level2_item.name}/{level3_item.name}, using defaults")
-                            l3_description = f"Files for {level3_item.name} folder"
-
-                        # Generate files for this level 3 folder
-                        if not l3_purpose == "timeseries":
-                            logging.info(f"Generating files for {level1_item.name}/{level2_item.name}/{level3_item.name}")
-                            try:
-                                # Use the level3_files_prompt which is designed for file generation
-                                instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language, None)
-                                context = get_translation("folder_structure_prompt.level3_files_prompt.context", language, None)
-                                folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language, None)
-                                file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language, None)
-                                file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language, None)
-                                important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language, None)
-                                important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language, None)
-                                
-                                # Get translated description template
-                                file_description = get_translation("description_templates.file_description", language, "Clear description of the file's purpose")
-                                
-                                # Check if essential components are missing
-                                if not instruction or not file_instruction:
-                                    error_msg = f"No localized template found for '{language}' language (folder_structure_prompt.level3_files_prompt.*)"
-                                    logging.error(error_msg)
-                                    continue
-                                    
-                                # Role placeholder might be formatted differently in localized templates
-                                role_text = f" for a {role}" if role else ""
-                                
-                                # Get the JSON template and apply translated descriptions
-                                json_template = JsonTemplates.get_template("level3_files")
-                                json_template = json_template.format(file_description=file_description)
-                                
-                                # Construct the full prompt
-                                prompt_parts = [
-                                    instruction.format(industry=industry, role_text=role_text),
-                                    context.format(
-                                        l1_folder_name=level1_item.name,
-                                        l1_description=l1_description,
-                                        l2_folder_name=level2_item.name,
-                                        l2_description=l2_description
-                                    ),
-                                    folder_context.format(folder_structure=f"This is a level 3 folder named '{level3_item.name}' with description: '{l3_description}'") if folder_context else "",
-                                    file_instruction,
-                                    f"Respond in the following JSON format:\n\n{json_template}",
-                                    file_naming.format(industry=industry),
-                                    f"IMPORTANT: {important_language}",
-                                    f"IMPORTANT: {important_format}"
-                                ]
-                                
-                                # Join all prompt parts, filtering empty ones
-                                prompt = "\n\n".join([part for part in prompt_parts if part])
-                                
-                                # Generate files structure using LLM
-                                logging.info(f"Requesting file structure for {level1_item.name}/{level2_item.name}/{level3_item.name} using LLM")
-                                file_structure = self.llm_client.get_json_completion(
-                                    prompt=prompt,
-                                    max_attempts=3,
-                                    language=language
-                                )
-                                
-                                # Process the file structure
-                                if not file_structure or "files" not in file_structure:
-                                    logging.warning(f"Failed to get valid file structure for {level1_item.name}/{level2_item.name}/{level3_item.name}")
-                                    continue
-                                    
-                                # Handle both list and dict format for files
-                                default_files = []
-                                if isinstance(file_structure["files"], list):
-                                    default_files = file_structure["files"]
-                                elif isinstance(file_structure["files"], dict):
-                                    for file_name, file_data in file_structure["files"].items():
-                                        if isinstance(file_data, dict):
-                                            file_data["name"] = file_name
-                                            default_files.append(file_data)
-                                
-                                logging.info(f"Generated {len(default_files)} files for {level1_item.name}/{level2_item.name}/{level3_item.name}")
-                                
-                                # Update metadata with new files
-                                if l3_metadata and isinstance(l3_metadata, dict):
-                                    if "files" not in l3_metadata:
-                                        l3_metadata["files"] = {}
-                                        
-                                    # Add generated files to metadata
-                                    for file_data in default_files:
-                                        if isinstance(file_data, dict) and "name" in file_data:
-                                            file_name = file_data["name"]
-                                            l3_metadata["files"][file_name] = {k: v for k, v in file_data.items() if k != "name"}
-                                    
-                                    # Write updated metadata
-                                    self.file_manager.write_json_file(str(l3_metadata_path), l3_metadata)
-                                    logging.info(f"Updated metadata for {level1_item.name}/{level2_item.name}/{level3_item.name} with new files")
-                                
-                                if not default_files:
-                                    logging.warning(f"No valid files were generated for folder '{level1_item.name}/{level2_item.name}/{level3_item.name}'")
-                                    continue
-                                    
-                                # Now create the actual files
-                                for file_data in default_files:
-                                    if not isinstance(file_data, dict) or "name" not in file_data:
-                                        continue
-                                        
-                                    file_path = level3_item / file_data["name"]
-                                    
-                                    # Skip if file already exists
-                                    if file_path.exists():
-                                        logging.info(f"File {file_data['name']} already exists, skipping")
-                                        continue
-                                    
-                                    # Get file type from extension or explicit type field
-                                    file_type = file_data.get("type", "")
-                                    if not file_type and "." in file_data["name"]:
-                                        file_type = file_data["name"].split(".")[-1]
-                                    
-                                    # Generate file content
-                                    success = self.content_generator.generate_file_content(
-                                        str(file_path),
-                                        file_type,
-                                        file_data.get("description", ""),
-                                        industry,
-                                        f"{level1_item.name}/{level2_item.name}/{level3_item.name}",
-                                        language,
-                                        role
-                                    )
-                                    
-                                    if success:
-                                        total_files_generated += 1
-                                        self.statistics_tracker.add_file(str(file_path))
-                                        logging.info(f"Created file: {level1_item.name}/{level2_item.name}/{level3_item.name}/{file_data['name']} (total: {total_files_generated})")
-                                        
-                                        # Check file limit after successfully creating a file
-                                        if self._check_short_mode_limit(self.ITEM_TYPE_FILE): 
-                                            logging.info(f"Short mode file limit reached after creating {total_files_generated} files")
-                                            return True
-                            except ShortModeLimitReached:
-                                return True
-                            except Exception as e:
-                                logging.error(f"Error generating files for {level1_item.name}/{level2_item.name}/{level3_item.name}: {e}")
-                        else:
-                            # Handle timeseries folders at level 3
-                            logging.info(f"Generating timeseries files for {level1_item.name}/{level2_item.name}/{level3_item.name}")
-                            try:
-                                self._generate_timeseries_files(
-                                    level3_item, level3_item.name, l3_description,
-                                    industry, language, role
-                                )
-                            except ShortModeLimitReached:
-                                # Re-raise to handle at the generate_files_only level
-                                return True
-            
-            if total_files_generated == 0:
-                logging.warning("No files were generated. Check your folder structure.")
-                return False
-                
-            logging.info(f"Successfully generated {total_files_generated} files in file mode")
-            return success
-            
-        except Exception as e:
-            logging.exception(f"Error during file regeneration: {e}")
-            return False
-        
-    def _get_level2_folders_prompt(self, industry: str, l1_folder_name: str, 
-                                 l1_description: str, language: str, 
-                                 role: Optional[str] = None) -> str:
-        """
-        Get prompt for level 2 folder generation.
-        
-        Args:
-            industry: Industry context
-            l1_folder_name: Level 1 folder name
-            l1_description: Level 1 folder description
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Prompt string
-            
-        Raises:
-            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
-        """
-        # Get the translated components from language resources
-        instruction = get_translation("folder_structure_prompt.level2.instruction", language)
-        context = get_translation("folder_structure_prompt.level2.context", language)
-        folder_instruction = get_translation("folder_structure_prompt.level2.folder_instruction", language)
-        folder_naming = get_translation("folder_structure_prompt.level2.folder_naming", language)
-        important_language = get_translation("folder_structure_prompt.level2.important_language", language)
-        important_format = get_translation("folder_structure_prompt.level2.important_format", language)
-        
-        # Get translated description template
-        folder_description = get_translation("description_templates.folder_description", language)
-        
-        # Role placeholder might be formatted differently in localized templates
-        role_text = f" for a {role}" if role else ""
-        
-        # Get the JSON template and apply translated descriptions
-        json_template = JsonTemplates.get_template("level2_folders")
-        json_template = json_template.format(folder_description=folder_description)
-        
-        # Get the JSON response format instruction template
-        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language)
-        
-        # Construct the full prompt
-        prompt_parts = [
-            instruction.format(industry=industry, role_text=role_text, l1_folder_name=l1_folder_name),
-            context.format(l1_description=l1_description),
-            folder_instruction,
-            json_response_format_instruction.format(json_template=json_template),
-            folder_naming.format(industry=industry),
-            f"IMPORTANT: {important_language}",
-            f"IMPORTANT: {important_format}"
-        ]
-        
-        return "\n\n".join([part for part in prompt_parts if part])
-
-    def _reset_short_mode(self, short_mode: bool, mode: str = "all"):
-        """
-        Resets the counters and sets the mode for a new run.
-        
-        Args:
-            short_mode: Whether to enable short mode
-            mode: The generation mode ('all', 'structure', or 'file')
-        """
-        self._item_counts = {item_type: 0 for item_type in self.SHORT_MODE_LIMITS.keys()}
-        self._short_mode_enabled = short_mode
-        
-        # For file-only mode, disable folder limits
-        if mode == "file" and short_mode:
-            self.SHORT_MODE_LIMITS[self.ITEM_TYPE_FOLDER] = 0  # Disable folder limit in file mode
-            logging.info("File mode: folder limit disabled")
-        elif short_mode:
-            # Reset to default limits for other modes
-            self.SHORT_MODE_LIMITS[self.ITEM_TYPE_FOLDER] = 10
-            
-        if short_mode:
-            limits_str = ", ".join(f"{limit} {item_type}s" for item_type, limit in self.SHORT_MODE_LIMITS.items() if limit > 0)
-            logging.info(f"Short mode enabled (limits: {limits_str}).")
-            
-        # Add debug logging for current limits
-        for item_type, limit in self.SHORT_MODE_LIMITS.items():
-            logging.debug(f"Short mode limit for {item_type}: {limit}")
-            
-        # Log current date range information
-        logging.info(f"Using date range: {self.date_range_str} for content generation")
-        
-    def _check_short_mode_limit(self, item_type: str) -> bool:
-        """
-        Checks if the short mode limit has been reached for the specified item type.
-        
-        Args:
-            item_type: Type of item to check (must be one of the ITEM_TYPE_* constants)
-            
-        Returns:
-            True if limit reached, False otherwise
-        """
-        if not self._short_mode_enabled:
-            return False # Short mode not active
-
-        if item_type not in self.SHORT_MODE_LIMITS:
-            logging.warning(f"Unknown item type '{item_type}' in short mode check")
-            return False
-
-        limit = self.SHORT_MODE_LIMITS[item_type]
-        if limit == 0:  # No limit for this item type
-            logging.debug(f"No limit set for item type '{item_type}', continuing")
-            return False
-
-        # Get caller info for debugging
-        import inspect
-        caller_frame = inspect.currentframe().f_back
-        caller_function = caller_frame.f_code.co_name if caller_frame else "unknown"
-        caller_line = caller_frame.f_lineno if caller_frame else 0
-        
-        # Log every check with caller information
-        logging.debug(f"Checking {item_type} limit ({self._item_counts[item_type]}/{limit}) - called from {caller_function}:{caller_line}")
-
-        if self._item_counts[item_type] >= limit:
-            logging.info(f"Short mode {item_type} limit ({limit} {item_type}s) reached - called from {caller_function}:{caller_line}")
-            return True # Limit reached
-        
-        self._item_counts[item_type] += 1
-        logging.info(f"Short mode {item_type} count: {self._item_counts[item_type]}/{limit} - called from {caller_function}:{caller_line}")
-        return False # Limit not reached
-
-    # --- LLM Interaction and Prompt Generation --- 
-    def _generate_level1_folders(self, industry: str, language: str, 
-                               role: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Generate level 1 folder structure using LLM.
-        """
-        prompt = self._get_level1_folders_prompt(industry, language, role)
-        if not prompt:
-            logging.error("Failed to generate prompt for level 1 folders.")
-            # Return an empty structure or None to indicate failure
-            return {"folders": {}} 
-        
-        return self.llm_client.get_json_completion(
-            prompt=prompt,
-            max_attempts=3,
-            language=language
-        )
-    
-    def _generate_level2_folders(self, industry: str, l1_folder_name: str, 
-                               l1_description: str, language: str, 
-                               role: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Generate level 2 folder structure.
-        
-        Args:
-            industry: Industry context
-            l1_folder_name: Level 1 folder name
-            l1_description: Level 1 folder description
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Dictionary with folder structure information
-        """
-        prompt = self._get_level2_folders_prompt(industry, l1_folder_name, l1_description, language, role)
-        
-        return self.llm_client.get_json_completion(
-            prompt=prompt,
-            max_attempts=3,
-            language=language
-        )
-    
-    def _get_level1_folders_prompt(self, industry: str, language: str, role: Optional[str] = None) -> str:
-        """
-        Get prompt for level 1 folder generation.
-        
-        Args:
-            industry: Industry context
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Prompt string
-            
-        Raises:
-            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
-        """
-        # Get the translated components from language resources
-        instruction = get_translation("folder_structure_prompt.level1.instruction", language)
-        folder_naming = get_translation("folder_structure_prompt.level1.folder_naming", language)
-        important_language = get_translation("folder_structure_prompt.level1.important_language", language)
-        important_format = get_translation("folder_structure_prompt.level1.important_format", language)
-        
-        # Get translated description template
-        folder_description = get_translation("description_templates.folder_description", language)
-        
-        # Role placeholder might be formatted differently in localized templates
-        # so we'll use the role_text format from the language templates
-        role_text = f" for a {role}" if role else ""
-        
-        # Get the JSON template and apply translated descriptions
-        json_template = JsonTemplates.get_template("level1_folders")
-        json_template = json_template.format(folder_description=folder_description)
-        
-        # Get the JSON response format instruction template
-        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language)
-
-        # Construct the full prompt
-        prompt_parts = [
-            instruction.format(industry=industry),
-            json_response_format_instruction.format(json_template=json_template),
-            folder_naming.format(industry=industry),
-            f"IMPORTANT: {important_language}",
-            f"IMPORTANT: {important_format}"
-        ]
-        
-        return "\n\n".join([part for part in prompt_parts if part])
-        
-    def _generate_level3_folders(self, industry: str, l2_folder_name: str, 
-                               l2_folder_data: Dict[str, Any], l1_description: str,
-                               l1_folder_name: str, language: str, 
-                               role: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Generate level 3 folder structure.
-        
-        Args:
-            industry: Industry context
-            l2_folder_name: Level 2 folder name
-            l2_folder_data: Level 2 folder data
-            l1_description: Level 1 folder description
-            l1_folder_name: Level 1 folder name
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Dictionary with folder structure information
-        """
-        prompt = self._get_level3_folders_prompt(industry, l2_folder_name, l2_folder_data, 
-                                               l1_description, l1_folder_name, language, role)
-        
-        return self.llm_client.get_json_completion(
-            prompt=prompt,
-            max_attempts=3,
-            language=language
-        )
-    
-    def _get_level3_folders_prompt(self, industry: str, l2_folder_name: str, 
-                                 l2_folder_data: Dict[str, Any], l1_description: str,
-                                 l1_folder_name: str, language: str, 
-                                 role: Optional[str] = None) -> str:
-        """
-        Get prompt for level 3 folder generation.
-        
-        Args:
-            industry: Industry context
-            l2_folder_name: Level 2 folder name
-            l2_folder_data: Level 2 folder data
-            l1_description: Level 1 folder description
-            l1_folder_name: Level 1 folder name
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Prompt string
-            
-        Raises:
-            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
-        """
-        l2_description = l2_folder_data.get("description", "")
-        
-        # Get the translated components from language resources
-        instruction = get_translation("folder_structure_prompt.level3.instruction", language)
-        context = get_translation("folder_structure_prompt.level3.context", language)
-        folder_instruction = get_translation("folder_structure_prompt.level3.folder_instruction", language)
-        folder_naming = get_translation("folder_structure_prompt.level3.folder_naming", language)
-        important_language = get_translation("folder_structure_prompt.level3.important_language", language)
-        important_format = get_translation("folder_structure_prompt.level3.important_format", language)
-        
-        # Get translated description template
-        folder_description = get_translation("description_templates.folder_description", language)
-        
-        # Role placeholder might be formatted differently in localized templates
-        role_text = f" for a {role}" if role else ""
-        
-        # Get the JSON template and apply translated descriptions
-        json_template = JsonTemplates.get_template("level3_folders")
-        json_template = json_template.format(folder_description=folder_description)
-        
-        # Get the JSON response format instruction template
-        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language)
-        
-        # Construct the full prompt
-        prompt_parts = [
-            instruction.format(industry=industry, role_text=role_text),
-            context.format(
-                l1_folder_name=l1_folder_name,
-                l1_description=l1_description,
-                l2_folder_name=l2_folder_name,
-                l2_description=l2_description
-            ),
-            folder_instruction,
-            json_response_format_instruction.format(json_template=json_template),
-            folder_naming.format(industry=industry),
-            f"IMPORTANT: {important_language}",
-            f"IMPORTANT: {important_format}"
-        ]
-        
-        return "\n\n".join([part for part in prompt_parts if part])
-    
-    def _generate_level3_files(self, industry: str, l2_folder_name: str, 
-                             l2_folder_data: Dict[str, Any], l1_description: str,
-                             l1_folder_name: str, language: str, 
-                             role: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Generate level 3 files structure.
-        
-        Args:
-            industry: Industry context
-            l2_folder_name: Level 2 folder name
-            l2_folder_data: Level 2 folder data
-            l1_description: Level 1 folder description
-            l1_folder_name: Level 1 folder name
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Dictionary with files information
-        """
-        prompt = self._get_level3_files_prompt(industry, l2_folder_name, l2_folder_data, 
-                                             l1_description, l1_folder_name, language, role)
-        
-        return self.llm_client.get_json_completion(
-            prompt=prompt,
-            max_attempts=3,
-            language=language
-        )
-    
-    def _get_level3_files_prompt(self, industry: str, l2_folder_name: str, 
-                               l2_folder_data: Dict[str, Any], l1_description: str,
-                               l1_folder_name: str, language: str, 
-                               role: Optional[str] = None) -> str:
-        """
-        Get prompt for level 3 files generation.
-        
-        Args:
-            industry: Industry context
-            l2_folder_name: Level 2 folder name
-            l2_folder_data: Level 2 folder data
-            l1_description: Level 1 folder description
-            l1_folder_name: Level 1 folder name
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            Prompt string
-            
-        Raises:
-            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
-        """
-        l2_description = l2_folder_data.get("description", "")
-        
-        # Get the translated components from language resources
-        instruction = get_translation("folder_structure_prompt.level3_files_prompt.instruction", language)
-        context = get_translation("folder_structure_prompt.level3_files_prompt.context", language)
-        folder_context = get_translation("folder_structure_prompt.level3_files_prompt.folder_context", language)
-        file_instruction = get_translation("folder_structure_prompt.level3_files_prompt.file_instruction", language)
-        file_naming = get_translation("folder_structure_prompt.level3_files_prompt.file_naming", language)
-        important_language = get_translation("folder_structure_prompt.level3_files_prompt.important_language", language)
-        important_format = get_translation("folder_structure_prompt.level3_files_prompt.important_format", language)
-        
-        # Get translated description template
-        file_description = get_translation("description_templates.file_description", language)
-        
-        # Role placeholder might be formatted differently in localized templates
-        role_text = f" for a {role}" if role else ""
-        
-        # Get the JSON template and apply translated descriptions
-        json_template = JsonTemplates.get_template("level3_files")
-        json_template = json_template.format(file_description=file_description)
-
-        # Get the JSON response format instruction template
-        json_response_format_instruction = get_translation("json_format_instructions.json_response_format_instruction", language)
-        
-        # Construct the full prompt
-        prompt_parts = [
-            instruction.format(
-                industry=industry,
-                role_text=role_text,
-                l2_folder_name=l2_folder_name,
-                l1_folder_name=l1_folder_name
-            ),
-            context.format(
-                l1_folder_name=l1_folder_name,
-                l1_description=l1_description,
-                l2_folder_name=l2_folder_name,
-                l2_description=l2_description
-            ),
-            folder_context.format(
-                folder_structure=f"Level 1 folder: {l1_folder_name} ({l1_description})\nLevel 2 folder: {l2_folder_name} ({l2_description})"
-            ) if folder_context else "",
-            file_instruction,
-            json_response_format_instruction.format(json_template=json_template),
-            file_naming.format(industry=industry),
-            f"IMPORTANT: {important_language}",
-            f"IMPORTANT: {important_format}"
-        ]
-        
-        return "\n\n".join([part for part in prompt_parts if part])
-         
-    def _generate_timeseries_files(self, folder_path: Path, folder_name: str, folder_description: str,
-                                 industry: str, language: str, role: Optional[str] = None) -> bool:
-        """
-        Generate timeseries files for a folder marked with timeseries purpose.
-        
-        Args:
-            folder_path: Path to the folder
-            folder_name: Name of the folder
-            folder_description: Description of the folder
-            industry: Industry context
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            True if successful, False otherwise
-            
-        Raises:
-            LocalizedTemplateNotFoundError: If no localized template is found for the specified language
-        """
-        # Get localized prompt template
-        prompt_template = get_translation("folder_structure_prompt.timeseries_files_prompt", language)
-            
-        # Replace placeholders in the template
-        role_text = f" for a {role}" if role else ""
-        prompt = prompt_template.format(
-            folder_name=folder_name,
-            folder_description=folder_description,
-            industry=industry,
-            language=language,
-            role_text=role_text,
-            date_range=self.date_range_str
-        )
-        
-        file_structure = self.llm_client.get_json_completion(
-            prompt=prompt,
-            max_attempts=3,
-            language=language
-        )
-        
-        # Process the file structure
-        if not file_structure or "files" not in file_structure:
-            logging.warning(f"Failed to get valid file structure for {folder_path}")
-            return False
-            
-        # Handle both list and dict format for files
-        timeseries_files = []
-        if isinstance(file_structure["files"], list):
-            timeseries_files = file_structure["files"]
-        elif isinstance(file_structure["files"], dict):
-            for file_name, file_data in file_structure["files"].items():
-                if isinstance(file_data, dict):
-                    file_data["name"] = file_name
-                    timeseries_files.append(file_data)
-        
-        logging.info(f"Generated {len(timeseries_files)} files for {folder_path}")
-        
-        # Create the files
-        for file_data in timeseries_files:
-            if not isinstance(file_data, dict) or "name" not in file_data:
-                logging.warning(f"Invalid file data: {file_data}")
-                continue
-                
-            file_name = file_data.get("name", "")
-            file_type = file_data.get("type", "")
-            file_description = file_data.get("description", "")
-            
-            # Check limit after extracting file data
-            if self._check_short_mode_limit(self.ITEM_TYPE_FILE):
-                raise ShortModeLimitReached()
-                
-            # Generate content for the file
-            file_path = folder_path / self.file_manager.sanitize_path(file_name)
-            
-            if self.content_generator.generate_file(
-                str(file_path),
-                file_type,
-                file_description,
-                industry,
-                str(folder_path.relative_to(folder_path.parent.parent)),
-                language,
-                role
-            ):
-                # Successfully generated file
-                self.statistics_tracker.add_file(str(file_path))
-            else:
-                logging.error(f"Failed to generate file {file_name}")
-                
-        return True
-
-    def _process_folder_structure(self, level1_structure: Dict[str, Any], target_dir: Path,
-                                industry: str, language: str, role: Optional[str] = None) -> bool:
-        """
-        Process the folder structure and generate files.
-        
-        Args:
-            level1_structure: Level 1 folder structure data
-            target_dir: Target directory
-            industry: Industry context
-            language: Language to use
-            role: Specific role within the industry (optional)
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        success = True
-        
-        # Store root level metadata
-        root_metadata = {
-            "industry": industry,
-            "language": language,
-            "role": role,
-            "date_range": self.date_range_str,
-            "date_start": self.date_start.strftime("%Y-%m-%d"),
-            "date_end": self.date_end.strftime("%Y-%m-%d"),
-            "folders": level1_structure["folders"]
-        }
-        self.file_manager.write_json_file(str(target_dir / ".metadata.json"), root_metadata)
-        self.statistics_tracker.add_file(str(target_dir / ".metadata.json"))
-        
-        # Get parent folder names to check for conflicts
-        parent_dirs = [p.name for p in target_dir.parents]
-        
-        for l1_folder_name, l1_folder_data in level1_structure["folders"].items():
-            if not isinstance(l1_folder_data, dict) or "description" not in l1_folder_data:
-                logging.warning(f"Invalid data for folder {l1_folder_name}, skipping")
-                continue
-                
-            # Check if folder name conflicts with parent folder name
-            if l1_folder_name in parent_dirs:
-                logging.warning(f"Folder name '{l1_folder_name}' conflicts with parent folder name, skipping")
-                continue
-                
-            # Create level 1 folder
-            l1_folder_path = target_dir / self.file_manager.sanitize_path(l1_folder_name)
-            if not self.file_manager.ensure_directory(str(l1_folder_path)):
-                success = False
-                continue
-                
-                
-            # If folder already exists, proceed with content generation
-            if l1_folder_path.exists():
-                # Check limit after successfully creating L1 folder
-                if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER): raise ShortModeLimitReached()
-                
-            # Track folder
-            self.statistics_tracker.add_folder(str(l1_folder_path))
-                
-            logging.info(f"Created level 1 folder: {l1_folder_name}")
-            
-            # Get folder purpose if specified
-            folder_purpose = l1_folder_data.get("purpose")
-            
-            # Store level 1 folder metadata
-            l1_metadata = {
-                "name": l1_folder_name,
-                "description": l1_folder_data.get("description", ""),
-                "industry": industry,
-                "purpose": folder_purpose
-            }
-            
-            # Skip subfolder creation for timeseries folders
-            if folder_purpose == "timeseries":
-                logging.info(f"Folder {l1_folder_name} is marked as timeseries, skipping subfolders")
-                self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
-                self.statistics_tracker.add_file(str(l1_folder_path / ".metadata.json"))
-                
-                # Generate timeseries files for this folder
-                self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}")
-                self._generate_timeseries_files(
-                    l1_folder_path, l1_folder_name, l1_folder_data.get("description", ""),
-                    industry, language, role
-                )
-                self.statistics_tracker.end_tracking_item()
-                continue
-            
-            # Generate level 2 folder structure
-            self.statistics_tracker.start_tracking_item(f"level2_folders_for_{l1_folder_name}")
-            level2_structure = self._generate_level2_folders(
-                industry, l1_folder_name, l1_folder_data.get("description", ""), language, role
-            )
-            self.statistics_tracker.end_tracking_item()
-            
-            if not level2_structure or "folders" not in level2_structure:
-                logging.error(f"Failed to get valid level 2 structure for {l1_folder_name}, skipping")
-                continue
-            
-            # Add folders to level 1 metadata
-            l1_metadata["folders"] = level2_structure["folders"]
-            self.file_manager.write_json_file(str(l1_folder_path / ".metadata.json"), l1_metadata)
-            self.statistics_tracker.add_file(str(l1_folder_path / ".metadata.json"))
-            
-            # Track timeseries folders at level 2
-            if self.content_generator.is_timeseries_limit_reached(str(l1_folder_path)):
-                logging.warning(f"Maximum number of timeseries folders in {l1_folder_name} reached")
-            
-            # Update parent directories list for level 2 folder check
-            l2_parent_dirs = parent_dirs + [l1_folder_name]
-                
-            # Process level 2 folders
-            for l2_folder_name, l2_folder_data in level2_structure["folders"].items():
-                if not isinstance(l2_folder_data, dict) or "description" not in l2_folder_data:
-                    logging.warning(f"Invalid data for level 2 folder {l2_folder_name}, skipping")
-                    continue
-                    
-                # Create level 2 folder
-                l2_folder_path = l1_folder_path / self.file_manager.sanitize_path(l2_folder_name)
-                if not self.file_manager.ensure_directory(str(l2_folder_path)):
-                    success = False
-                    continue
-                    
-                # Check limit after successfully creating L2 folder
-                if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER): raise ShortModeLimitReached()
-                
-                logging.info(f"Created level 2 folder: {l1_folder_name}/{l2_folder_name}")
-                
-                # Get folder purpose if specified
-                l2_folder_purpose = l2_folder_data.get("purpose")
-                
-                # Store level 2 folder metadata
-                l2_metadata = {
-                    "name": l2_folder_name,
-                    "description": l2_folder_data.get("description", ""),
-                    "parent_folder": l1_folder_name,
-                    "industry": industry,
-                    "purpose": l2_folder_purpose
-                }
-                
-                # Skip subfolder creation for timeseries folders
-                if l2_folder_purpose == "timeseries":
-                    logging.info(f"Folder {l1_folder_name}/{l2_folder_name} is marked as timeseries, skipping subfolders")
-                    self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
-                    self.statistics_tracker.add_file(str(l2_folder_path / ".metadata.json"))
-                    
-                    # Generate timeseries files for this folder
-                    self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}_{l2_folder_name}")
-                    self._generate_timeseries_files(
-                        l2_folder_path, l2_folder_name, l2_folder_data.get("description", ""),
-                        industry, language, role
-                    )
-                    self.statistics_tracker.end_tracking_item()
-                    continue
-                
-                # Generate level 3 folder structure
-                level3_structure = self._generate_level3_folders(
-                    industry, l2_folder_name, l2_folder_data, 
-                    l1_folder_data.get("description", ""), l1_folder_name, language, role
-                )
-                
-                if not level3_structure or "folders" not in level3_structure:
-                    logging.warning(f"Failed to get valid level 3 structure for {l1_folder_name}/{l2_folder_name}, skipping")
-                    continue
-                
-                # Add folders to level 2 metadata
-                l2_metadata["folders"] = level3_structure["folders"]
-                self.file_manager.write_json_file(str(l2_folder_path / ".metadata.json"), l2_metadata)
-                self.statistics_tracker.add_file(str(l2_folder_path / ".metadata.json"))
-                
-                # Track timeseries folders at level 3
-                if self.content_generator.is_timeseries_limit_reached(str(l2_folder_path)):
-                    logging.warning(f"Maximum number of timeseries folders in {l1_folder_name}/{l2_folder_name} reached")
-                
-                # Update parent directories list for level 3 folder check
-                l3_parent_dirs = l2_parent_dirs + [l2_folder_name]
-                
-                # Process level 3 folders
-                for l3_folder_name, l3_folder_data in level3_structure["folders"].items():
-                    if not isinstance(l3_folder_data, dict) or "description" not in l3_folder_data:
-                        logging.warning(f"Invalid data for folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name}, skipping")
-                        continue
-                        
-                    # Create level 3 folder
-                    l3_folder_path = l2_folder_path / self.file_manager.sanitize_path(l3_folder_name)
-                    if not self.file_manager.ensure_directory(str(l3_folder_path)):
-                        success = False
-                        continue
-                        
-                    # Check limit after successfully creating L3 folder
-                    if self._check_short_mode_limit(self.ITEM_TYPE_FOLDER): raise ShortModeLimitReached()
-                    
-                    logging.info(f"Created level 3 folder: {l1_folder_name}/{l2_folder_name}/{l3_folder_name}")
-                    
-                    # Store level 3 folder metadata
-                    l3_metadata = {
-                        "name": l3_folder_name,
-                        "description": l3_folder_data.get("description", ""),
-                        "parent_folder": l2_folder_name,
-                        "grandparent_folder": l1_folder_name,
-                        "industry": industry,
-                        "purpose": l3_folder_data.get("purpose")
-                    }
-                    self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
-                    self.statistics_tracker.add_file(str(l3_folder_path / ".metadata.json"))
-                    
-                    # Generate files for this level 3 folder
-                    l3_files_structure = self._generate_level3_files(
-                        industry, l2_folder_name, l2_folder_data,
-                        l1_folder_data.get("description", ""), l1_folder_name, language, role
-                    )
-                    
-                    if not l3_files_structure or "files" not in l3_files_structure:
-                        logging.warning(f"Failed to get valid files structure for {l1_folder_name}/{l2_folder_name}/{l3_folder_name}")
-                        continue
-                        
                     # Handle both list and dict format for files
-                    l3_files = []
-                    if isinstance(l3_files_structure["files"], list):
-                        l3_files = l3_files_structure["files"]
-                    elif isinstance(l3_files_structure["files"], dict):
-                        for file_name, file_data in l3_files_structure["files"].items():
+                    if isinstance(files_part, list):
+                        files_to_create = files_part
+                    elif isinstance(files_part, dict):
+                        for file_name, file_data in files_part.items():
                             if isinstance(file_data, dict):
                                 file_data["name"] = file_name
-                                l3_files.append(file_data)
-                    
-                    # Add files to level 3 metadata
-                    l3_metadata["files"] = {
-                        file_data["name"]: {k: v for k, v in file_data.items() if k != "name"}
-                        for file_data in l3_files
-                        if isinstance(file_data, dict) and "name" in file_data
-                    }
-                    
-                    # Update metadata with files information
-                    self.file_manager.write_json_file(str(l3_folder_path / ".metadata.json"), l3_metadata)
-                    
-                    # Create files for this level 3 folder
-                    for file_data in l3_files:
-                        if not isinstance(file_data, dict) or "name" not in file_data:
-                            continue
+                                files_to_create.append(file_data)
+                
+                # If we didn't get any files from the LLM, generate them individually
+                if not files_to_create:
+                    logging.warning(f"No files returned from LLM for {folder_path_str}, generating individually")
+                    # Generate files one by one
+                    for _ in range(files_to_generate):
+                        file_data = self._generate_random_file_data(folder_path_str, folder_description, industry)
+                        if file_data and "name" in file_data:
+                            files_to_create.append(file_data)
                             
+                # Merge updated metadata with existing metadata
+                if folder_metadata_updated and folder_metadata:
+                    # Update description if it changed significantly
+                    if "description" in folder_metadata_updated and folder_metadata_updated["description"] != folder_description:
+                        folder_metadata["description"] = folder_metadata_updated["description"]
+                        
+                    # Update purpose if provided
+                    if "purpose" in folder_metadata_updated:
+                        folder_metadata["purpose"] = folder_metadata_updated["purpose"]
+                    
+                    # Initialize files dictionary if it doesn't exist
+                    if "files" not in folder_metadata:
+                        folder_metadata["files"] = {}
+                    
+                    # Write updated metadata back to disk
+                    self.file_manager.write_json_file(str(metadata_path), folder_metadata)
+                    logging.info(f"Updated folder metadata for {folder_path_str}")
+                elif folder_metadata_updated:
+                    # Write the new metadata to disk
+                    self.file_manager.write_json_file(str(metadata_path), folder_metadata_updated)
+                    logging.info(f"Created new folder metadata for {folder_path_str}")
+                    folder_metadata = folder_metadata_updated
+                
+                # Generate files from the prepared list
+                file_count = 0
+                
+                # Process each file in the list
+                for file_data in files_to_create:
+                    if remaining_files <= 0:
+                        break
+                        
+                    if not file_data or "name" not in file_data:
+                        continue
+                    
+                    try:
                         file_name = file_data["name"]
-                        file_path = l3_folder_path / self.file_manager.sanitize_path(file_name)
+                        file_path = folder_path / self.file_manager.sanitize_path(file_name)
+                        
+                        # Skip if file already exists
+                        if file_path.exists():
+                            logging.info(f"File {file_name} already exists in {folder_path_str}, skipping")
+                            continue
                         
                         # Get file type from extension or explicit type field
                         file_type = file_data.get("type", "")
                         if not file_type and "." in file_name:
                             file_type = file_name.split(".")[-1]
-                        
-                        # Check limit before file creation
-                        if self._check_short_mode_limit(self.ITEM_TYPE_FILE): raise ShortModeLimitReached()
                         
                         # Generate file content
                         success = self.content_generator.generate_file_content(
@@ -2020,29 +478,273 @@ class FolderGenerator:
                             file_type,
                             file_data.get("description", ""),
                             industry,
-                            f"{l1_folder_name}/{l2_folder_name}/{l3_folder_name}",
+                            folder_path_str,
                             language,
                             role
                         )
                         
                         if success:
+                            files_generated += 1
                             self.statistics_tracker.add_file(str(file_path))
-                            logging.info(f"Created file: {l1_folder_name}/{l2_folder_name}/{l3_folder_name}/{file_name}")
-                    
-                    # Generate timeseries files for timeseries folders
-                    if l3_folder_data.get("purpose") == "timeseries":
-                        logging.info(f"Folder {l1_folder_name}/{l2_folder_name}/{l3_folder_name} is marked as timeseries")
-                        self.statistics_tracker.start_tracking_item(f"timeseries_files_for_{l1_folder_name}_{l2_folder_name}_{l3_folder_name}")
-                        try:
-                            self._generate_timeseries_files(
-                                l3_folder_path, l3_folder_name, l3_folder_data.get("description", ""),
-                                industry, language, role
-                            )
-                        except ShortModeLimitReached:
-                            # Re-raise to handle at the generate_all level
-                            raise
-                        finally:
-                            self.statistics_tracker.end_tracking_item()
+                            logging.info(f"Created file: {folder_path_str}/{file_name}")
+                            file_count += 1
+                            remaining_files -= 1
+                            
+                            # Update metadata with new file
+                            if folder_metadata and isinstance(folder_metadata, dict):
+                                if "files" not in folder_metadata:
+                                    folder_metadata["files"] = {}
+                                
+                                # Add generated file to metadata
+                                folder_metadata["files"][file_name] = {k: v for k, v in file_data.items() if k != "name"}
+                                
+                                # Write updated metadata
+                                self.file_manager.write_json_file(str(metadata_path), folder_metadata)
+                        else:
+                            logging.error(f"Failed to generate file {file_name} in {folder_path_str}")
+                            overall_success = False
+                    except Exception as e:
+                        logging.error(f"Error generating file in {folder_path_str}: {e}")
+                        overall_success = False
+                
+                logging.info(f"Generated {file_count} files in folder {folder_path_str}")
+            
+            logging.info(f"Total files generated: {files_generated} out of requested {max_files}")
+            
+            # Print statistics at the end
+            self.statistics_tracker.print_statistics(language)
+            
+            return overall_success
+        except ShortModeLimitReached:
+            logging.info("File generation stopped due to short mode limit.")
+            
+            # Print statistics even when stopped early
+            self.statistics_tracker.print_statistics(language)
+            
+            return True
+        except LocalizedTemplateNotFoundError as e:
+            logging.error(f"Language resource error: {e}")
+            return False
+        except Exception as e:
+            logging.exception(f"Error during file generation in folders: {e}")
+            return False
+    
+    def _generate_random_file_data(self, folder_path: str, folder_description: str, industry: str) -> Dict[str, Any]:
+        """Generate random file data based on folder context."""
+        # Use LLM to generate file metadata based on folder context
+        try:
+            # Get localized prompt template for generating a single file metadata
+            prompt_template = get_translation("folder_structure_prompt.single_file_metadata", self.settings.language)
+            if not prompt_template:
+                # No fallback - fail fast
+                logging.error(f"Missing translation for single_file_metadata in language {self.settings.language}")
+                raise LocalizedTemplateNotFoundError(f"No translation found for single_file_metadata in {self.settings.language}")
+            
+            # Get JSON template and localized descriptions
+            json_template = JsonTemplates.get_template("single_file_metadata")
+            if not json_template:
+                logging.error("Missing JSON template for single_file_metadata")
+                raise ValueError("JSON template not found for single_file_metadata")
+            
+            # Get localized description template
+            file_description_template = get_translation(
+                "description_templates.file_description", 
+                self.settings.language
+            )
+            
+            # Apply localized descriptions to the template
+            json_template = json_template.format(
+                file_description=file_description_template
+            )
+            
+            # Replace placeholders in the template
+            date_range = self.date_range_str or f"{self.date_start.strftime('%Y-%m-%d')} to {self.date_end.strftime('%Y-%m-%d')}" if self.date_start and self.date_end else "no specific date range"
+            
+            prompt = prompt_template.format(
+                folder_path=folder_path,
+                folder_description=folder_description or f"Folder for {folder_path.split('/')[-1].replace('_', ' ').replace('-', ' ')}",
+                industry=industry,
+                date_range=date_range
+            )
+            
+            # Get localized template label
+            template_label = get_translation(
+                "json_format_instructions.json_template_label", 
+                self.settings.language
+            )
+            
+            # Add JSON template to the prompt
+            prompt = f"{prompt}\n\n{template_label}\n{json_template}"
+            
+            # Generate file metadata using LLM
+            logging.info(f"Requesting file metadata for {folder_path} using LLM")
+            file_data = self.llm_client.get_json_completion(
+                prompt=prompt,
+                max_attempts=3,
+                language=self.settings.language
+            )
+            
+            # Validate the returned data
+            if not file_data or "name" not in file_data:
+                logging.error(f"Failed to get valid file metadata for {folder_path}")
+                return None
+            
+            # Ensure we have a type value
+            if "type" not in file_data and "name" in file_data and "." in file_data["name"]:
+                file_data["type"] = file_data["name"].split(".")[-1]
+                
+            # Ensure we have a description
+            if "description" not in file_data:
+                file_data["description"] = f"File related to {folder_path}"
+                
+            return file_data
+            
+        except Exception as e:
+            logging.error(f"Error generating file metadata with LLM for {folder_path}: {e}")
+            # Fail fast instead of providing fallback
+            raise
+
+    def _update_folder_metadata_with_llm(self, folder_path: str, folder_description: str, folder_metadata: Optional[Dict[str, Any]], industry: str, files_to_generate: int) -> Optional[Dict[str, Any]]:
+        """
+        Update folder metadata with suggestions from LLM.
         
-        logging.info("Folder structure and file creation completed (or stopped by short mode).")
-        return success
+        Args:
+            folder_path: Path to the folder
+            folder_description: Description of the folder
+            folder_metadata: Current metadata for the folder
+            industry: Industry context
+            files_to_generate: Number of files to generate
+            
+        Returns:
+            Updated metadata for the folder
+            
+        Raises:
+            LocalizedTemplateNotFoundError: If no localized template is found
+        """
+        # Use LLM to generate suggestions for folder metadata
+        prompt_template = get_translation("folder_structure_prompt.folder_metadata_prompt", self.settings.language)
+        if not prompt_template:
+            # No fallback - fail fast
+            logging.error(f"Missing translation for folder_metadata_prompt in language {self.settings.language}")
+            raise LocalizedTemplateNotFoundError(f"No translation found for folder_metadata_prompt in {self.settings.language}")
+        
+        # Get JSON template and localized descriptions
+        json_template = JsonTemplates.get_template("folder_metadata")
+        if not json_template:
+            logging.error("Missing JSON template for folder_metadata")
+            raise ValueError("JSON template not found for folder_metadata")
+        
+        # Get localized description templates
+        folder_description_template = get_translation(
+            "description_templates.folder_description", 
+            self.settings.language
+        )
+        file_description_template = get_translation(
+            "description_templates.file_description", 
+            self.settings.language
+        )
+        
+        # Apply localized descriptions to the template
+        json_template = json_template.format(
+            folder_description=folder_description_template,
+            file_description=file_description_template
+        )
+        
+        # Replace placeholders in the template
+        date_range = self.date_range_str or f"{self.date_start.strftime('%Y-%m-%d')} to {self.date_end.strftime('%Y-%m-%d')}" if self.date_start and self.date_end else "no specific date range"
+        
+        prompt = prompt_template.format(
+            folder_path=folder_path,
+            folder_description=folder_description or f"Folder for {folder_path.split('/')[-1].replace('_', ' ').replace('-', ' ')}",
+            industry=industry,
+            date_range=date_range
+        )
+        
+        # Get localized template label
+        template_label = get_translation(
+            "json_format_instructions.json_template_label", 
+            self.settings.language
+        )
+        
+        # Add JSON template to the prompt
+        prompt = f"{prompt}\n\n{template_label}\n{json_template}"
+        
+        # Generate metadata using LLM
+        logging.info(f"Requesting folder metadata for {folder_path} using LLM")
+        metadata = self.llm_client.get_json_completion(
+            prompt=prompt,
+            max_attempts=3,
+            language=self.settings.language
+        )
+        
+        # Validate the returned data
+        if not metadata or "description" not in metadata:
+            logging.error(f"Failed to get valid folder metadata for {folder_path}")
+            return None
+        
+        # Ensure we have a purpose
+        if "purpose" not in metadata:
+            metadata["purpose"] = "general"
+        
+        # Ensure we have a files list
+        if "files" not in metadata:
+            metadata["files"] = []
+        
+        # Generate file suggestions if none were returned by the LLM
+        if not metadata["files"]:
+            for _ in range(files_to_generate):
+                try:
+                    file_data = self._generate_random_file_data(folder_path, folder_description, industry)
+                    if file_data and "name" in file_data:
+                        metadata["files"].append(file_data)
+                except Exception as e:
+                    logging.error(f"Error generating file data: {e}")
+                    # Continue even if individual file generation fails
+                    continue
+        
+        return metadata
+        
+    def _reset_short_mode(self, short_mode: bool, mode: str = "all"):
+        """
+        Reset short mode settings for the current operation.
+        
+        Args:
+            short_mode: Whether to enable short mode
+            mode: Operation mode ('all', 'structure', or 'file')
+        """
+        self._short_mode_enabled = short_mode
+        self._item_counts = {item_type: 0 for item_type in self.SHORT_MODE_LIMITS.keys()}
+        
+        # Log mode-specific info
+        if short_mode:
+            if mode == "all":
+                logging.info(f"Short mode enabled: max {self.SHORT_MODE_LIMITS[self.ITEM_TYPE_FOLDER]} folders and {self.SHORT_MODE_LIMITS[self.ITEM_TYPE_FILE]} files")
+            elif mode == "structure":
+                logging.info(f"Short mode enabled: max {self.SHORT_MODE_LIMITS[self.ITEM_TYPE_FOLDER]} folders")
+            elif mode == "file":
+                logging.info(f"Short mode enabled: max {self.SHORT_MODE_LIMITS[self.ITEM_TYPE_FILE]} files")
+        else:
+            logging.info("Short mode disabled: no limit on folder and file count")
+            
+    def _check_short_mode_limit(self, item_type: str) -> bool:
+        """
+        Check if the short mode limit has been reached for the given item type.
+        
+        Args:
+            item_type: Type of item to check ('folder', 'file', etc.)
+            
+        Returns:
+            True if limit reached, False otherwise
+        """
+        if not self._short_mode_enabled:
+            return False
+            
+        # Increment counter for this item type
+        self._item_counts[item_type] = self._item_counts.get(item_type, 0) + 1
+        
+        # Check if limit reached
+        if self._item_counts[item_type] > self.SHORT_MODE_LIMITS.get(item_type, 0):
+            logging.info(f"Short mode limit reached for {item_type}s ({self._item_counts[item_type]-1})")
+            return True
+            
+        return False

@@ -60,6 +60,8 @@
       "important_language": "すべてのフォルダ名は日本語である必要があります。他の言語でフォルダ名を使用しないでください。",
       "instruction": "{industry}業界{role_text}のレベル3フォルダ構造を作成してください。"
     },
+    "single_file_metadata": "{industry}業界のフォルダに適した単一ファイルのメタデータを生成してください。\n\nフォルダ情報：\n- パス: {folder_path}\n- 説明: {folder_description}\n\nフォルダの目的とコンテキストを考慮して適切なファイルを作成してください。\n日付範囲が関連する場合（{date_range}）、ファイル名に適切に日付を組み込んでください。\n\nファイルメタデータのテンプレート構造に一致する単一のJSONオブジェクトで応答してください。",
+    "folder_metadata_prompt": "{industry}業界のフォルダのメタデータを生成してください。\n\nフォルダ情報：\n- パス: {folder_path}\n- 説明: {folder_description}\n\nフォルダの目的とコンテキストを考慮して適切なメタデータを作成してください。\n日付範囲が関連する場合（{date_range}）、メタデータに適切に日付を組み込んでください。\n\nファイル提案を含むフォルダメタデータのテンプレート構造に一致する単一のJSONオブジェクトで応答してください。",
     "level3_files_prompt": {
       "context": "レベル1フォルダ：{l1_folder_name} - {l1_description}\nレベル2フォルダ：{l2_folder_name} - {l2_description}",
       "file_instruction": "このレベル2フォルダに論理的に属する適切なファイルを作成してください。これらはサブフォルダ内ではなく、レベル2フォルダ直接内のファイルです。",
@@ -89,6 +91,7 @@
     "json_format_instruction": "応答を正しい中括弧と引用符を持つ有効なJSONオブジェクトとしてフォーマットしてください。すべてのフォルダ名は日本語である必要があります。",
     "json_object_instruction": "{key}のみをJSONオブジェクトとして返してください。{key}データのみを返してください。",
     "json_response_format_instruction": "以下のJSON構造で応答してください：\\n\\n{json_template}",
+    "json_template_label": "JSONテンプレート：",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "{industry}業界の具体的で適切なフォルダ名を作成してください。各フォルダのビジネス目的を説明する詳細な説明を提供してください。",

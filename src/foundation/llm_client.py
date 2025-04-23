@@ -113,7 +113,7 @@ class OllamaClient:
             LocalizedTemplateNotFoundError: If required translation is not found
         """
         # Get the json format instruction from the translation resources
-        json_validation_instruction = get_translation("json_format_instructions.json_format_instruction", language, None)
+        json_validation_instruction = get_translation("json_format_instructions.json_format_instruction", language)
         if not json_validation_instruction:
             error_msg = f"No translation found for 'json_format_instructions.json_format_instruction' in language '{language}'"
             logging.error(error_msg)

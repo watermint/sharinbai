@@ -209,20 +209,19 @@ def get_normalized_language_key(language: str) -> str:
     # Default to base language if all else fails
     return base_lang
 
-def get_translation(key: str, language: str, default: str = None) -> str:
+def get_translation(key: str, language: str) -> str:
     """
     Get a translation for a key in a specific language.
     
     Args:
         key: Translation key
         language: Language code
-        default: Default value if translation not found (deprecated, will be removed)
     
     Returns:
         Translated string
         
     Raises:
-        LocalizedTemplateNotFoundError: If no translation is found and no default is provided
+        LocalizedTemplateNotFoundError: If no translation is found
     """
     language_files = get_available_language_files()
     normalized_lang = get_normalized_language_key(language)
@@ -255,12 +254,7 @@ def get_translation(key: str, language: str, default: str = None) -> str:
             except Exception as e:
                 logging.debug(f"Error loading translation for {lang}: {e}")
     
-    # If no translation found and default is provided, return default
-    if default is not None:
-        logging.warning(f"No translation found for key '{key}' in language '{language}'. Using provided default value.")
-        return default
-        
-    # If no translation found and no default is provided, raise an exception
+    # If no translation found, raise an exception (fail fast)
     error_msg = f"No translation found for key '{key}' in language '{language}'"
     logging.error(error_msg)
     raise LocalizedTemplateNotFoundError(error_msg) 

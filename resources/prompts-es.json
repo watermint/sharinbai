@@ -60,6 +60,8 @@
       "important_language": "Todos los nombres de carpetas deben estar en español. No utilices nombres de carpetas en otros idiomas.",
       "instruction": "Crea una estructura de carpetas de Nivel 3 para la industria {industry}{role_text}."
     },
+    "single_file_metadata": "Genera metadatos para un archivo único que sería apropiado para una carpeta en la industria {industry}.\n\nInformación de la carpeta:\n- Ruta: {folder_path}\n- Descripción: {folder_description}\n\nConsidera el propósito y contexto de la carpeta al crear un archivo apropiado.\nSi un rango de fechas es relevante ({date_range}), incorpora las fechas apropiadamente en el nombre del archivo.\n\nResponde con un solo objeto JSON que coincida con la siguiente estructura de plantilla para metadatos de archivo.",
+    "folder_metadata_prompt": "Genera metadatos para una carpeta en la industria {industry}.\n\nInformación de la carpeta:\n- Ruta: {folder_path}\n- Descripción: {folder_description}\n\nConsidera el propósito y contexto de la carpeta al crear metadatos apropiados.\nSi un rango de fechas es relevante ({date_range}), incorpora las fechas apropiadamente en los metadatos.\n\nResponde con un solo objeto JSON que coincida con la siguiente estructura de plantilla para metadatos de carpeta con sugerencias de archivos.",
     "level3_files_prompt": {
       "context": "Carpeta de Nivel 1: {l1_folder_name} - {l1_description}\nCarpeta de Nivel 2: {l2_folder_name} - {l2_description}",
       "file_instruction": "Por favor, crea archivos apropiados que lógicamente pertenecerían a esta carpeta de Nivel 2. Estos son archivos directamente en la carpeta de Nivel 2, no dentro de sus subcarpetas.",
@@ -89,6 +91,7 @@
     "json_format_instruction": "Por favor, formatea tu respuesta como un objeto JSON válido con las llaves y comillas correctas. Todos los nombres de carpetas deben estar en español.",
     "json_object_instruction": "Por favor, devuelve solo {key} como un objeto JSON. Devuelve solo los datos de {key}.",
     "json_response_format_instruction": "Por favor, responde con una estructura JSON en el siguiente formato:\\n\\n{json_template}",
+    "json_template_label": "Plantilla JSON:",
     "level1_folders_prompt": {
       "date_range_instruction": "{date_range}",
       "folder_naming": "Crea nombres de carpetas específicos y apropiados para la industria {industry}. Proporciona descripciones detalladas que expliquen el propósito empresarial de cada carpeta.",
