@@ -1,5 +1,7 @@
 # Sharinbai - Automated Directory Structure Generator
 
+![sharinbai](sharinbai_w256.png)
+
 Sharinbai is a tool for generating industry-specific folder structures and placeholder files using AI.
 It utilizes LLM models to create a hierarchical directory structure tailored to specific industries and roles.
 
