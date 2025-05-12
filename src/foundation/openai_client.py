@@ -1,5 +1,5 @@
 """
-LLM client for communication with Ollama API
+OpenAI client for communication with OpenAI API
 """
 
 import json
@@ -15,26 +15,32 @@ from src.config.settings import Settings
 from src.config import get_translation
 from src.config.language_utils import LocalizedTemplateNotFoundError
 
-class OllamaClient(LLMClient):
-    """Client for communicating with Ollama API"""
+class OpenAIClient(LLMClient):
+    """Client for communicating with OpenAI API"""
     
-    def __init__(self, model: str = Settings.DEFAULT_OLLAMA_MODEL, ollama_url: Optional[str] = None):
+    def __init__(self, model: str = "gpt-3.5-turbo", api_key: Optional[str] = None, 
+                 api_base: Optional[str] = None, organization: Optional[str] = None):
         """
-        Initialize the Ollama client.
+        Initialize the OpenAI client.
         
         Args:
-            model: The model to use for requests
-            ollama_url: URL for the Ollama API server
+            model: The model to use for requests (default: gpt-3.5-turbo)
+            api_key: OpenAI API key (defaults to OPENAI_API_KEY environment variable)
+            api_base: Optional custom API base URL
+            organization: Optional OpenAI organization ID
         """
         self.model = model
-        # Use provided URL or environment variable or default
-        self.base_url = ollama_url or os.environ.get("OLLAMA_API_URL", "http://localhost:11434")
-        self.api_url = f"{self.base_url}/api/generate"
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        if not self.api_key:
+            logging.warning("No OpenAI API key provided. Set OPENAI_API_KEY environment variable or pass api_key parameter.")
+        
+        self.api_base = api_base or os.environ.get("OPENAI_API_BASE", "https://api.openai.com/v1")
+        self.organization = organization or os.environ.get("OPENAI_ORGANIZATION")
         
     def _make_request(self, prompt: str, system: Optional[str] = None, 
                      max_attempts: int = 3, timeout: int = 300) -> Optional[str]:
         """
-        Make a request to the Ollama API.
+        Make a request to the OpenAI API.
         
         Args:
             prompt: The prompt to send to the model
@@ -45,40 +51,60 @@ class OllamaClient(LLMClient):
         Returns:
             Model response text or None if the request failed
         """
-        payload = {
-            "model": self.model,
-            "prompt": prompt,
-            "stream": False,
-            "options": {
-                "temperature": 0.1,
-                "num_predict": 4096,
-            }
+        if not self.api_key:
+            logging.error("OpenAI API key is required but not provided")
+            return None
+            
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
         }
         
-        if system:
-            payload["system"] = system
+        if self.organization:
+            headers["OpenAI-Organization"] = self.organization
             
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        
+        messages.append({"role": "user", "content": prompt})
+        
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": 0.1,
+            "max_tokens": 4096
+        }
+        
         attempt = 0
         while attempt < max_attempts:
             try:
-                logging.debug(f"Sending request to Ollama API: {self.api_url}")
-                response = requests.post(self.api_url, json=payload, timeout=timeout)
+                logging.debug(f"Sending request to OpenAI API: {self.api_base}/chat/completions")
+                response = requests.post(
+                    f"{self.api_base}/chat/completions", 
+                    headers=headers,
+                    json=payload, 
+                    timeout=timeout
+                )
                 
                 if response.status_code == 200:
-                    return response.json().get("response", "")
+                    result = response.json()
+                    return result["choices"][0]["message"]["content"]
                 else:
                     logging.error(f"Request failed with status code {response.status_code}: {response.text}")
             except requests.exceptions.RequestException as e:
                 logging.error(f"Request exception: {e}")
             except json.JSONDecodeError as e:
                 logging.error(f"JSON decode error: {e}")
+            except KeyError as e:
+                logging.error(f"Response format error: {e}")
                 
             attempt += 1
             if attempt < max_attempts:
                 logging.info(f"Retrying request (attempt {attempt+1}/{max_attempts})...")
                 time.sleep(2 ** attempt)  # Exponential backoff
                 
-        logging.error(f"Failed to get response from Ollama API after {max_attempts} attempts")
+        logging.error(f"Failed to get response from OpenAI API after {max_attempts} attempts")
         return None
         
     def get_completion(self, prompt: str, system: Optional[str] = None, 
@@ -184,7 +210,7 @@ class OllamaClient(LLMClient):
             except json.JSONDecodeError:
                 logging.debug(f"Parsing JSON with braces failed: {extracted_json[:100]}...")
                 
-                # Try more aggressive JSON fixing - common issues with Japanese text
+                # Try more aggressive JSON fixing
                 try:
                     # Fix missing quotes around keys
                     fixed_json = re.sub(r'([{,])\s*([^"{\s][^:{\s]*?)\s*:', r'\1"\2":', extracted_json)
@@ -210,4 +236,4 @@ class OllamaClient(LLMClient):
                 
         # If all parsing attempts failed, log the error and return None
         logging.error(f"Failed to parse JSON from response: {text[:200]}...")
-        return None 
+        return None

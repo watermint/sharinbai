@@ -2,6 +2,7 @@
 
 Sharinbai is a tool for generating industry-specific folder structures and placeholder files using AI.
 It utilizes LLM models to create a hierarchical directory structure tailored to specific industries and roles.
+The tool supports both local models via Ollama and cloud-based models via the OpenAI API.
 
 ## Features
 
@@ -14,13 +15,17 @@ It utilizes LLM models to create a hierarchical directory structure tailored to 
 ## Requirements
 
 - Python 3.6+
-- Ollama
+- Ollama (for local models) or OpenAI API key (for cloud-based models)
 
 ## Installation
 
-### 1. Setting up Ollama
+### 1. Setting up an LLM Provider
 
-Sharinbai requires Ollama to run AI models locally on your machine. Follow these steps to install and set up Ollama:
+Sharinbai requires either Ollama (for local models) or an OpenAI API key (for cloud-based models) to generate content.
+
+#### Option A: Setting up Ollama (Local Models)
+
+To run AI models locally on your machine, follow these steps to install and set up Ollama:
 
 1. Download and install Ollama from [https://ollama.ai](https://ollama.ai)
    - For Windows: Download the installer from the website
@@ -52,6 +57,21 @@ Sharinbai requires Ollama to run AI models locally on your machine. Follow these
    ```
 
 For more details, visit the [Ollama documentation](https://github.com/ollama/ollama/blob/main/README.md).
+
+#### Option B: Using OpenAI API (Cloud-based Models)
+
+To use OpenAI's models instead of local models, you'll need an API key:
+
+1. Create an account on [OpenAI's website](https://openai.com/) if you don't have one
+2. Navigate to the [API keys section](https://platform.openai.com/account/api-keys)
+3. Create a new API key
+4. Set the API key as an environment variable:
+   ```
+   export OPENAI_API_KEY=your-api-key-here
+   ```
+   Or provide it via command line argument (see Usage section)
+
+Note: Using OpenAI API will incur charges based on your usage.
 
 ### 2. Download the Repository
 
@@ -113,6 +133,12 @@ To create a complete folder structure with files:
 python sharinbai.py all
 ```
 
+By default, this uses Ollama. To use OpenAI instead:
+
+```
+python sharinbai.py all --provider openai --model gpt-3.5-turbo
+```
+
 ### Generate Structure Only
 
 To create only the folder structure without generating any files:
@@ -155,6 +181,27 @@ To see all supported languages:
 ```
 python sharinbai.py list-languages
 ```
+
+### LLM Provider Options
+
+You can specify the LLM provider and related settings:
+
+```
+# Using Ollama (default)
+python sharinbai.py all --provider ollama --model gemma3:4b
+
+# Using OpenAI
+python sharinbai.py all --provider openai --model gpt-3.5-turbo
+
+# Using OpenAI with custom API base URL
+python sharinbai.py all --provider openai --model gpt-3.5-turbo --openai-api-base https://your-custom-endpoint/v1 --openai-api-key your-api-key
+```
+
+You can also set environment variables instead of passing command-line arguments:
+- `OLLAMA_API_URL`: Custom Ollama API URL (default: http://localhost:11434)
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `OPENAI_API_BASE`: Custom OpenAI API base URL (default: https://api.openai.com/v1)
+- `OPENAI_ORGANIZATION`: Your OpenAI organization ID (optional)
 
 ## Interactive Parameter Input
 

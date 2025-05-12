@@ -17,6 +17,7 @@ ENV/
 
 # Output and generated files
 output/
+out/
 logs/
 
 # Logs

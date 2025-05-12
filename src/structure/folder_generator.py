@@ -14,7 +14,7 @@ import random
 from ..config.language_utils import get_translation
 from ..content.content_generator import ContentGenerator
 from ..content.file_manager import FileManager
-from ..foundation.llm_client import OllamaClient
+from ..foundation.llm_base import LLMClient
 from ..statistics.statistics_tracker import StatisticsTracker
 from ..config.settings import Settings
 from .json_templates import JsonTemplates
@@ -58,15 +58,13 @@ class FolderGenerator:
         ITEM_TYPE_IMAGE: 0     # No limit for images by default
     }
 
-    def __init__(self, model: str = Settings.DEFAULT_MODEL, ollama_url: Optional[str] = None, 
-                 settings: Optional[Settings] = None, date_start: Optional[datetime] = None, 
-                 date_end: Optional[datetime] = None):
+    def __init__(self, llm_client: LLMClient, settings: Optional[Settings] = None, 
+                 date_start: Optional[datetime] = None, date_end: Optional[datetime] = None):
         """
         Initialize the folder generator.
         
         Args:
-            model: Model name to use for generation
-            ollama_url: URL for the Ollama API server
+            llm_client: LLM client instance for generating content
             settings: Application settings
             date_start: Optional start date for date range hints (defaults to 30 days ago)
             date_end: Optional end date for date range hints (defaults to today)
@@ -75,7 +73,7 @@ class FolderGenerator:
             LocalizedTemplateNotFoundError: If required translations are missing
             ValueError: If language is not set in settings
         """
-        self.llm_client = OllamaClient(model, ollama_url)
+        self.llm_client = llm_client
         self.file_manager = FileManager()
         
         # Initialize date range parameters
@@ -85,8 +83,7 @@ class FolderGenerator:
         
         # Initialize content generator with date range
         self.content_generator = ContentGenerator(
-            model, 
-            ollama_url,
+            llm_client,
             date_start=self.date_start,
             date_end=self.date_end
         )

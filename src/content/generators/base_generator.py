@@ -9,13 +9,13 @@ from typing import Optional
 
 from src.config.language_utils import get_translation, LocalizedTemplateNotFoundError
 from src.content.file_manager import FileManager
-from src.foundation.llm_client import OllamaClient
+from src.foundation.llm_base import LLMClient
 
 
 class BaseGenerator(ABC):
     """Base abstract class for all content generators"""
     
-    def __init__(self, llm_client: OllamaClient):
+    def __init__(self, llm_client: LLMClient):
         """
         Initialize the base generator.
         

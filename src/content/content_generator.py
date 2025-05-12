@@ -16,7 +16,7 @@ from src.content.generators import (
     XlsxGenerator,
     ImageGenerator
 )
-from src.foundation.llm_client import OllamaClient
+from src.foundation.llm_base import LLMClient
 from src.config.settings import Settings
 from src.config.language_utils import get_translation
 
@@ -27,19 +27,18 @@ class ContentGenerator:
     # Maximum number of timeseries folders allowed at each level
     MAX_TIMESERIES_FOLDERS = 5
     
-    def __init__(self, model: str = Settings.DEFAULT_MODEL, ollama_url: Optional[str] = None,
+    def __init__(self, llm_client: LLMClient,
                 date_start: Optional[datetime.datetime] = None,
                 date_end: Optional[datetime.datetime] = None):
         """
         Initialize the content generator.
         
         Args:
-            model: Model name to use for content generation
-            ollama_url: URL for the Ollama API server
+            llm_client: LLM client instance for generating content
             date_start: Optional start date for date range hints (defaults to 30 days ago)
             date_end: Optional end date for date range hints (defaults to today)
         """
-        self.llm_client = OllamaClient(model, ollama_url)
+        self.llm_client = llm_client
         self.file_manager = FileManager()
         
         # Initialize the generators

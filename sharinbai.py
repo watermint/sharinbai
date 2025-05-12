@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 from src.config.settings import Settings
 from src.config.logging_config import setup_logging
 from src.config.ui_constants import ROLE_PROMPT_CLI
+from src.foundation.llm_factory import create_llm_client
 from src.config.language_utils import (
     get_normalized_language_key,
     get_supported_languages,
@@ -229,7 +230,7 @@ def test_templates():
     """
     return run_template_tests()
 
-def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, model_override=None, date_start_override=None, date_end_override=None):
+def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, model_override=None, date_start_override=None, date_end_override=None, provider_override=None, openai_api_key_override=None, openai_api_base_override=None, openai_organization_override=None):
     """
     Process a batch YAML file containing multiple tasks.
     
@@ -247,8 +248,17 @@ def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, m
         
     Example batch YAML format:
     ```yaml
+    provider: "ollama"  # LLM provider to use: ollama or openai
     model: "llama3"  # Common model for all tasks
+    
+    # Ollama-specific settings
     ollama_url: "http://localhost:11434"  # Common Ollama URL
+    
+    # OpenAI-specific settings
+    openai_api_key: "your-api-key"  # Common OpenAI API key
+    openai_api_base: "https://api.openai.com/v1"  # Custom API base URL
+    openai_organization: "your-org-id"  # OpenAI organization ID
+    
     date_start: "2023-05-01"  # Common date range start
     date_end: "2023-05-31"  # Common date range end
     
@@ -301,8 +311,25 @@ def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, m
             return False # Exit if CLI override is invalid
 
     # Extract common settings if present
-    common_model = batch_data.get('model', Settings.DEFAULT_MODEL)
+    common_provider = provider_override or batch_data.get('provider', Settings.DEFAULT_PROVIDER)
+    
+    # Set default model based on provider
+    if common_provider == Settings.PROVIDER_OLLAMA:
+        default_model = Settings.DEFAULT_OLLAMA_MODEL
+    elif common_provider == Settings.PROVIDER_OPENAI:
+        default_model = Settings.DEFAULT_OPENAI_MODEL
+    else:
+        default_model = Settings.DEFAULT_OLLAMA_MODEL
+        
+    common_model = model_override or batch_data.get('model', default_model)
+    
+    # Ollama-specific settings
     common_ollama_url = batch_data.get('ollama_url', None)
+    
+    # OpenAI-specific settings
+    common_openai_api_key = openai_api_key_override or batch_data.get('openai_api_key', None)
+    common_openai_api_base = openai_api_base_override or batch_data.get('openai_api_base', None)
+    common_openai_organization = openai_organization_override or batch_data.get('openai_organization', None)
     
     # Calculate default date range values
     today = datetime.now()
@@ -378,8 +405,17 @@ def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, m
             'path': task.get('path', './out'),
             'language': task.get('language'),
             'role': task.get('role'),
+            'provider': provider_override or task.get('provider', common_provider),  # Use command line provider or task-specific setting
             'model': model_override or task.get('model', common_model),  # Use command line model or task-specific setting
+            
+            # Ollama-specific settings
             'ollama_url': task.get('ollama_url', common_ollama_url),
+            
+            # OpenAI-specific settings
+            'openai_api_key': task.get('openai_api_key', common_openai_api_key),
+            'openai_api_base': task.get('openai_api_base', common_openai_api_base),
+            'openai_organization': task.get('openai_organization', common_openai_organization),
+            
             'short': short_mode or task.get('short', False),  # Use command line short mode or task-specific setting
             'log_level': log_level,
             'log_path': log_path,
@@ -392,9 +428,21 @@ def process_batch_file(batch_file_path, log_level, log_path, short_mode=False, m
         
         # Process this task
         try:
+            # Create LLM client based on provider setting
+            try:
+                llm_client = create_llm_client(settings)
+                logging.info(f"Using {settings.provider} provider with model {settings.model}")
+            except ValueError as e:
+                logging.error(f"Error creating LLM client: {e}")
+                all_successful = False
+                continue
+            except Exception as e:
+                logging.error(f"Unexpected error creating LLM client: {e}")
+                all_successful = False
+                continue
+                
             folder_generator = FolderGenerator(
-                settings.model, 
-                settings.ollama_url, 
+                llm_client,
                 settings,
                 date_start=task_date_start,
                 date_end=task_date_end
@@ -484,9 +532,22 @@ def main():
         subparser.add_argument('--industry', '-i', type=str, help='Industry for the folder structure (if .metadata.json exists, this will temporarily override the stored value)')
         subparser.add_argument('--path', '-p', type=str, default='./out', help='Path where to create the folder structure')
         subparser.add_argument('--language', '-l', type=str, help='Language for the folder structure (can be omitted if .metadata.json exists)')
-        subparser.add_argument('--model', '-m', type=str, default=Settings.DEFAULT_MODEL, help='Ollama model to use')
+        
+        # LLM provider options
+        subparser.add_argument('--provider', type=str, choices=[Settings.PROVIDER_OLLAMA, Settings.PROVIDER_OPENAI], 
+                             default=Settings.DEFAULT_PROVIDER, 
+                             help=f'LLM provider to use: {Settings.PROVIDER_OLLAMA} or {Settings.PROVIDER_OPENAI}')
+        subparser.add_argument('--model', '-m', type=str, help='Model to use for the selected provider')
         subparser.add_argument('--role', '-r', type=str, default=None, help='Specific role within the industry (if .metadata.json exists, this will temporarily override the stored value)')
-        subparser.add_argument('--ollama-url', type=str, default=None, help='URL for the Ollama API server.')
+        
+        # Ollama specific options
+        subparser.add_argument('--ollama-url', type=str, default=None, help='URL for the Ollama API server')
+        
+        # OpenAI specific options
+        subparser.add_argument('--openai-api-key', type=str, default=None, help='OpenAI API key (can also be set via OPENAI_API_KEY environment variable)')
+        subparser.add_argument('--openai-api-base', type=str, default=None, help='Custom OpenAI API base URL (defaults to https://api.openai.com/v1)')
+        subparser.add_argument('--openai-organization', type=str, default=None, help='OpenAI organization ID')
+        
         subparser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items)')
         subparser.add_argument('--log-path', type=str, default='./logs', help='Path where to store log files')
         subparser.add_argument('--date-start', '-ds', type=str, default=default_date_start,
@@ -517,7 +578,18 @@ def main():
     batch_parser.add_argument('--file', '-f', type=str, required=True, help='Path to the batch YAML file')
     batch_parser.add_argument('--log-path', type=str, default='./logs', help='Path where to store log files')
     batch_parser.add_argument('--short', action='store_true', help='Enable short mode (max 5 items) for all tasks')
-    batch_parser.add_argument('--model', '-m', type=str, help='Ollama model to use for all tasks')
+    batch_parser.add_argument('--provider', type=str, 
+                             choices=[Settings.PROVIDER_OLLAMA, Settings.PROVIDER_OPENAI], 
+                             help='LLM provider to use for all tasks')
+    batch_parser.add_argument('--model', '-m', type=str, help='Model to use for all tasks')
+    
+    # OpenAI-specific options for batch mode
+    batch_parser.add_argument('--openai-api-key', type=str, default=None, 
+                              help='OpenAI API key (can also be set via OPENAI_API_KEY environment variable)')
+    batch_parser.add_argument('--openai-api-base', type=str, default=None, 
+                              help='Custom OpenAI API base URL (defaults to https://api.openai.com/v1)')
+    batch_parser.add_argument('--openai-organization', type=str, default=None, 
+                              help='OpenAI organization ID')
     batch_parser.add_argument('--date-start', '-ds', type=str, default=default_date_start,
                               help='Start date to override for all tasks (format: YYYY-MM-DD).')
     batch_parser.add_argument('--date-end', '-de', type=str, default=default_date_end,
@@ -567,7 +639,11 @@ def main():
             args.short, 
             args.model,
             date_start_override=args.date_start, # Pass CLI date start
-            date_end_override=args.date_end     # Pass CLI date end
+            date_end_override=args.date_end,    # Pass CLI date end
+            provider_override=args.provider,    # Pass CLI provider
+            openai_api_key_override=args.openai_api_key,
+            openai_api_base_override=args.openai_api_base,
+            openai_organization_override=args.openai_organization
         )
         if success:
             logging.info("All batch tasks completed successfully")
@@ -578,6 +654,15 @@ def main():
     
     # Initialize settings from args with default language
     settings = Settings().from_args(vars(args))
+    
+    # Set default model based on provider if not specified
+    if not args.model:
+        if settings.provider == Settings.PROVIDER_OLLAMA:
+            settings.model = Settings.DEFAULT_OLLAMA_MODEL
+            logging.info(f"Using default Ollama model: {settings.model}")
+        elif settings.provider == Settings.PROVIDER_OPENAI:
+            settings.model = Settings.DEFAULT_OPENAI_MODEL
+            logging.info(f"Using default OpenAI model: {settings.model}")
     
     # Parse date range parameters (they now always have values from defaults)
     date_start = None
@@ -738,9 +823,19 @@ def main():
     if not is_language_supported(settings.language):
         logging.warning(f"Language '{settings.language}' is not directly supported. Using best available match.")
     
+    # Create LLM client based on provider setting
+    try:
+        llm_client = create_llm_client(settings)
+        logging.info(f"Using {settings.provider} provider with model {settings.model}")
+    except ValueError as e:
+        logging.error(f"Error creating LLM client: {e}")
+        sys.exit(1)
+    except Exception as e:
+        logging.error(f"Unexpected error creating LLM client: {e}")
+        sys.exit(1)
+        
     folder_generator = FolderGenerator(
-        settings.model, 
-        settings.ollama_url, 
+        llm_client,
         settings,
         date_start=date_start,
         date_end=date_end
